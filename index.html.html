@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impara la Virgola nelle Divisioni</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 0.8em;
+            font-style: italic;
+        }
+
+        .mode-indicator {
+            text-align: center;
+            padding: 5px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .mode-guided {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .mode-autonomous {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 6px;
+            padding: 5px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.65em;
+            opacity: 0.9;
+        }
+
+        .score-value {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .lesson-box {
+            background: #fff3cd;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #ffc107;
+        }
+
+        .lesson-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+        }
+
+        .lesson-content {
+            color: #856404;
+            font-size: 0.75em;
+            line-height: 1.4;
+        }
+
+        .lesson-content strong {
+            color: #d63384;
+        }
+
+        .example {
+            background: white;
+            padding: 6px;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .exercise-area {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .exercise-title {
+            text-align: center;
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .division-steps {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 2px solid #667eea;
+        }
+
+        .steps-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .steps-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .step-line {
+            margin: 5px 0;
+        }
+
+        .step-line .highlight-integer {
+            background: #e3f2fd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .step-line .highlight-comma {
+            background: #ffcdd2;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #f5576c;
+            font-size: 1.2em;
+        }
+
+        .step-line .highlight-decimal {
+            background: #e8f5e9;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .division-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5em;
+            text-align: center;
+            margin: 12px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quotient-builder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-height: 60px;
+            position: relative;
+        }
+
+        .section-label {
+            position: absolute;
+            top: -25px;
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #666;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .label-integer {
+            color: #2196F3;
+            left: 0;
+        }
+
+        .label-decimal {
+            color: #4CAF50;
+            right: 0;
+        }
+
+        .digit-slot {
+            width: 38px;
+            height: 45px;
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .digit-slot.integer {
+            border-color: #2196F3;
+            background: #e3f2fd;
+        }
+
+        .digit-slot.decimal {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .digit-slot.filled {
+            border-style: solid;
+        }
+
+        .digit-slot.comma {
+            width: 30px;
+            border-color: #f5576c;
+            border-width: 4px;
+            background: #ffe5ea;
+        }
+
+        .digit-slot.comma.filled {
+            background: #ffcdd2;
+            border-color: #f5576c;
+        }
+
+        .digit-slot.neutral {
+            border-color: #9e9e9e;
+            background: #f5f5f5;
+        }
+
+        .digit-slot.drag-over {
+            background: #e3f2fd;
+            transform: scale(1.1);
+        }
+
+        .digit-slot.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            animation: success 0.5s;
+        }
+
+        .digit-slot.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            animation: shake 0.3s;
+        }
+
+        @keyframes success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .tiles-panel {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .tiles-title {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .tiles-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tile {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: move;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .tile.comma {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-size: 2em;
+        }
+
+        .tile:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .tile.dragging {
+            opacity: 0.5;
+        }
+
+        .tile.used {
+            display: none;
+        }
+
+        .hint-box {
+            background: #d1ecf1;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #0c5460;
+            display: none;
+        }
+
+        .hint-box.show {
+            display: block;
+        }
+
+        .hint-text {
+            color: #0c5460;
+            font-size: 0.9em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 15px;
+            font-size: 0.85em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-hint {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            text-align: center;
+            padding: 6px;
+            margin-top: 8px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+            min-height: 35px;
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Impara la Virgola nelle Divisioni 🎯</h1>
+        <div class="subtitle">Prima impara, poi mettiti alla prova!</div>
+
+        <div class="mode-indicator" id="modeIndicator"></div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Corrette</div>
+                <div class="score-value" id="correct">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Fase</div>
+                <div class="score-value" id="phase">Guidata</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Esercizio</div>
+                <div class="score-value"><span id="current">1</span>/<span id="total">10</span></div>
+            </div>
+        </div>
+
+        <div class="lesson-box">
+            <div class="lesson-title">📚 Regola della Virgola:</div>
+            <div class="lesson-content">
+                Quando fai una divisione con i decimali, la <strong>virgola nel quoziente</strong> va messa quando:
+                <br>• Hai finito le cifre del dividendo (parti intere)
+                <br>• Devi "abbassare lo 0" per continuare
+                <br>• Il resto non è zero e vuoi continuare la divisione
+                <div class="example">
+                    Esempio: 25 ÷ 2 = 12<strong style="color: #f5576c;">,</strong>5
+                    <br><span style="font-size: 0.8em;">↑ La virgola va dopo le cifre intere</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="exercise-area">
+            <div class="exercise-title" id="exerciseTitle">Esercizio 1</div>
+            
+            <div id="divisionStepsContainer"></div>
+
+            <div class="division-display">
+                <span id="dividend">245</span>
+                <span>÷</span>
+                <span id="divisor">2</span>
+                <span>=</span>
+            </div>
+
+            <div class="quotient-builder" id="quotientBuilder">
+                <!-- Slots generati dinamicamente -->
+            </div>
+
+            <div class="tiles-panel">
+                <div class="tiles-title" id="tilesTitle">🎲 Trascina qua sopra:</div>
+                <div class="tiles-container" id="tilesContainer">
+                    <!-- Tiles generati dinamicamente -->
+                </div>
+            </div>
+
+            <div class="hint-box" id="hintBox">
+                <div class="hint-text" id="hintText"></div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-check" id="checkBtn">Controlla</button>
+            <button class="btn-hint" id="hintBtn">Aiuto</button>
+            <button class="btn-reset" id="resetBtn">Ricomincia</button>
+            <button class="btn-next" id="nextBtn" disabled>Prossimo ➜</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        let currentExercise = 0;
+        let correctCount = 0;
+        let draggedTile = null;
+
+        // Primi 5 esercizi: GUIDATI (con colori e etichette)
+        // Ultimi 5 esercizi: AUTONOMI (senza aiuti visivi)
+        const exercises = [
+            // FASE GUIDATA - Esercizi 1-5
+            { dividend: 25, divisor: 2, quotient: "12,5", hint: "25 ÷ 2: fai 25÷2=12 resto 1. Metti virgola e abbassa 0: 10÷2=5", guided: true },
+            { dividend: 45, divisor: 2, quotient: "22,5", hint: "45 ÷ 2: fai 45÷2=22 resto 1. Metti virgola e abbassa 0: 10÷2=5", guided: true },
+            { dividend: 15, divisor: 4, quotient: "3,75", hint: "15 ÷ 4: fai 15÷4=3 resto 3. Virgola! 30÷4=7 resto 2, poi 20÷4=5", guided: true },
+            { dividend: 125, divisor: 5, quotient: "25,0", hint: "125 ÷ 5: fai 125÷5=25 resto 0. Virgola e zero!", guided: true },
+            { dividend: 175, divisor: 5, quotient: "35,0", hint: "175 ÷ 5: fai 175÷5=35 resto 0. Virgola e zero!", guided: true },
+            
+            // FASE AUTONOMA - Esercizi 6-10 (SENZA colori e etichette)
+            { dividend: 65, divisor: 4, quotient: "16,25", hint: "65 ÷ 4: fai 65÷4=16 resto 1. Virgola! 10÷4=2 resto 2, poi 20÷4=5", guided: false },
+            { dividend: 225, divisor: 4, quotient: "56,25", hint: "225 ÷ 4: fai 225÷4=56 resto 1. Virgola! 10÷4=2 resto 2, poi 20÷4=5", guided: false },
+            { dividend: 145, divisor: 4, quotient: "36,25", hint: "145 ÷ 4: fai 145÷4=36 resto 1. Virgola! 10÷4=2 resto 2, poi 20÷4=5", guided: false },
+            { dividend: 157, divisor: 4, quotient: "39,25", hint: "157 ÷ 4: fai 157÷4=39 resto 1. Virgola! 10÷4=2 resto 2, poi 20÷4=5", guided: false },
+            { dividend: 365, divisor: 8, quotient: "45,625", hint: "365 ÷ 8: fai 365÷8=45 resto 5. Virgola! 50÷8=6 resto 2, 20÷8=2 resto 4, 40÷8=5", guided: false }
+        ];
+
+        function startExercise() {
+            const ex = exercises[currentExercise];
+            const isGuided = ex.guided;
+            
+            // Aggiorna indicatore modalità
+            const modeIndicator = document.getElementById('modeIndicator');
+            const phaseDisplay = document.getElementById('phase');
+            
+            if (isGuided) {
+                modeIndicator.className = 'mode-indicator mode-guided';
+                modeIndicator.innerHTML = '👨‍🏫 FASE GUIDATA: Ti aiuto con i colori!';
+                phaseDisplay.textContent = 'Guidata';
+            } else {
+                modeIndicator.className = 'mode-indicator mode-autonomous';
+                modeIndicator.innerHTML = '🎯 FASE AUTONOMA: Decidi tu dove va la virgola!';
+                phaseDisplay.textContent = 'Autonoma';
+            }
+            
+            document.getElementById('exerciseTitle').textContent = `Esercizio ${currentExercise + 1} di ${exercises.length}`;
+            document.getElementById('dividend').textContent = ex.dividend;
+            document.getElementById('divisor').textContent = ex.divisor;
+            document.getElementById('current').textContent = currentExercise + 1;
+            document.getElementById('total').textContent = exercises.length;
+            document.getElementById('correct').textContent = correctCount;
+            
+            updateProgressBar();
+            
+            // Mostra passaggi solo in fase guidata
+            const stepsContainer = document.getElementById('divisionStepsContainer');
+            if (isGuided) {
+                stepsContainer.innerHTML = showDivisionSteps(ex.dividend, ex.divisor, ex.quotient);
+            } else {
+                stepsContainer.innerHTML = '<div class="division-steps"><div class="steps-title">🤔 Ora tocca a te! Dove va la virgola?</div></div>';
+            }
+            
+            // Aggiorna testo pannello tessere
+            const tilesTitle = document.getElementById('tilesTitle');
+            if (isGuided) {
+                tilesTitle.textContent = '🎲 Trascina qua sopra:';
+            } else {
+                tilesTitle.textContent = '🔀 Trascina in ordine (mischiate):';
+            }
+            
+            // Crea slots per il quoziente
+            createQuotientSlots(ex.quotient, isGuided);
+            
+            // Crea tiles
+            createTiles(ex.quotient);
+            
+            // Nascondi hint e pulsante next
+            document.getElementById('hintBox').classList.remove('show');
+            document.getElementById('nextBtn').disabled = true;
+            
+            showMessage('');
+        }
+
+        function showDivisionSteps(dividend, divisor, quotient) {
+            const parts = quotient.split(',');
+            const integerPart = parts[0];
+            const decimalPart = parts[1] || '';
+            
+            let html = '<div class="division-steps">';
+            html += '<div class="steps-title">📖 Guarda i passaggi:</div>';
+            html += '<div class="steps-content">';
+            
+            html += `<div class="step-line">1. ${dividend} ÷ ${divisor} = <span class="highlight-integer">${integerPart}</span> (cifre intere)</div>`;
+            
+            if (decimalPart) {
+                html += `<div class="step-line">2. C'è un resto → metti la <span class="highlight-comma">virgola ,</span></div>`;
+                html += `<div class="step-line">3. Abbassa lo 0 e continua → <span class="highlight-decimal">${decimalPart}</span> (cifre decimali)</div>`;
+                html += `<div class="step-line"><strong>Risultato:</strong> <span class="highlight-integer">${integerPart}</span><span class="highlight-comma">,</span><span class="highlight-decimal">${decimalPart}</span></div>`;
+            }
+            
+            html += '</div></div>';
+            
+            return html;
+        }
+
+        function createQuotientSlots(quotient, isGuided) {
+            const builder = document.getElementById('quotientBuilder');
+            builder.innerHTML = '';
+            
+            const commaIndex = quotient.indexOf(',');
+            
+            if (isGuided) {
+                // FASE GUIDATA: con etichette e colori
+                const labelInteger = document.createElement('div');
+                labelInteger.className = 'section-label label-integer';
+                labelInteger.textContent = '🔵 Cifre INTERE';
+                builder.appendChild(labelInteger);
+                
+                if (commaIndex !== -1) {
+                    const labelDecimal = document.createElement('div');
+                    labelDecimal.className = 'section-label label-decimal';
+                    labelDecimal.textContent = '🟢 Cifre DECIMALI';
+                    builder.appendChild(labelDecimal);
+                }
+            }
+            
+            for (let i = 0; i < quotient.length; i++) {
+                const char = quotient[i];
+                const slot = document.createElement('div');
+                
+                if (isGuided) {
+                    // GUIDATA: colori diversi e dimensioni diverse
+                    if (char === ',') {
+                        slot.className = 'digit-slot comma';
+                    } else if (i < commaIndex || commaIndex === -1) {
+                        slot.className = 'digit-slot integer';
+                    } else {
+                        slot.className = 'digit-slot decimal';
+                    }
+                } else {
+                    // AUTONOMA: TUTTE le caselle identiche (anche la virgola!)
+                    slot.className = 'digit-slot neutral';
+                }
+                
+                slot.dataset.expected = char;
+                
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('dragenter', handleDragEnter);
+                slot.addEventListener('dragleave', handleDragLeave);
+                slot.addEventListener('drop', handleDrop);
+                
+                builder.appendChild(slot);
+            }
+        }
+
+        function createTiles(quotient) {
+            const container = document.getElementById('tilesContainer');
+            container.innerHTML = '';
+            
+            const chars = quotient.split('');
+            
+            // Nella fase AUTONOMA, mescola le tessere in ordine casuale
+            const ex = exercises[currentExercise];
+            if (!ex.guided) {
+                // Algoritmo Fisher-Yates per mescolare l'array
+                for (let i = chars.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [chars[i], chars[j]] = [chars[j], chars[i]];
+                }
+            }
+            
+            chars.forEach((char, index) => {
+                const tile = document.createElement('div');
+                tile.className = char === ',' ? 'tile comma' : 'tile';
+                tile.textContent = char;
+                tile.draggable = true;
+                tile.dataset.char = char;
+                tile.dataset.id = `tile-${index}`;
+                
+                tile.addEventListener('dragstart', handleDragStart);
+                tile.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(tile);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedTile = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('char', e.target.dataset.char);
+            e.dataTransfer.setData('id', e.target.dataset.id);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('digit-slot')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('digit-slot')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            e.target.classList.remove('drag-over');
+            
+            const char = e.dataTransfer.getData('char');
+            const tileId = e.dataTransfer.getData('id');
+            
+            if (e.target.classList.contains('digit-slot')) {
+                if (e.target.dataset.tileId) {
+                    const oldTile = document.querySelector(`[data-id="${e.target.dataset.tileId}"]`);
+                    if (oldTile) {
+                        oldTile.classList.remove('used');
+                    }
+                }
+                
+                e.target.textContent = char;
+                e.target.classList.add('filled');
+                e.target.dataset.value = char;
+                e.target.dataset.tileId = tileId;
+                
+                draggedTile.classList.add('used');
+            }
+            
+            return false;
+        }
+
+        function checkAnswer() {
+            const slots = document.querySelectorAll('.digit-slot');
+            let allCorrect = true;
+            let emptySlots = false;
+            
+            slots.forEach(slot => {
+                const expected = slot.dataset.expected;
+                const value = slot.dataset.value;
+                
+                if (!value) {
+                    emptySlots = true;
+                } else if (value === expected) {
+                    slot.classList.add('correct');
+                    slot.classList.remove('incorrect');
+                } else {
+                    slot.classList.add('incorrect');
+                    slot.classList.remove('correct');
+                    allCorrect = false;
+                }
+            });
+            
+            if (emptySlots) {
+                showMessage('📝 Completa tutti gli spazi!', 'error');
+                return;
+            }
+            
+            if (allCorrect) {
+                correctCount++;
+                document.getElementById('correct').textContent = correctCount;
+                
+                const ex = exercises[currentExercise];
+                if (ex.guided) {
+                    showMessage('🎉 Perfetto! Hai capito dove va la virgola! 🌟', 'success');
+                } else {
+                    showMessage('🏆 Eccellente! Hai deciso da solo dove mettere la virgola! 🎯', 'success');
+                }
+                
+                document.getElementById('nextBtn').disabled = false;
+                
+                if (currentExercise === exercises.length - 1) {
+                    setTimeout(() => {
+                        showMessage(`🏆 COMPLIMENTI! Hai finito! Punteggio: ${correctCount}/${exercises.length}`, 'success');
+                    }, 2000);
+                }
+            } else {
+                showMessage('❌ Controlla la posizione della virgola!', 'error');
+            }
+        }
+
+        function showHint() {
+            const ex = exercises[currentExercise];
+            const hintBox = document.getElementById('hintBox');
+            const hintText = document.getElementById('hintText');
+            
+            hintText.innerHTML = `<strong>💡 Suggerimento:</strong><br>${ex.hint}`;
+            hintBox.classList.add('show');
+        }
+
+        function resetExercise() {
+            const slots = document.querySelectorAll('.digit-slot');
+            slots.forEach(slot => {
+                if (slot.dataset.tileId) {
+                    const tile = document.querySelector(`[data-id="${slot.dataset.tileId}"]`);
+                    if (tile) {
+                        tile.classList.remove('used');
+                    }
+                }
+                slot.textContent = '';
+                slot.classList.remove('filled', 'correct', 'incorrect');
+                delete slot.dataset.value;
+                delete slot.dataset.tileId;
+            });
+            
+            document.getElementById('hintBox').classList.remove('show');
+            showMessage('');
+        }
+
+        function nextExercise() {
+            if (currentExercise < exercises.length - 1) {
+                currentExercise++;
+                startExercise();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentExercise + 1) / exercises.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showMessage(text, type = '') {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message';
+            if (type) messageEl.classList.add(type);
+            if (text) messageEl.classList.add('show');
+            
+            if (text && type !== 'error') {
+                setTimeout(() => {
+                    messageEl.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+        document.getElementById('hintBtn').addEventListener('click', showHint);
+        document.getElementById('resetBtn').addEventListener('click', resetExercise);
+        document.getElementById('nextBtn').addEventListener('click', nextExercise);
+
+        startExercise();
+    </script>
+</body>
+</html>

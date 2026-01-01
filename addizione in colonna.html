@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Bruco Matematico - Addizioni in Colonna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #87cefa, #add8e6);
+            min-height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 100, 0.2);
+            padding: 8px;
+            width: 99vw;
+            height: 98vh;
+            max-height: 98vh;
+            text-align: center;
+            border: 4px solid #4a90e2;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .game-header {
+            flex-shrink: 0;
+            margin-bottom: 5px;
+        }
+        
+        h1 {
+            color: #ff6b00;
+            font-size: 1.8rem;
+            margin-bottom: 2px;
+            text-shadow: 1px 1px 0 #ffd700;
+            line-height: 1;
+        }
+        
+        .sottotitolo {
+            color: #333;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            background: #e6f7ff;
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 2px solid #4a90e2;
+            flex-shrink: 0;
+        }
+        
+        .punteggio, .vite, .operazione-info {
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .punteggio { 
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        .vite { 
+            background: #ffe6e6;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+        .operazione-info { 
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        
+        /* MODALITÀ SELEZIONE */
+        .modalita-selezione {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 5px 0;
+            flex-shrink: 0;
+        }
+        
+        .bottone-modalita {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border: 2px solid #4a90e2;
+            border-radius: 6px;
+            background: #e6f7ff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .bottone-modalita:hover {
+            background: #b3e0ff;
+        }
+        
+        .bottone-modalita.attiva {
+            background: #4a90e2;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* CONTENUTO PRINCIPALE - MODIFICATO */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            padding: 2px;
+            gap: 8px;
+        }
+        
+        /* SEZIONE OPERAZIONE IN COLONNA */
+        .sezione-colonna {
+            background: #f0f8ff;
+            border: 2px solid #4a90e2;
+            border-radius: 10px;
+            padding: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        .titolo-operazione {
+            font-size: 1.1rem;
+            color: #000080;
+            margin-bottom: 10px;
+            background: #fffacd;
+            padding: 5px;
+            border-radius: 6px;
+            border: 2px solid #ffa500;
+            flex-shrink: 0;
+        }
+        
+        /* COLONNA ALLINEATA CORRETTAMENTE */
+        .colonna-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 0;
+        }
+        
+        .colonna-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 auto;
+            max-width: 350px;
+        }
+        
+        .riga-colonna {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 3px 0;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* RIPORTI SOPRA LA COLONNA */
+        .riga-riporti {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+            min-height: 35px;
+        }
+        
+        .cella-riporto {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #228b22;
+            border-radius: 6px;
+            background: #90ee90;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #006400;
+            margin-left: 5px;
+        }
+        
+        .cella-riporto.attivo {
+            background: #c8f7c5 !important;
+            border: 2px solid #28a745 !important;
+            animation: pulse-riporto 1s infinite;
+        }
+        
+        @keyframes pulse-riporto {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .spazio-segno {
+            width: 25px;
+            margin-right: 5px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cella-numero {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #4a90e2;
+            margin-left: 5px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: white;
+            border-radius: 6px;
+        }
+        
+        .cella-numero.vuota {
+            visibility: hidden;
+        }
+        
+        .cella-virgola {
+            width: 15px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+        
+        .cella-risultato {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #4a90e2;
+            margin-left: 5px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: #e6f7ff;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .cella-risultato:hover {
+            background: #b3e0ff;
+            transform: scale(1.05);
+        }
+        
+        .cella-evidenziata {
+            animation: evidencia 1s infinite;
+            border: 2px solid #ffa500 !important;
+            background: #fffacd !important;
+        }
+        
+        @keyframes evidencia {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .cella-corretta {
+            background: #c8f7c5 !important;
+            border: 2px solid #28a745 !important;
+            color: #155724;
+        }
+        
+        .cella-errata {
+            background: #ffcccc !important;
+            border: 2px solid #dc3545 !important;
+            color: #721c24;
+        }
+        
+        .linea-divisione {
+            border-top: 2px solid #000;
+            margin: 8px 0;
+            width: 100%;
+        }
+        
+        .etichette-colonna {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 3px;
+            width: 100%;
+        }
+        
+        .etichetta {
+            width: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #4a90e2;
+            margin-left: 5px;
+        }
+        
+        .etichetta.vuota {
+            visibility: hidden;
+        }
+        
+        /* MESSAGGIO */
+        .messaggio-container {
+            background: #fff3cd;
+            border: 2px dashed #ffc107;
+            border-radius: 6px;
+            padding: 6px;
+            margin-top: 8px;
+            min-height: 45px;
+            max-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .messaggio {
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            color: #856404;
+            line-height: 1.1;
+            padding: 2px;
+        }
+        
+        .messaggio-corretto {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .messaggio-errato {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        /* CONTROLLI */
+        .controlli {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 5px 0;
+            flex-shrink: 0;
+        }
+        
+        .bottone {
+            padding: 7px 12px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #4a90e2;
+            color: white;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 100px;
+            justify-content: center;
+        }
+        
+        .bottone:hover {
+            background: #357ae8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .bottone:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .bottone-verifica {
+            background: #28a745;
+        }
+        
+        .bottone-aiuto {
+            background: #ffa500;
+        }
+        
+        .bottone-nuova {
+            background: #9370db;
+        }
+        
+        /* TASTIERA NUMERICA ORIZZONTALE - SOTTO I PULSANTI (SENZA TITOLO) */
+        .tastiera-container {
+            background: #e6f7ff;
+            border-radius: 8px;
+            padding: 8px;
+            flex-shrink: 0;
+            border: 2px solid #4a90e2;
+            margin-top: 5px;
+        }
+        
+        .tastiera-numerica {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tasto-numero {
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid #4a90e2;
+            border-radius: 6px;
+            background: #b3e0ff;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #000080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .tasto-numero:hover {
+            background: #87cefa;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tasto-numero:active {
+            transform: scale(0.95);
+        }
+        
+        .tasto-cancella {
+            background: #ff6b6b;
+            color: white;
+            border-color: #dc3545;
+            font-size: 1rem;
+            width: 60px;
+        }
+        
+        .tasto-ok {
+            background: #32cd32;
+            color: white;
+            border-color: #28a745;
+            font-size: 1rem;
+            width: 80px;
+        }
+        
+        /* RIPORTI INFO */
+        .riporti-info {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 6px 0;
+            flex-shrink: 0;
+        }
+        
+        .riporto-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            background: #f0f8ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #4a90e2;
+        }
+        
+        .riporto-icon {
+            font-size: 0.8rem;
+        }
+        
+        /* GUIDA RAPIDA */
+        .guida-toggle {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .guida-rapida {
+            background: #f0f8ff;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 5px;
+            border: 2px solid #4a90e2;
+            flex-shrink: 0;
+            max-height: 110px;
+            overflow-y: auto;
+            font-size: 0.75rem;
+        }
+        
+        .guida-titolo {
+            color: #000080;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .passo-guida {
+            display: flex;
+            align-items: flex-start;
+            margin: 3px 0;
+            gap: 4px;
+        }
+        
+        .numero-passo {
+            background: #4a90e2;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        
+        .passo-testo {
+            text-align: left;
+            font-size: 0.7rem;
+            line-height: 1.2;
+            flex: 1;
+        }
+        
+        .esempio-guida {
+            background: #fffacd;
+            padding: 5px;
+            border-radius: 5px;
+            margin-top: 4px;
+            border: 1px dashed #ffa500;
+            text-align: left;
+            font-size: 0.65rem;
+        }
+        
+        .esempio-titolo {
+            font-weight: bold;
+            color: #000080;
+            margin-bottom: 2px;
+            font-size: 0.75rem;
+        }
+        
+        /* ANIMAZIONI */
+        @keyframes vittoria {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .game-container {
+                padding: 6px;
+                height: 99vh;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .cella-numero, .cella-risultato, .cella-riporto {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+            
+            .cella-virgola {
+                width: 12px;
+                height: 35px;
+                font-size: 1.3rem;
+            }
+            
+            .etichetta {
+                width: 35px;
+                font-size: 0.75rem;
+            }
+            
+            .tasto-numero {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .tasto-cancella, .tasto-ok {
+                width: 55px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 5px;
+                border-width: 3px;
+            }
+            
+            .main-content {
+                gap: 6px;
+            }
+            
+            .sezione-colonna {
+                padding: 8px;
+            }
+            
+            .colonna-container {
+                transform: scale(0.9);
+            }
+            
+            .controlli {
+                margin: 4px 0;
+            }
+            
+            .bottone {
+                min-width: 85px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .tastiera-numerica {
+                gap: 3px;
+            }
+            
+            .tasto-numero {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .tasto-cancella {
+                width: 50px;
+            }
+            
+            .tasto-ok {
+                width: 70px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .game-container {
+                padding: 4px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+                margin-bottom: 1px;
+            }
+            
+            .sottotitolo {
+                font-size: 0.75rem;
+                margin-bottom: 4px;
+            }
+            
+            .sezione-colonna {
+                padding: 6px;
+            }
+            
+            .cella-numero, .cella-risultato, .cella-riporto {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+            
+            .cella-virgola {
+                width: 10px;
+                height: 32px;
+                font-size: 1.2rem;
+            }
+            
+            .etichetta {
+                width: 32px;
+                font-size: 0.7rem;
+            }
+            
+            .messaggio-container {
+                min-height: 40px;
+                max-height: 40px;
+                padding: 5px;
+            }
+            
+            .messaggio {
+                font-size: 0.8rem;
+            }
+            
+            .guida-rapida {
+                max-height: 90px;
+                font-size: 0.7rem;
+            }
+            
+            .tasto-numero {
+                width: 38px;
+                height: 38px;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .game-container {
+                padding: 3px;
+                height: 99vh;
+            }
+            
+            .game-info {
+                padding: 4px;
+                margin-bottom: 4px;
+            }
+            
+            .punteggio, .vite, .operazione-info {
+                font-size: 0.8rem;
+                padding: 2px 5px;
+            }
+            
+            .colonna-container {
+                transform: scale(0.85);
+            }
+            
+            .guida-rapida {
+                max-height: 75px;
+                padding: 6px;
+                font-size: 0.65rem;
+            }
+            
+            .tasto-numero {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-height: 500px) {
+            .guida-toggle, .guida-rapida {
+                display: none;
+            }
+            
+            .tasto-numero {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .tasto-cancella, .tasto-ok {
+                width: 45px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body onload="inizializzaGioco()">
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🐛 IL BRUCO MATEMATICO 🐛</h1>
+            <p class="sottotitolo">Impara le addizioni in colonna con il bruco simpatico!</p>
+            
+            <!-- SELEZIONE MODALITÀ -->
+            <div class="modalita-selezione">
+                <button class="bottone-modalita attiva" onclick="cambiaModalita('interi')">
+                    Numeri Interi
+                </button>
+                <button class="bottone-modalita" onclick="cambiaModalita('decimali')">
+                    Numeri Decimali
+                </button>
+            </div>
+            
+            <div class="game-info">
+                <div class="punteggio">🌟 <span id="punteggio">0</span> punti</div>
+                <div class="vite">❤️ <span id="vite">3</span> vite</div>
+                <div class="operazione-info">🔢 Addizione in colonna</div>
+            </div>
+        </div>
+        
+        <!-- CONTENUTO PRINCIPALE -->
+        <div class="main-content">
+            <div class="sezione-colonna">
+                <div class="titolo-operazione" id="titolo-operazione">Operazione in colonna</div>
+                
+                <div class="colonna-wrapper">
+                    <!-- COLONNA ALLINEATA CORRETTAMENTE -->
+                    <div class="colonna-container" id="colonna-container">
+                        <!-- Contenuto generato dinamicamente -->
+                    </div>
+                </div>
+                
+                <!-- Informazioni sui riporti -->
+                <div class="riporti-info">
+                    <div class="riporto-item">
+                        <span class="riporto-icon">📝</span>
+                        <span>Clicca su casella gialla</span>
+                    </div>
+                    <div class="riporto-item">
+                        <span class="riporto-icon">🔄</span>
+                        <span>Da destra a sinistra</span>
+                    </div>
+                </div>
+                
+                <!-- Istruzioni passo passo -->
+                <div class="messaggio-container" id="messaggio-container">
+                    <div class="messaggio" id="messaggio-testo">
+                        Clicca sulla casella gialla delle unità (U) per iniziare!
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CONTROLLI -->
+            <div class="controlli">
+                <button class="bottone bottone-aiuto" onclick="mostraAiuto()">
+                    🧠 Aiuto (-1)
+                </button>
+                <button class="bottone bottone-verifica" onclick="verificaOperazione()" id="bottone-verifica">
+                    ✓ Verifica
+                </button>
+                <button class="bottone bottone-nuova" onclick="nuovaOperazione()">
+                    🔄 Nuova
+                </button>
+            </div>
+            
+            <!-- TASTIERA NUMERICA ORIZZONTALE (SENZA TITOLO) -->
+            <div class="tastiera-container">
+                <div class="tastiera-numerica" id="tastiera-numerica">
+                    <!-- Numeri verranno aggiunti dinamicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- BOTTONE PER MOSTRARE/NASCONDERE GUIDA -->
+        <button class="guida-toggle" onclick="toggleGuida()">
+            <span>📚 Mostra/Nascondi Guida</span>
+        </button>
+        
+        <!-- GUIDA RAPIDA -->
+        <div class="guida-rapida" id="guida-rapida">
+            <div class="guida-titolo">
+                <span>COME FARE L'ADDIZIONE IN COLONNA:</span>
+            </div>
+            
+            <div class="passo-guida">
+                <div class="numero-passo">1</div>
+                <div class="passo-testo"><strong>Parti dalle unità (U)</strong> - colonna più a destra</div>
+            </div>
+            
+            <div class="passo-guida">
+                <div class="numero-passo">2</div>
+                <div class="passo-testo"><strong>Somma le cifre</strong> - esempio: 7 + 8 = 15</div>
+            </div>
+            
+            <div class="passo-guida">
+                <div class="numero-passo">3</div>
+                <div class="passo-testo"><strong>Se somma ≥ 10:</strong> Scrivi unità nel risultato, metti decine come riporto sopra la colonna successiva</div>
+            </div>
+            
+            <div class="esempio-guida">
+                <div class="esempio-titolo">🧮 ESEMPIO DECIMALI: 45,67 + 23,89 = 69,56</div>
+                <div>
+                    • <strong>Centesimi:</strong> 7 + 9 = 16 → scrivi 6, riporto 1<br>
+                    • <strong>Decimi:</strong> 6 + 8 + 1 = 15 → scrivi 5, riporto 1<br>
+                    • <strong>Unità:</strong> 5 + 3 + 1 = 9 → scrivi 9<br>
+                    • <strong>Decine:</strong> 4 + 2 = 6 → scrivi 6<br>
+                    • <strong>Risultato:</strong> 69,56
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================
+        // VARIABILI DEL GIOCO
+        // ====================================================
+        let punteggio = 0;
+        let vite = 3;
+        let numero1 = 0;
+        let numero2 = 0;
+        let risultatoCorretto = 0;
+        let modalitaGioco = 'interi'; // 'interi' o 'decimali'
+        
+        // Variabili dinamiche basate sui numeri
+        let numCifreIntere = 0;
+        let numCifreDecimali = 2; // Sempre 2 decimali
+        let numCifreTotali = 0; // Intere + decimali + virgola
+        let colonnaAttiva = 0;
+        let cifreNumero1 = [];
+        let cifreNumero2 = [];
+        let cifreRisultato = [];
+        let cifreRiporto = [];
+        let risultatiCorretti = [];
+        let riportiCorretti = [];
+        let modalitaRiporto = false;
+        let riportiDaInserire = [];
+        let posizioneVirgola = 0; // Indice della virgola nell'array
+        
+        // Nuove variabili per gestire la visualizzazione senza zeri iniziali
+        let primoNumeroOriginale = "";
+        let secondoNumeroOriginale = "";
+        let risultatoOriginale = "";
+        let cifreNumero1Originali = [];
+        let cifreNumero2Originali = [];
+        let cifreRisultatoOriginali = [];
+
+        // ====================================================
+        // INIZIALIZZAZIONE
+        // ====================================================
+        function inizializzaGioco() {
+            punteggio = 0;
+            vite = 3;
+            modalitaGioco = 'interi';
+            aggiornaUI();
+            creaTastiera();
+            nuovaOperazione();
+        }
+
+        function cambiaModalita(nuovaModalita) {
+            modalitaGioco = nuovaModalita;
+            
+            // Aggiorna pulsanti modalità
+            document.querySelectorAll('.bottone-modalita').forEach(btn => {
+                btn.classList.remove('attiva');
+                if ((nuovaModalita === 'interi' && btn.textContent.includes('Interi')) || 
+                    (nuovaModalita === 'decimali' && btn.textContent.includes('Decimali'))) {
+                    btn.classList.add('attiva');
+                }
+            });
+            
+            // Genera nuova operazione nella nuova modalità
+            nuovaOperazione();
+        }
+
+        function nuovaOperazione() {
+            if (modalitaGioco === 'interi') {
+                // Genera numeri interi casuali (3-5 cifre)
+                numero1 = Math.floor(Math.random() * 90000) + 10000;
+                numero2 = Math.floor(Math.random() * 90000) + 10000;
+            } else {
+                // Genera numeri decimali casuali (2 cifre decimali, 3-5 cifre intere)
+                numero1 = Math.round((Math.random() * 9000 + 1000) * 100) / 100;
+                numero2 = Math.round((Math.random() * 9000 + 1000) * 100) / 100;
+            }
+            
+            risultatoCorretto = Math.round((numero1 + numero2) * 100) / 100;
+            
+            // Salva i numeri originali
+            primoNumeroOriginale = numero1.toString();
+            secondoNumeroOriginale = numero2.toString();
+            risultatoOriginale = risultatoCorretto.toString();
+            
+            // Prepara i numeri per la colonna
+            preparaNumeriPerColonna();
+            
+            // Inizia dall'ultima colonna (cifra più a destra)
+            colonnaAttiva = numCifreTotali - 1;
+            modalitaRiporto = false;
+            
+            // Aggiorna visualizzazione
+            aggiornaColonna();
+            aggiornaMessaggio(`Clicca sulla casella gialla ${getNomeColonna(colonnaAttiva)} per iniziare!`);
+            
+            // Abilita/disabilita pulsanti
+            document.getElementById("bottone-verifica").disabled = false;
+        }
+
+        function preparaNumeriPerColonna() {
+            let str1, str2, strRisultato;
+            
+            if (modalitaGioco === 'interi') {
+                str1 = numero1.toString();
+                str2 = numero2.toString();
+                strRisultato = risultatoCorretto.toString();
+                
+                // Determina la lunghezza massima
+                const maxLength = Math.max(str1.length, str2.length, strRisultato.length);
+                
+                str1 = str1.padStart(maxLength, '0');
+                str2 = str2.padStart(maxLength, '0');
+                strRisultato = strRisultato.padStart(maxLength, '0');
+                
+                numCifreIntere = maxLength;
+                numCifreTotali = maxLength;
+                posizioneVirgola = -1; // Nessuna virgola
+                
+                // Inizializza array
+                cifreNumero1 = new Array(numCifreTotali).fill("");
+                cifreNumero2 = new Array(numCifreTotali).fill("");
+                cifreRisultato = new Array(numCifreTotali).fill("");
+                cifreRiporto = new Array(numCifreTotali).fill("");
+                risultatiCorretti = new Array(numCifreTotali).fill(0);
+                riportiCorretti = new Array(numCifreTotali).fill(0);
+                
+                // Salva le cifre originali (con zeri iniziali se necessario)
+                cifreNumero1Originali = str1.split('');
+                cifreNumero2Originali = str2.split('');
+                cifreRisultatoOriginali = strRisultato.split('');
+                
+                for (let i = 0; i < str1.length; i++) {
+                    cifreNumero1[i] = str1[i];
+                    cifreNumero2[i] = str2[i];
+                }
+                
+                // Calcola risultati e riporti corretti
+                calcolaRisultatiCorrettiInteri();
+            } else {
+                // Per decimali, formattiamo con 2 cifre decimali
+                str1 = numero1.toFixed(2);
+                str2 = numero2.toFixed(2);
+                strRisultato = risultatoCorretto.toFixed(2);
+                
+                // Separiamo parte intera e decimale
+                const [parteIntera1, parteDecimale1] = str1.split('.');
+                const [parteIntera2, parteDecimale2] = str2.split('.');
+                const [parteInteraRis, parteDecimaleRis] = strRisultato.split('.');
+                
+                // Determiniamo la lunghezza massima della parte intera
+                const maxIntera = Math.max(parteIntera1.length, parteIntera2.length, parteInteraRis.length);
+                
+                // Allineiamo le parti intere
+                const parteIntera1Allineata = parteIntera1.padStart(maxIntera, '0');
+                const parteIntera2Allineata = parteIntera2.padStart(maxIntera, '0');
+                const parteInteraRisAllineata = parteInteraRis.padStart(maxIntera, '0');
+                
+                // Combiniamo tutto
+                const numero1Allineato = parteIntera1Allineata + parteDecimale1;
+                const numero2Allineato = parteIntera2Allineata + parteDecimale2;
+                const risultatoAllineato = parteInteraRisAllineata + parteDecimaleRis;
+                
+                const maxLength = Math.max(numero1Allineato.length, numero2Allineato.length, risultatoAllineato.length);
+                
+                // Allineiamo tutto
+                str1 = numero1Allineato.padStart(maxLength, '0');
+                str2 = numero2Allineato.padStart(maxLength, '0');
+                strRisultato = risultatoAllineato.padStart(maxLength, '0');
+                
+                numCifreIntere = maxLength - 2; // Tutte le cifre tranne le 2 decimali
+                numCifreDecimali = 2;
+                numCifreTotali = maxLength + 1; // +1 per la virgola
+                posizioneVirgola = maxLength - 2; // Posizione della virgola (prima delle ultime 2 cifre)
+                
+                // Inizializza array
+                cifreNumero1 = new Array(numCifreTotali).fill("");
+                cifreNumero2 = new Array(numCifreTotali).fill("");
+                cifreRisultato = new Array(numCifreTotali).fill("");
+                cifreRiporto = new Array(numCifreTotali).fill("");
+                risultatiCorretti = new Array(numCifreTotali).fill(0);
+                riportiCorretti = new Array(numCifreTotali).fill(0);
+                
+                // Salva le cifre originali (con zeri iniziali se necessario)
+                cifreNumero1Originali = new Array(numCifreTotali).fill("");
+                cifreNumero2Originali = new Array(numCifreTotali).fill("");
+                cifreRisultatoOriginali = new Array(numCifreTotali).fill("");
+                
+                let index1 = 0;
+                
+                // Inserisci cifre intere e decimali con la virgola
+                for (let i = 0; i < numCifreTotali; i++) {
+                    if (i === posizioneVirgola) {
+                        cifreNumero1[i] = ",";
+                        cifreNumero2[i] = ",";
+                        risultatiCorretti[i] = ",";
+                        cifreNumero1Originali[i] = ",";
+                        cifreNumero2Originali[i] = ",";
+                        cifreRisultatoOriginali[i] = ",";
+                    } else {
+                        cifreNumero1[i] = str1[index1];
+                        cifreNumero2[i] = str2[index1];
+                        cifreNumero1Originali[i] = str1[index1];
+                        cifreNumero2Originali[i] = str2[index1];
+                        cifreRisultatoOriginali[i] = strRisultato[index1];
+                        index1++;
+                    }
+                }
+                
+                // Calcola risultati e riporti corretti
+                calcolaRisultatiCorrettiDecimali();
+            }
+            
+            riportiDaInserire = [];
+        }
+
+        // FUNZIONI PER GESTIRE CORRETTAMENTE LE ETICHETTE
+        function getNomeColonna(indice) {
+            if (modalitaGioco === 'interi') {
+                const posizioneDaDestra = numCifreTotali - 1 - indice;
+                
+                switch(posizioneDaDestra) {
+                    case 0: return "unità (U)";
+                    case 1: return "decine (D)";
+                    case 2: return "centinaia (C)";
+                    case 3: return "migliaia (M)";
+                    case 4: return "decine di migliaia (DM)";
+                    case 5: return "centinaia di migliaia (CM)";
+                    default: return "unità (U)";
+                }
+            } else {
+                // Per decimali
+                if (indice > posizioneVirgola) {
+                    // Parte decimale (a destra della virgola)
+                    const posizioneDecimale = indice - posizioneVirgola - 1;
+                    switch(posizioneDecimale) {
+                        case 0: return "decimi (d)";
+                        case 1: return "centesimi (c)";
+                        default: return "decimi (d)";
+                    }
+                } else if (indice < posizioneVirgola) {
+                    // Parte intera (a sinistra della virgola)
+                    const posizioneDaDestra = posizioneVirgola - 1 - indice;
+                    switch(posizioneDaDestra) {
+                        case 0: return "unità (U)";
+                        case 1: return "decine (D)";
+                        case 2: return "centinaia (C)";
+                        case 3: return "migliaia (M)";
+                        case 4: return "decine di migliaia (DM)";
+                        default: return "unità (U)";
+                    }
+                } else {
+                    return "virgola";
+                }
+            }
+        }
+
+        function getEtichettaColonna(indice) {
+            if (modalitaGioco === 'interi') {
+                const posizioneDaDestra = numCifreTotali - 1 - indice;
+                
+                switch(posizioneDaDestra) {
+                    case 0: return "U";
+                    case 1: return "D";
+                    case 2: return "C";
+                    case 3: return "M";
+                    case 4: return "DM";
+                    case 5: return "CM";
+                    default: return "U";
+                }
+            } else {
+                // Per decimali
+                if (indice > posizioneVirgola) {
+                    // Parte decimale (a destra della virgola)
+                    const posizioneDecimale = indice - posizioneVirgola - 1;
+                    switch(posizioneDecimale) {
+                        case 0: return "d";
+                        case 1: return "c";
+                        default: return "d";
+                    }
+                } else if (indice < posizioneVirgola) {
+                    // Parte intera (a sinistra della virgola)
+                    const posizioneDaDestra = posizioneVirgola - 1 - indice;
+                    switch(posizioneDaDestra) {
+                        case 0: return "U";
+                        case 1: return "D";
+                        case 2: return "C";
+                        case 3: return "M";
+                        case 4: return "DM";
+                        default: return "U";
+                    }
+                } else {
+                    return "";
+                }
+            }
+        }
+
+        function calcolaRisultatiCorrettiInteri() {
+            let riporto = 0;
+            
+            // Calcola da destra a sinistra
+            for (let i = numCifreTotali - 1; i >= 0; i--) {
+                const cifra1 = parseInt(cifreNumero1[i]) || 0;
+                const cifra2 = parseInt(cifreNumero2[i]) || 0;
+                const somma = cifra1 + cifra2 + riporto;
+                
+                risultatiCorretti[i] = somma % 10;
+                riporto = Math.floor(somma / 10);
+                
+                // Memorizza il riporto per la colonna successiva (a sinistra)
+                // SOLO se il riporto è 1, altrimenti non memorizzarlo (0 non va mostrato)
+                if (i > 0) {
+                    riportiCorretti[i-1] = riporto;
+                }
+            }
+        }
+
+        function calcolaRisultatiCorrettiDecimali() {
+            let riporto = 0;
+            
+            // Calcola da destra a sinistra
+            for (let i = numCifreTotali - 1; i >= 0; i--) {
+                if (cifreNumero1[i] === ",") {
+                    risultatiCorretti[i] = ",";
+                    continue;
+                }
+                
+                const cifra1 = parseInt(cifreNumero1[i]) || 0;
+                const cifra2 = parseInt(cifreNumero2[i]) || 0;
+                const somma = cifra1 + cifra2 + riporto;
+                
+                risultatiCorretti[i] = somma % 10;
+                riporto = Math.floor(somma / 10);
+                
+                // Memorizza il riporto per la colonna successiva (a sinistra)
+                // SOLO se il riporto è 1, altrimenti non memorizzarlo (0 non va mostrato)
+                if (i > 0) {
+                    let colonnaSinistra = i - 1;
+                    // Se la colonna a sinistra è la virgola, cerchiamo la colonna ancora più a sinistra
+                    while (colonnaSinistra >= 0 && cifreNumero1[colonnaSinistra] === ",") {
+                        colonnaSinistra--;
+                    }
+                    if (colonnaSinistra >= 0) {
+                        riportiCorretti[colonnaSinistra] = riporto;
+                    }
+                }
+            }
+        }
+
+        // ====================================================
+        // VISUALIZZAZIONE
+        // ====================================================
+        function aggiornaUI() {
+            document.getElementById("punteggio").textContent = punteggio;
+            document.getElementById("vite").textContent = vite;
+            
+            // Aggiorna titolo operazione
+            const titolo = document.getElementById("titolo-operazione");
+            if (modalitaGioco === 'interi') {
+                titolo.textContent = `Addizione con numeri interi: ${numero1} + ${numero2}`;
+            } else {
+                titolo.textContent = `Addizione con numeri decimali: ${numero1} + ${numero2}`;
+            }
+        }
+
+        function aggiornaColonna() {
+            const colonnaContainer = document.getElementById("colonna-container");
+            colonnaContainer.innerHTML = "";
+            
+            // Crea righe per la colonna
+            const righe = {
+                riporti: document.createElement("div"),
+                numero1: document.createElement("div"),
+                numero2: document.createElement("div"),
+                linea: document.createElement("div"),
+                risultato: document.createElement("div"),
+                etichette: document.createElement("div")
+            };
+            
+            // Aggiungi classi
+            righe.riporti.className = "riga-colonna riga-riporti";
+            righe.numero1.className = "riga-colonna";
+            righe.numero2.className = "riga-colonna";
+            righe.linea.className = "linea-divisione";
+            righe.risultato.className = "riga-colonna";
+            righe.etichette.className = "etichette-colonna";
+            
+            // Aggiungi spazio per il segno
+            righe.numero2.innerHTML = '<div class="spazio-segno">+</div>';
+            
+            // Determina se mostrare o meno le cifre
+            // Dobbiamo nascondere gli zeri iniziali non necessari
+            let mostraCifraNumero1 = new Array(numCifreTotali).fill(true);
+            let mostraCifraNumero2 = new Array(numCifreTotali).fill(true);
+            let mostraEtichetta = new Array(numCifreTotali).fill(true);
+            
+            // Per numeri interi: nascondi gli zeri iniziali
+            if (modalitaGioco === 'interi') {
+                // Trova la prima cifra non zero da sinistra per ogni numero
+                let primaCifraNonZero1 = -1;
+                let primaCifraNonZero2 = -1;
+                
+                for (let i = 0; i < numCifreTotali; i++) {
+                    if (cifreNumero1[i] !== "0") {
+                        primaCifraNonZero1 = i;
+                        break;
+                    }
+                }
+                
+                for (let i = 0; i < numCifreTotali; i++) {
+                    if (cifreNumero2[i] !== "0") {
+                        primaCifraNonZero2 = i;
+                        break;
+                    }
+                }
+                
+                // La prima cifra non zero è quella più a sinistra tra i due numeri
+                const primaCifraNonZero = Math.min(
+                    primaCifraNonZero1 >= 0 ? primaCifraNonZero1 : numCifreTotali,
+                    primaCifraNonZero2 >= 0 ? primaCifraNonZero2 : numCifreTotali
+                );
+                
+                // Nascondi tutte le cifre a sinistra della prima cifra non zero
+                for (let i = 0; i < primaCifraNonZero; i++) {
+                    mostraCifraNumero1[i] = false;
+                    mostraCifraNumero2[i] = false;
+                    mostraEtichetta[i] = false;
+                }
+                
+                // Se tutti i numeri sono zero, mostra almeno l'ultima cifra (unità)
+                if (primaCifraNonZero >= numCifreTotali) {
+                    mostraCifraNumero1[numCifreTotali-1] = true;
+                    mostraCifraNumero2[numCifreTotali-1] = true;
+                    mostraEtichetta[numCifreTotali-1] = true;
+                }
+            } else {
+                // Per numeri decimali: nascondi solo gli zeri a sinistra della virgola
+                // che non sono necessari
+                let primaCifraNonZero1 = -1;
+                let primaCifraNonZero2 = -1;
+                
+                // Cerca solo nella parte intera (a sinistra della virgola)
+                for (let i = 0; i < posizioneVirgola; i++) {
+                    if (cifreNumero1[i] !== "0") {
+                        primaCifraNonZero1 = i;
+                        break;
+                    }
+                }
+                
+                for (let i = 0; i < posizioneVirgola; i++) {
+                    if (cifreNumero2[i] !== "0") {
+                        primaCifraNonZero2 = i;
+                        break;
+                    }
+                }
+                
+                // La prima cifra non zero è quella più a sinistra tra i due numeri
+                const primaCifraNonZero = Math.min(
+                    primaCifraNonZero1 >= 0 ? primaCifraNonZero1 : posizioneVirgola,
+                    primaCifraNonZero2 >= 0 ? primaCifraNonZero2 : posizioneVirgola
+                );
+                
+                // Nascondi tutte le cifre a sinistra della prima cifra non zero (solo parte intera)
+                for (let i = 0; i < primaCifraNonZero; i++) {
+                    mostraCifraNumero1[i] = false;
+                    mostraCifraNumero2[i] = false;
+                    mostraEtichetta[i] = false;
+                }
+                
+                // Se tutti i numeri interi sono zero, mostra almeno la cifra immediatamente prima della virgola
+                if (primaCifraNonZero >= posizioneVirgola && posizioneVirgola > 0) {
+                    mostraCifraNumero1[posizioneVirgola-1] = true;
+                    mostraCifraNumero2[posizioneVirgola-1] = true;
+                    mostraEtichetta[posizioneVirgola-1] = true;
+                }
+            }
+            
+            // Crea le celle per ogni colonna
+            for (let i = 0; i < numCifreTotali; i++) {
+                // Gestisci riporti - IMPORTANTE: ELIMINIAMO LA PRIMA CASELLA A DESTRA
+                // Non mostrare mai una casella riporto per l'ultima colonna a destra (unità)
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    // Per la virgola nei decimali, cella vuota nei riporti
+                    righe.riporti.innerHTML += '<div class="cella-riporto" style="visibility: hidden;"></div>';
+                } else if (i === numCifreTotali - 1) {
+                    // NON mostrare MAI una casella riporto per l'ultima colonna a destra (unità)
+                    // Questa casella non serve perché non c'è mai un riporto da inserire sopra le unità
+                    righe.riporti.innerHTML += '<div class="cella-riporto" style="visibility: hidden;"></div>';
+                } else {
+                    // Mostra la cella riporto SOLO se c'è un riporto o se è attiva
+                    let valoreRiporto = "";
+                    let isRiportoAttivo = false;
+                    
+                    if (cifreRiporto[i] !== "") {
+                        valoreRiporto = cifreRiporto[i];
+                        isRiportoAttivo = (colonnaAttiva === i && modalitaRiporto);
+                    }
+                    
+                    // Se il riporto è 0, non mostrare la cella (tranne se è attiva per l'inserimento)
+                    if (valoreRiporto === "0" && !isRiportoAttivo) {
+                        // Per riporto = 0, cella invisibile
+                        righe.riporti.innerHTML += '<div class="cella-riporto" style="visibility: hidden;"></div>';
+                    } else {
+                        const riportoHTML = 
+                            `<div class="cella-riporto ${isRiportoAttivo ? 'attivo' : ''}" 
+                                  id="riporto-${i}"
+                                  onclick="selezionaRiporto(${i})">
+                                ${valoreRiporto}
+                             </div>`;
+                        righe.riporti.innerHTML += riportoHTML;
+                    }
+                }
+                
+                // Primo numero
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    // Mostra sempre la virgola
+                    righe.numero1.innerHTML += `<div class="cella-virgola">,</div>`;
+                } else {
+                    if (mostraCifraNumero1[i]) {
+                        righe.numero1.innerHTML += 
+                            `<div class="cella-numero">${cifreNumero1[i]}</div>`;
+                    } else {
+                        // Cella vuota (invisibile) per zeri iniziali non necessari
+                        righe.numero1.innerHTML += 
+                            `<div class="cella-numero vuota">0</div>`;
+                    }
+                }
+                
+                // Secondo numero
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    // Mostra sempre la virgola
+                    righe.numero2.innerHTML += `<div class="cella-virgola">,</div>`;
+                } else {
+                    if (mostraCifraNumero2[i]) {
+                        righe.numero2.innerHTML += 
+                            `<div class="cella-numero">${cifreNumero2[i]}</div>`;
+                    } else {
+                        // Cella vuota (invisibile) per zeri iniziali non necessari
+                        righe.numero2.innerHTML += 
+                            `<div class="cella-numero vuota">0</div>`;
+                    }
+                }
+                
+                // Risultato
+                const isAttiva = colonnaAttiva === i && !modalitaRiporto;
+                let cellaRisultato = "";
+                
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    cellaRisultato = `<div class="cella-virgola">,</div>`;
+                } else {
+                    cellaRisultato = 
+                        `<div class="cella-risultato ${isAttiva ? 'cella-evidenziata' : ''}" 
+                              id="risultato-${i}"
+                              onclick="selezionaColonna(${i})">
+                            ${cifreRisultato[i] || ""}
+                         </div>`;
+                }
+                
+                righe.risultato.innerHTML += cellaRisultato;
+                
+                // Etichette (non per la virgola)
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    righe.etichette.innerHTML += `<div class="etichetta"></div>`;
+                } else {
+                    if (mostraEtichetta[i]) {
+                        righe.etichette.innerHTML += 
+                            `<div class="etichetta">${getEtichettaColonna(i)}</div>`;
+                    } else {
+                        // Etichetta vuota (invisibile) per colonne nascoste
+                        righe.etichette.innerHTML += 
+                            `<div class="etichetta vuota"></div>`;
+                    }
+                }
+            }
+            
+            // Aggiungi tutte le righe al container
+            colonnaContainer.appendChild(righe.riporti);
+            colonnaContainer.appendChild(righe.numero1);
+            colonnaContainer.appendChild(righe.numero2);
+            colonnaContainer.appendChild(righe.linea);
+            colonnaContainer.appendChild(righe.risultato);
+            colonnaContainer.appendChild(righe.etichette);
+        }
+
+        function aggiornaMessaggio(testo, tipo = "normale") {
+            const container = document.getElementById("messaggio-container");
+            const messaggio = document.getElementById("messaggio-testo");
+            
+            messaggio.textContent = testo;
+            
+            container.classList.remove("messaggio-corretto", "messaggio-errato");
+            
+            if (tipo === "corretto") {
+                container.classList.add("messaggio-corretto");
+            } else if (tipo === "errato") {
+                container.classList.add("messaggio-errato");
+            }
+        }
+
+        function creaTastiera() {
+            const tastiera = document.getElementById("tastiera-numerica");
+            tastiera.innerHTML = "";
+            
+            // Crea tasti numerici da 0 a 9 in ordine
+            for (let i = 0; i <= 9; i++) {
+                const tasto = document.createElement("button");
+                tasto.className = "tasto-numero";
+                tasto.textContent = i;
+                tasto.onclick = () => inserisciCifra(i);
+                tastiera.appendChild(tasto);
+            }
+            
+            // Tasto cancella
+            const tastoCancella = document.createElement("button");
+            tastoCancella.className = "tasto-numero tasto-cancella";
+            tastoCancella.textContent = "⌫";
+            tastoCancella.onclick = cancellaCifra;
+            tastiera.appendChild(tastoCancella);
+            
+            // Tasto OK
+            const tastoOK = document.createElement("button");
+            tastoOK.className = "tasto-numero tasto-ok";
+            tastoOK.textContent = "OK";
+            tastoOK.onclick = confermaColonna;
+            tastiera.appendChild(tastoOK);
+        }
+
+        // ====================================================
+        // LOGICA DI GIOCO
+        // ====================================================
+        function selezionaColonna(indice) {
+            // Non permettere di selezionare la virgola
+            if (modalitaGioco === 'decimali' && indice === posizioneVirgola) {
+                return;
+            }
+            
+            colonnaAttiva = indice;
+            modalitaRiporto = false;
+            aggiornaColonna();
+            aggiornaMessaggio(`Inserisci la cifra ${getNomeColonna(indice)} nel risultato!`);
+        }
+
+        function selezionaRiporto(indice) {
+            // Non permettere di selezionare riporto sulla virgola
+            if (modalitaGioco === 'decimali' && indice === posizioneVirgola) {
+                return;
+            }
+            
+            // Non permettere di selezionare riporto sull'ultima colonna a destra
+            if (indice === numCifreTotali - 1) {
+                return;
+            }
+            
+            if (indice < numCifreTotali) {
+                colonnaAttiva = indice;
+                modalitaRiporto = true;
+                aggiornaColonna();
+                aggiornaMessaggio(`Inserisci il riporto per ${getNomeColonna(indice)}!`);
+            }
+        }
+
+        function inserisciCifra(cifra) {
+            if (colonnaAttiva < 0 || colonnaAttiva >= numCifreTotali) {
+                aggiornaMessaggio("Prima seleziona una casella!", "errato");
+                return;
+            }
+            
+            // Non permettere inserimento sulla virgola
+            if (modalitaGioco === 'decimali' && colonnaAttiva === posizioneVirgola) {
+                return;
+            }
+            
+            if (modalitaRiporto) {
+                // Se si sta inserendo un riporto
+                if (cifra === 0 || cifra === 1) {
+                    cifreRiporto[colonnaAttiva] = cifra.toString();
+                    aggiornaColonna();
+                    
+                    // Se il riporto inserito è 0, non chiedere di inserire il riporto
+                    // Passa direttamente alla colonna del risultato
+                    if (cifra === 1) {
+                        modalitaRiporto = false;
+                        aggiornaMessaggio(`Riporto 1 inserito! Ora inserisci il risultato per ${getNomeColonna(colonnaAttiva)}.`);
+                    } else {
+                        // Se il riporto è 0, passa automaticamente alla colonna precedente
+                        // e NON chiedere di inserire il riporto
+                        modalitaRiporto = false;
+                        
+                        // Trova la colonna precedente valida (saltando la virgola se presente)
+                        let colonnaPrecedente = colonnaAttiva - 1;
+                        
+                        if (modalitaGioco === 'decimali') {
+                            while (colonnaPrecedente >= 0 && colonnaPrecedente === posizioneVirgola) {
+                                colonnaPrecedente--;
+                            }
+                        }
+                        
+                        if (colonnaPrecedente >= 0) {
+                            colonnaAttiva = colonnaPrecedente;
+                            aggiornaMessaggio(`Riporto 0 inserito. Inserisci il risultato per ${getNomeColonna(colonnaAttiva)}.`);
+                        } else {
+                            aggiornaMessaggio("Tutte le colonne completate! Premi VERIFICA per controllare.", "corretto");
+                        }
+                    }
+                } else {
+                    aggiornaMessaggio("Il riporto può essere solo 0 o 1!", "errato");
+                }
+            } else {
+                // Se si sta inserendo una cifra del risultato
+                if (cifra >= 0 && cifra <= 9) {
+                    cifreRisultato[colonnaAttiva] = cifra.toString();
+                    
+                    // Calcola la somma della colonna attuale per vedere se c'è riporto
+                    const cifra1 = parseInt(cifreNumero1[colonnaAttiva]) || 0;
+                    const cifra2 = parseInt(cifreNumero2[colonnaAttiva]) || 0;
+                    const riportoIn = parseInt(cifreRiporto[colonnaAttiva]) || 0;
+                    const somma = cifra1 + cifra2 + riportoIn;
+                    
+                    // Trova la colonna precedente valida (saltando la virgola se presente)
+                    let colonnaPrecedente = colonnaAttiva - 1;
+                    
+                    if (modalitaGioco === 'decimali') {
+                        while (colonnaPrecedente >= 0 && colonnaPrecedente === posizioneVirgola) {
+                            colonnaPrecedente--;
+                        }
+                    }
+                    
+                    if (colonnaPrecedente >= 0) {
+                        colonnaAttiva = colonnaPrecedente;
+                        
+                        if (somma >= 10) {
+                            // Se somma >= 10, c'è un riporto 1
+                            modalitaRiporto = true;
+                            aggiornaMessaggio(`SOMMA = ${cifra1} + ${cifra2} + ${riportoIn} = ${somma} → C'È UN RIPORTO! Inserisci il riporto (1) per ${getNomeColonna(colonnaAttiva)}!`);
+                        } else {
+                            // Se somma < 10, il riporto è 0 - NON chiedere di inserirlo
+                            modalitaRiporto = false;
+                            aggiornaMessaggio(`SOMMA = ${cifra1} + ${cifra2} + ${riportoIn} = ${somma} → Nessun riporto. Inserisci il risultato per ${getNomeColonna(colonnaAttiva)}.`);
+                        }
+                    } else {
+                        // Siamo arrivati alla prima colonna (più a sinistra)
+                        if (somma >= 10) {
+                            // Se c'è un riporto alla prima colonna, dobbiamo aggiungere una cifra extra
+                            aggiornaMessaggio(`SOMMA = ${somma} → C'È UN RIPORTO FINALE! Il risultato completo è ${Math.floor(somma/10)}${somma%10}. Premi VERIFICA.`, "corretto");
+                        } else {
+                            aggiornaMessaggio("Tutte le colonne completate! Premi VERIFICA per controllare.", "corretto");
+                        }
+                    }
+                } else {
+                    aggiornaMessaggio("Inserisci una cifra da 0 a 9!", "errato");
+                }
+            }
+            
+            aggiornaColonna();
+        }
+
+        function cancellaCifra() {
+            if (colonnaAttiva < 0 || colonnaAttiva >= numCifreTotali) {
+                aggiornaMessaggio("Prima seleziona una casella!", "errato");
+                return;
+            }
+            
+            // Non permettere cancellazione sulla virgola
+            if (modalitaGioco === 'decimali' && colonnaAttiva === posizioneVirgola) {
+                return;
+            }
+            
+            if (modalitaRiporto) {
+                cifreRiporto[colonnaAttiva] = "";
+            } else {
+                cifreRisultato[colonnaAttiva] = "";
+            }
+            
+            aggiornaColonna();
+            aggiornaMessaggio(`Cifra cancellata. Seleziona una nuova casella.`);
+        }
+
+        function confermaColonna() {
+            if (colonnaAttiva < 0 || colonnaAttiva >= numCifreTotali) {
+                aggiornaMessaggio("Prima seleziona una casella!", "errato");
+                return;
+            }
+            
+            // Non permettere conferma sulla virgola
+            if (modalitaGioco === 'decimali' && colonnaAttiva === posizioneVirgola) {
+                return;
+            }
+            
+            if (modalitaRiporto) {
+                if (cifreRiporto[colonnaAttiva] === "") {
+                    aggiornaMessaggio("Inserisci un riporto prima di confermare!", "errato");
+                    return;
+                }
+                
+                // Se il riporto è 0, passa automaticamente senza chiedere altro
+                if (cifreRiporto[colonnaAttiva] === "0") {
+                    modalitaRiporto = false;
+                    
+                    // Trova la colonna precedente valida (saltando la virgola se presente)
+                    let colonnaPrecedente = colonnaAttiva - 1;
+                    
+                    if (modalitaGioco === 'decimali') {
+                        while (colonnaPrecedente >= 0 && colonnaPrecedente === posizioneVirgola) {
+                            colonnaPrecedente--;
+                        }
+                    }
+                    
+                    if (colonnaPrecedente >= 0) {
+                        colonnaAttiva = colonnaPrecedente;
+                        aggiornaMessaggio(`Riporto 0 confermato. Inserisci il risultato per ${getNomeColonna(colonnaAttiva)}.`);
+                    } else {
+                        aggiornaMessaggio("Tutte le colonne completate! Premi VERIFICA per controllare l'operazione.", "corretto");
+                    }
+                } else {
+                    // Se il riporto è 1, passa al risultato della stessa colonna
+                    modalitaRiporto = false;
+                    aggiornaMessaggio(`Riporto 1 confermato! Ora inserisci il risultato per ${getNomeColonna(colonnaAttiva)}.`);
+                }
+            } else {
+                if (cifreRisultato[colonnaAttiva] === "") {
+                    aggiornaMessaggio("Inserisci un risultato prima di confermare!", "errato");
+                    return;
+                }
+                
+                // Calcola la somma della colonna attuale per vedere se c'è riporto
+                const cifra1 = parseInt(cifreNumero1[colonnaAttiva]) || 0;
+                const cifra2 = parseInt(cifreNumero2[colonnaAttiva]) || 0;
+                const riportoIn = parseInt(cifreRiporto[colonnaAttiva]) || 0;
+                const somma = cifra1 + cifra2 + riportoIn;
+                
+                // Trova la colonna precedente valida (saltando la virgola se presente)
+                let colonnaPrecedente = colonnaAttiva - 1;
+                
+                if (modalitaGioco === 'decimali') {
+                    while (colonnaPrecedente >= 0 && colonnaPrecedente === posizioneVirgola) {
+                        colonnaPrecedente--;
+                    }
+                }
+                
+                if (colonnaPrecedente >= 0) {
+                    colonnaAttiva = colonnaPrecedente;
+                    
+                    if (somma >= 10) {
+                        modalitaRiporto = true;
+                        aggiornaMessaggio(`SOMMA = ${cifra1} + ${cifra2} + ${riportoIn} = ${somma} → C'È UN RIPORTO! Inserisci il riporto (1) per ${getNomeColonna(colonnaAttiva)}!`);
+                    } else {
+                        aggiornaMessaggio(`SOMMA = ${cifra1} + ${cifra2} + ${riportoIn} = ${somma} → Nessun riporto. Inserisci il risultato per ${getNomeColonna(colonnaAttiva)}.`);
+                    }
+                } else {
+                    // Siamo arrivati alla prima colonna (più a sinistra)
+                    if (somma >= 10) {
+                        aggiornaMessaggio(`SOMMA = ${somma} → C'È UN RIPORTO FINALE! Il risultato completo è ${Math.floor(somma/10)}${somma%10}. Premi VERIFICA.`, "corretto");
+                    } else {
+                        aggiornaMessaggio("Tutte le colonne completate! Premi VERIFICA per controllare l'operazione.", "corretto");
+                    }
+                }
+            }
+            
+            aggiornaColonna();
+        }
+
+        function verificaOperazione() {
+            let tuttoCorretto = true;
+            let messaggioDettaglio = "";
+            
+            // Calcola risultati corretti
+            if (modalitaGioco === 'interi') {
+                calcolaRisultatiCorrettiInteri();
+            } else {
+                calcolaRisultatiCorrettiDecimali();
+            }
+            
+            // Prima verifica: controlla tutte le cifre del risultato
+            for (let i = 0; i < numCifreTotali; i++) {
+                // Salta la virgola nei decimali
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    continue;
+                }
+                
+                const risultatoUtente = parseInt(cifreRisultato[i]) || 0;
+                const risultatoCorrettoColonna = risultatiCorretti[i];
+                
+                const cellaRisultato = document.getElementById(`risultato-${i}`);
+                if (cellaRisultato) {
+                    if (risultatoUtente === risultatoCorrettoColonna) {
+                        cellaRisultato.classList.add("cella-corretta");
+                        cellaRisultato.classList.remove("cella-errata");
+                    } else {
+                        cellaRisultato.classList.add("cella-errata");
+                        cellaRisultato.classList.remove("cella-corretta");
+                        tuttoCorretto = false;
+                        messaggioDettaglio += `${getNomeColonna(i)}: ${risultatoUtente} invece di ${risultatoCorrettoColonna}. `;
+                    }
+                }
+            }
+            
+            // Seconda verifica: controlla tutti i riporti
+            // Per i riporti, consideriamo solo quelli che devono essere 1 (non controlliamo gli 0)
+            for (let i = 0; i < numCifreTotali; i++) {
+                // Salta la virgola nei decimali
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    continue;
+                }
+                
+                const riportoUtente = parseInt(cifreRiporto[i]) || 0;
+                const riportoCorretto = riportiCorretti[i] || 0;
+                
+                const cellaRiporto = document.getElementById(`riporto-${i}`);
+                
+                // IMPORTANTE: controlliamo solo se il riporto corretto è 1
+                // Se il riporto corretto è 0, non dobbiamo controllare (0 non va inserito)
+                if (riportoCorretto === 1) {
+                    if (cellaRiporto) {
+                        if (riportoUtente === riportoCorretto) {
+                            cellaRiporto.classList.add("cella-corretta");
+                            cellaRiporto.classList.remove("cella-errata");
+                        } else {
+                            cellaRiporto.classList.add("cella-errata");
+                            cellaRiporto.classList.remove("cella-corretta");
+                            tuttoCorretto = false;
+                            messaggioDettaglio += `Riporto ${getEtichettaColonna(i)}: ${riportoUtente} invece di ${riportoCorretto}. `;
+                        }
+                    }
+                }
+                // Se il riporto corretto è 0, non facciamo nulla (non è un errore se l'utente non ha inserito 0)
+            }
+            
+            if (tuttoCorretto) {
+                punteggio += 10;
+                aggiornaMessaggio(`BRAVISSIMO! ${numero1} + ${numero2} = ${risultatoCorretto}. +10 punti!`, "corretto");
+                
+                setTimeout(() => {
+                    aggiornaMessaggio("Premi 'NUOVA' per un'altra operazione!", "corretto");
+                }, 2000);
+            } else {
+                vite--;
+                if (vite <= 0) {
+                    aggiornaMessaggio(`GAME OVER! Il risultato corretto era: ${risultatoCorretto}. Premi 'NUOVA' per ricominciare.`, "errato");
+                    document.getElementById("bottone-verifica").disabled = true;
+                } else {
+                    aggiornaMessaggio(`Attenzione! Errori: ${messaggioDettaglio}. -1 vita.`, "errato");
+                }
+            }
+            
+            aggiornaUI();
+        }
+
+        function mostraAiuto() {
+            if (punteggio <= 0) {
+                aggiornaMessaggio("Non hai abbastanza punti per usare l'aiuto!", "errato");
+                return;
+            }
+            
+            punteggio--;
+            aggiornaUI();
+            
+            if (modalitaRiporto) {
+                // Aiuto per il riporto - ma solo se il riporto corretto è 1
+                const riportoCorretto = riportiCorretti[colonnaAttiva] || 0;
+                if (riportoCorretto === 1) {
+                    aggiornaMessaggio(`AIUTO: Il riporto per ${getNomeColonna(colonnaAttiva)} è 1.`, "corretto");
+                } else {
+                    aggiornaMessaggio(`AIUTO: Per ${getNomeColonna(colonnaAttiva)} non c'è riporto (0).`, "corretto");
+                }
+            } else {
+                // Aiuto per il risultato
+                const risultatoCorrettoColonna = risultatiCorretti[colonnaAttiva];
+                aggiornaMessaggio(`AIUTO: Il risultato per ${getNomeColonna(colonnaAttiva)} è ${risultatoCorrettoColonna}.`, "corretto");
+            }
+        }
+
+        // ====================================================
+        // FUNZIONE PER TOGGLE GUIDA
+        // ====================================================
+        function toggleGuida() {
+            const guida = document.getElementById("guida-rapida");
+            if (guida.style.display === "none" || guida.style.display === "") {
+                guida.style.display = "block";
+            } else {
+                guida.style.display = "none";
+            }
+        }
+
+        // ====================================================
+        // INIZIALIZZAZIONE
+        // ====================================================
+        window.onload = inizializzaGioco;
+    </script>
+</body>
+</html>

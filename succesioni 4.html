@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Bruco dei Simboli - Gioco INVALSI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #add8e6, #87ceeb);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 100, 0.2);
+            padding: 20px;
+            max-width: 1100px;
+            width: 100%;
+            text-align: center;
+            border: 5px solid #4a90e2;
+            position: relative;
+        }
+        
+        h1 {
+            color: #000080;
+            font-size: 2rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 0 #ffd700;
+        }
+        
+        .sottotitolo {
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f8ff;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 3px solid #4a90e2;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .punteggio, .vite, .livello, .criterio-container {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .punteggio { color: #000080; }
+        .vite { color: #ff0000; }
+        .livello { color: #008000; }
+        .criterio { color: #8b4513; }
+        
+        .criterio-container {
+            background: #fffacd;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 2px solid #d2691e;
+            cursor: help;
+            position: relative;
+            min-width: 180px;
+        }
+        
+        .criterio-tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #8b4513;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 250px;
+            z-index: 100;
+            margin-top: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .criterio-container:hover .criterio-tooltip {
+            display: block;
+        }
+        
+        .bruco-container {
+            position: relative;
+            height: 160px;
+            margin: 5px 0 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Testa del bruco (cerchietto iniziale) */
+        .testa-bruco {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            margin: 0 15px 0 0;
+            border: 4px solid #006400;
+            box-shadow: 0 4px 10px rgba(0, 100, 0, 0.3);
+            z-index: 3;
+            position: relative;
+        }
+        
+        .faccia-bruco {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            z-index: 4;
+        }
+        
+        .occhio {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 20px;
+        }
+        
+        .occhio-sinistro { left: 18px; }
+        .occhio-destro { right: 18px; }
+        
+        .pupilla {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: black;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+        }
+        
+        .sorriso {
+            position: absolute;
+            width: 35px;
+            height: 18px;
+            border-bottom: 3px solid black;
+            border-radius: 0 0 35px 35px;
+            bottom: 15px;
+            left: 17px;
+        }
+        
+        .segmento-bruco {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin: 0 10px;
+            border: 4px solid #006400;
+            box-shadow: 0 4px 10px rgba(0, 100, 0, 0.3);
+            z-index: 2;
+            position: relative;
+        }
+        
+        .segmento-simbolo {
+            font-size: 2rem;
+            transition: transform 0.3s;
+        }
+        
+        .segmento-simbolo:hover {
+            transform: scale(1.2);
+        }
+        
+        .linea-bruco {
+            position: absolute;
+            height: 18px;
+            background: linear-gradient(to right, #228b22, #32cd32, #228b22);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+            border-radius: 9px;
+            width: 450px !important;
+            left: calc(50% - 225px) !important;
+        }
+        
+        .domanda {
+            font-size: 1.2rem;
+            color: #000080;
+            margin: 8px 0 12px 0;
+            background: #f0f8ff;
+            padding: 8px;
+            border-radius: 12px;
+            border: 3px dashed #4a90e2;
+        }
+        
+        .opzioni-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .bottone-opzione {
+            background: linear-gradient(145deg, #ff69b4, #ff1493);
+            border: none;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 #c71585;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75px;
+        }
+        
+        .bottone-opzione:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 0 #c71585;
+            background: linear-gradient(145deg, #ff1493, #ff69b4);
+        }
+        
+        .bottone-opzione:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 0 #c71585;
+        }
+        
+        .bottone-aiuto {
+            background: linear-gradient(145deg, #ffa500, #ff8c00);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 #cc7000;
+        }
+        
+        .bottone-aiuto:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0 #cc7000;
+        }
+        
+        .bottone-aiuto:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 3px 0 #999999;
+        }
+        
+        .messaggio {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 12px;
+            margin: 12px 0;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .corretto {
+            background-color: #90ee90;
+            color: #006400;
+            border: 3px solid #006400;
+        }
+        
+        .errato {
+            background-color: #ffcccc;
+            color: #8b0000;
+            border: 3px solid #8b0000;
+        }
+        
+        .aiuto {
+            background-color: #fffacd;
+            color: #b8860b;
+            border: 3px dashed #b8860b;
+        }
+        
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .game-over-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 5px solid #ff0000;
+        }
+        
+        .game-over-title {
+            color: #ff0000;
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        
+        .game-over-punteggio {
+            font-size: 1.5rem;
+            color: #000080;
+            margin-bottom: 15px;
+        }
+        
+        .bottone-rigioca {
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 25px;
+            font-size: 1.3rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        
+        .istruzioni {
+            background: #f0f8ff;
+            padding: 8px;
+            border-radius: 12px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #333;
+            border: 2px solid #4a90e2;
+        }
+        
+        .simbolo-spiegazione {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            background: #f0f8ff;
+            border-radius: 6px;
+            margin: 0 3px;
+            font-size: 1.1rem;
+            line-height: 25px;
+            border: 2px solid #4a90e2;
+        }
+        
+        .controlli-extra {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        
+        .bottone-mostra-criterio {
+            background: linear-gradient(145deg, #9370db, #8a2be2);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .bottone-mostra-criterio:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 900px) {
+            .opzioni-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .game-info {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .criterio-container {
+                min-width: 160px;
+                order: 4;
+                width: 100%;
+            }
+            
+            .linea-bruco {
+                width: 400px !important;
+                left: calc(50% - 200px) !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .sottotitolo {
+                font-size: 0.9rem;
+            }
+            
+            .bruco-container {
+                height: 140px;
+                margin: 5px 0 8px 0;
+            }
+            
+            .testa-bruco {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+                margin: 0 12px 0 0;
+            }
+            
+            .segmento-bruco {
+                width: 55px;
+                height: 55px;
+                font-size: 1.8rem;
+                margin: 0 8px;
+            }
+            
+            .segmento-simbolo {
+                font-size: 1.8rem;
+            }
+            
+            .linea-bruco {
+                width: 350px !important;
+                left: calc(50% - 175px) !important;
+                height: 15px;
+            }
+            
+            .occhio {
+                width: 10px;
+                height: 10px;
+                top: 16px;
+            }
+            
+            .occhio-sinistro { left: 15px; }
+            .occhio-destro { right: 15px; }
+            
+            .pupilla {
+                width: 5px;
+                height: 5px;
+            }
+            
+            .sorriso {
+                width: 30px;
+                height: 15px;
+                bottom: 12px;
+                left: 15px;
+            }
+            
+            .bottone-opzione {
+                font-size: 1.8rem;
+                min-height: 65px;
+                padding: 10px;
+            }
+            
+            .punteggio, .vite, .livello, .criterio-container {
+                font-size: 1.1rem;
+            }
+            
+            .domanda {
+                font-size: 1.1rem;
+                padding: 6px;
+                margin: 6px 0 8px 0;
+            }
+            
+            .messaggio {
+                font-size: 1.1rem;
+                min-height: 40px;
+                margin: 10px 0;
+            }
+            
+            .bottone-aiuto, .bottone-mostra-criterio {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+            
+            .istruzioni {
+                font-size: 0.8rem;
+            }
+            
+            .simbolo-spiegazione {
+                width: 22px;
+                height: 22px;
+                font-size: 1rem;
+                line-height: 22px;
+            }
+            
+            .game-over-content {
+                padding: 20px;
+            }
+            
+            .game-over-title {
+                font-size: 1.8rem;
+            }
+            
+            .game-over-punteggio {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            
+            .game-container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .game-info {
+                padding: 6px;
+                gap: 6px;
+            }
+            
+            .opzioni-container {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            
+            .bruco-container {
+                height: 120px;
+            }
+            
+            .testa-bruco {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                margin: 0 8px 0 0;
+            }
+            
+            .segmento-bruco {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5rem;
+                margin: 0 6px;
+            }
+            
+            .segmento-simbolo {
+                font-size: 1.5rem;
+            }
+            
+            .linea-bruco {
+                width: 300px !important;
+                left: calc(50% - 150px) !important;
+                height: 12px;
+            }
+            
+            .occhio {
+                width: 8px;
+                height: 8px;
+                top: 13px;
+            }
+            
+            .occhio-sinistro { left: 12px; }
+            .occhio-destro { right: 12px; }
+            
+            .pupilla {
+                width: 4px;
+                height: 4px;
+            }
+            
+            .sorriso {
+                width: 25px;
+                height: 12px;
+                bottom: 10px;
+                left: 12px;
+            }
+            
+            .bottone-opzione {
+                font-size: 1.6rem;
+                min-height: 60px;
+                padding: 8px;
+            }
+            
+            .controlli-extra {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .bottone-aiuto, .bottone-mostra-criterio {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+    
+    <!-- Font Awesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🐛 IL BRUCO DEI SIMBOLI 🐛</h1>
+        <p class="sottotitolo">Trova il simbolo mancante nella sequenza!</p>
+        
+        <div class="game-info">
+            <div class="punteggio">Punti: <span id="punteggio">0</span></div>
+            <div class="vite">Vite: <span id="vite">❤️❤️❤️</span></div>
+            <div class="livello">Livello: <span id="livello">1</span></div>
+            <div class="criterio-container">
+                <span class="criterio">Criterio: <span id="criterio-attuale">Alternanza</span></span>
+                <div class="criterio-tooltip" id="criterio-descrizione">
+                    <strong>Criterio attuale:</strong><br>
+                    <span id="criterio-dettaglio">Alterna tra due simboli</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bruco-container">
+            <div class="linea-bruco" id="linea-bruco"></div>
+            <!-- Testa del bruco con faccia -->
+            <div class="testa-bruco">
+                <div class="faccia-bruco">
+                    <div class="occhio occhio-sinistro"><div class="pupilla"></div></div>
+                    <div class="occhio occhio-destro"><div class="pupilla"></div></div>
+                    <div class="sorriso"></div>
+                </div>
+            </div>
+            <!-- I segmenti con simboli verranno aggiornati da JavaScript -->
+            <div class="segmento-bruco" id="segmento0"><span class="segmento-simbolo">⭐</span></div>
+            <div class="segmento-bruco" id="segmento1"><span class="segmento-simbolo">🔺</span></div>
+            <div class="segmento-bruco" id="segmento2"><span class="segmento-simbolo">❓</span></div>
+            <div class="segmento-bruco" id="segmento3"><span class="segmento-simbolo">🔶</span></div>
+            <div class="segmento-bruco" id="segmento4"><span class="segmento-simbolo">🔷</span></div>
+        </div>
+        
+        <div class="domanda" id="domanda">Quale simbolo completa la sequenza?</div>
+        
+        <div class="opzioni-container" id="opzioni-container">
+            <!-- I bottoni con simboli verranno generati qui da JavaScript -->
+        </div>
+        
+        <div class="controlli-extra">
+            <button class="bottone-aiuto" id="bottone-aiuto" onclick="mostraAiuto()">
+                🧠 AIUTINO (-2 punti)
+            </button>
+            <button class="bottone-mostra-criterio" onclick="mostraCriterioCompleto()">
+                📋 Mostra Criterio Completo
+            </button>
+        </div>
+        
+        <div class="messaggio" id="messaggio">
+            Osserva la sequenza e clicca sul simbolo mancante!
+        </div>
+        
+        <div class="istruzioni">
+            <strong>COME SI GIOCA:</strong> Osserva i simboli nel bruco, scopri come cambiano 
+            (forma, colore, direzione) e clicca sul simbolo mancante. Hai 3 vite!
+            <br><br>
+            <strong>SIMBOLI CHE INCONTRERAI:</strong>
+            <span class="simbolo-spiegazione">⭐</span> Stella
+            <span class="simbolo-spiegazione">🔺</span> Triangolo
+            <span class="simbolo-spiegazione">🔶</span> Rombo arancione
+            <span class="simbolo-spiegazione">🔷</span> Rombo blu
+            <span class="simbolo-spiegazione">●</span> Cerchio nero
+            <span class="simbolo-spiegazione">○</span> Cerchio bianco
+            <span class="simbolo-spiegazione">⬤</span> Cerchio pieno
+            <span class="simbolo-spiegazione">▲</span> Triangolo su
+            <span class="simbolo-spiegazione">▼</span> Triangolo giù
+            <span class="simbolo-spiegazione">❤️</span> Cuore
+        </div>
+    </div>
+    
+    <!-- Schermata Game Over (nascosta all'inizio) -->
+    <div class="game-over" id="game-over" style="display: none;">
+        <div class="game-over-content">
+            <h2 class="game-over-title">GAME OVER!</h2>
+            <p class="game-over-punteggio">Il tuo punteggio: <span id="punteggio-finale">0</span></p>
+            <p style="font-size: 1.1rem; margin-bottom: 15px;">Hai fatto un ottimo lavoro! Vuoi rigiocare?</p>
+            <button class="bottone-rigioca" onclick="rigioca()">🔄 RIGIOCA</button>
+        </div>
+    </div>
+
+    <script>
+        // Database di simboli tipo INVALSI
+        const simboliINVALSI = {
+            forme: ['⭐', '🔺', '🔶', '🔷', '●', '○', '⬤', '▲', '▼', '❤️', '♦️', '♠️', '♣️', '⬛', '⬜'],
+            colori: ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '⚫', '⚪'],
+            direzioni: ['⬆️', '⬇️', '⬅️', '➡️', '↖️', '↗️', '↙️', '↘️'],
+            faccine: ['😀', '😊', '😎', '🤔', '😍', '😂', '🥳', '😴', '😡', '😱']
+        };
+        
+        // Database dei criteri delle sequenze
+        const criteriSequenze = {
+            alternanza: {
+                nome: "Alternanza",
+                descrizione: "I simboli si alternano tra due tipi diversi (es: A, B, A, B, ...)",
+                esempi: ["⭐, 🔺, ⭐, 🔺, ?", "🔴, 🟢, 🔴, 🟢, ?", "😀, 😊, 😀, 😊, ?"]
+            },
+            rotazione: {
+                nome: "Rotazione",
+                descrizione: "I simboli ruotano in una direzione fissa (es: ⬆️, ➡️, ⬇️, ⬅️, ...)",
+                esempi: ["⬆️, ➡️, ⬇️, ⬅️, ?", "↖️, ↗️, ↘️, ↙️, ?", "◀️, 🔼, ▶️, 🔽, ?"]
+            },
+            progressione: {
+                nome: "Progressione",
+                descrizione: "I simboli cambiano gradualmente in una sequenza logica",
+                esempi: ["●, ○, ●, ○, ?", "⬤, ◯, ⬤, ◯, ?", "🔴, 🔶, 🟡, 🟢, ?"]
+            },
+            ripetizione: {
+                nome: "Ripetizione",
+                descrizione: "Un gruppo di simboli si ripete (es: A, B, C, A, B, ...)",
+                esempi: ["⭐, 🔺, 🔶, ⭐, 🔺, ?", "🔴, 🔵, 🟡, 🔴, 🔵, ?"]
+            },
+            inversione: {
+                nome: "Inversione",
+                descrizione: "La sequenza si inverte dopo un punto",
+                esempi: ["⭐, 🔺, 🔶, 🔺, ⭐, ?", "🔴, 🟢, 🔵, 🟢, 🔴, ?"]
+            }
+        };
+        
+        // Variabili di gioco
+        let punteggio = 0;
+        let vite = 3;
+        let livello = 1;
+        let aiutoUsato = false;
+        let sequenzaCorrente = [];
+        let rispostaCorretta = '';
+        let criterioCorrente = '';
+        let criterioCompleto = '';
+        let rispostaInCorso = false;
+        
+        // Elementi DOM
+        const elemPunteggio = document.getElementById('punteggio');
+        const elemVite = document.getElementById('vite');
+        const elemLivello = document.getElementById('livello');
+        const elemCriterio = document.getElementById('criterio-attuale');
+        const elemCriterioDettaglio = document.getElementById('criterio-dettaglio');
+        const elemMessaggio = document.getElementById('messaggio');
+        const opzioniContainer = document.getElementById('opzioni-container');
+        const bottoneAiuto = document.getElementById('bottone-aiuto');
+        const gameOverScreen = document.getElementById('game-over');
+        
+        // Genera una sequenza di simboli con criterio specifico
+        function generaSequenza() {
+            // Scegli criterio in base al livello
+            const criteriDisponibili = Object.keys(criteriSequenze);
+            let criterioScelto;
+            
+            if (livello <= 2) {
+                criterioScelto = criteriDisponibili[0]; // Solo alternanza
+            } else if (livello <= 4) {
+                criterioScelto = criteriDisponibili[Math.floor(Math.random() * 3)]; // Primi 3 criteri
+            } else {
+                criterioScelto = criteriDisponibili[Math.floor(Math.random() * criteriDisponibili.length)];
+            }
+            
+            criterioCorrente = criteriSequenze[criterioScelto].nome;
+            criterioCompleto = criteriSequenze[criterioScelto].descrizione;
+            
+            // Aggiorna display del criterio
+            elemCriterio.textContent = criterioCorrente;
+            elemCriterioDettaglio.textContent = criterioCompleto;
+            
+            // Genera sequenza in base al criterio
+            switch(criterioScelto) {
+                case 'alternanza':
+                    generaSequenzaAlternanza();
+                    break;
+                case 'rotazione':
+                    generaSequenzaRotazione();
+                    break;
+                case 'progressione':
+                    generaSequenzaProgressione();
+                    break;
+                case 'ripetizione':
+                    generaSequenzaRipetizione();
+                    break;
+                case 'inversione':
+                    generaSequenzaInversione();
+                    break;
+                default:
+                    generaSequenzaAlternanza(); // Fallback
+            }
+            
+            // Scegli quale posizione sarà il "buco" (non il primo, non l'ultimo)
+            let posBuco = Math.floor(Math.random() * 3) + 1; // Posizioni: 1, 2 o 3
+            rispostaCorretta = sequenzaCorrente[posBuco];
+            
+            // Aggiorna la visualizzazione del bruco
+            for (let i = 0; i < 5; i++) {
+                const segmento = document.getElementById(`segmento${i}`);
+                const simbolo = document.querySelector(`#segmento${i} .segmento-simbolo`);
+                if (i === posBuco) {
+                    simbolo.textContent = '❓';
+                    segmento.style.background = 'linear-gradient(145deg, #ff6b6b, #ff4757)';
+                } else {
+                    simbolo.textContent = sequenzaCorrente[i];
+                    segmento.style.background = 'linear-gradient(145deg, #32cd32, #228b22)';
+                }
+            }
+            
+            // Genera opzioni di risposta (1 corretta + 3 distrattori)
+            generaOpzioni(rispostaCorretta, criterioScelto);
+            
+            // Resetta aiuto
+            aiutoUsato = false;
+            bottoneAiuto.disabled = false;
+            bottoneAiuto.textContent = '🧠 AIUTINO (-2 punti)';
+            
+            // Aggiorna la linea del bruco
+            const linea = document.getElementById('linea-bruco');
+            linea.style.width = '450px';
+            linea.style.left = 'calc(50% - 225px)';
+            
+            // Reset flag risposta in corso
+            rispostaInCorso = false;
+        }
+        
+        // Funzioni per generare sequenze con diversi criteri
+        function generaSequenzaAlternanza() {
+            const gruppo = Math.random() > 0.5 ? simboliINVALSI.forme : 
+                          Math.random() > 0.5 ? simboliINVALSI.colori : 
+                          simboliINVALSI.faccine;
+            
+            const simbolo1 = gruppo[Math.floor(Math.random() * gruppo.length)];
+            let simbolo2;
+            let tentativi = 0;
+            do {
+                simbolo2 = gruppo[Math.floor(Math.random() * gruppo.length)];
+                tentativi++;
+            } while (simbolo2 === simbolo1 && tentativi < 10);
+            
+            // Fallback se non trova simbolo diverso
+            if (simbolo2 === simbolo1) {
+                simbolo2 = gruppo[(gruppo.indexOf(simbolo1) + 1) % gruppo.length] || '🔺';
+            }
+            
+            sequenzaCorrente = [];
+            for (let i = 0; i < 5; i++) {
+                sequenzaCorrente.push(i % 2 === 0 ? simbolo1 : simbolo2);
+            }
+        }
+        
+        function generaSequenzaRotazione() {
+            const direzioni = [...simboliINVALSI.direzioni];
+            const startIdx = Math.floor(Math.random() * direzioni.length);
+            
+            sequenzaCorrente = [];
+            for (let i = 0; i < 5; i++) {
+                sequenzaCorrente.push(direzioni[(startIdx + i) % direzioni.length]);
+            }
+        }
+        
+        function generaSequenzaProgressione() {
+            // Progressione tipo: pieno, semipieno, vuoto
+            const progressioni = [
+                ['⬤', '◑', '○', '◐', '⬤'],
+                ['🔴', '🟠', '🟡', '🟢', '🔵'],
+                ['●', '◔', '○', '◕', '●'],
+                ['😀', '😊', '😐', '😢', '😭']
+            ];
+            
+            sequenzaCorrente = progressioni[Math.floor(Math.random() * progressioni.length)];
+        }
+        
+        function generaSequenzaRipetizione() {
+            // Ripetizione di un gruppo di 2-3 simboli
+            const gruppo = [];
+            const tipo = Math.random() > 0.5 ? 'forme' : 'colori';
+            const numSimboli = Math.floor(Math.random() * 2) + 2; // 2 o 3 simboli
+            
+            let tentativi = 0;
+            for (let i = 0; i < numSimboli && tentativi < 20; i++) {
+                let simbolo;
+                do {
+                    simbolo = simboliINVALSI[tipo][Math.floor(Math.random() * simboliINVALSI[tipo].length)];
+                    tentativi++;
+                } while (gruppo.includes(simbolo) && tentativi < 20);
+                gruppo.push(simbolo);
+            }
+            
+            // Se non abbiamo abbastanza simboli unici, usiamo questi di default
+            if (gruppo.length < 2) {
+                gruppo.push('⭐', '🔺', '🔶');
+            }
+            
+            sequenzaCorrente = [];
+            for (let i = 0; i < 5; i++) {
+                sequenzaCorrente.push(gruppo[i % gruppo.length]);
+            }
+        }
+        
+        function generaSequenzaInversione() {
+            const simboli = [];
+            const tipo = Math.random() > 0.5 ? 'forme' : 'faccine';
+            
+            // Prendi 3 simboli diversi
+            for (let i = 0; i < 3; i++) {
+                let simbolo;
+                let tentativi = 0;
+                do {
+                    simbolo = simboliINVALSI[tipo][Math.floor(Math.random() * simboliINVALSI[tipo].length)];
+                    tentativi++;
+                } while (simboli.includes(simbolo) && tentativi < 10);
+                simboli.push(simbolo);
+            }
+            
+            // Assicurati di avere almeno 3 simboli unici
+            while (simboli.length < 3) {
+                const simboloExtra = simboliINVALSI.forme[simboli.length] || '⭐';
+                if (!simboli.includes(simboloExtra)) {
+                    simboli.push(simboloExtra);
+                }
+            }
+            
+            // Crea sequenza: A, B, C, B, A
+            sequenzaCorrente = [
+                simboli[0],
+                simboli[1],
+                simboli[2],
+                simboli[1],
+                simboli[0]
+            ];
+        }
+        
+        // Genera 4 opzioni di risposta (VERSIONE CORRETTA)
+        function generaOpzioni(corretta, criterio) {
+            // Svuota il container
+            opzioniContainer.innerHTML = '';
+            
+            // Crea opzioni: 1 corretta + 3 distrattori
+            let opzioni = [corretta];
+            
+            // Array di tutti i simboli disponibili per i distrattori
+            const tuttiSimboli = [
+                ...simboliINVALSI.forme,
+                ...simboliINVALSI.colori,
+                ...simboliINVALSI.direzioni,
+                ...simboliINVALSI.faccine
+            ];
+            
+            // Rimuovi la risposta corretta dai simboli disponibili per evitare duplicati
+            const simboliDisponibili = tuttiSimboli.filter(simbolo => simbolo !== corretta);
+            
+            // Prendi 3 distrattori casuali ma diversi dalla risposta corretta
+            let tentativi = 0;
+            while (opzioni.length < 4 && tentativi < 100) { // Limite di sicurezza
+                let distrattore;
+                
+                // Per i primi livelli, usa distrattori più semplici
+                if (livello <= 2) {
+                    // Distrattori casuali ma diversi
+                    distrattore = simboliDisponibili[Math.floor(Math.random() * simboliDisponibili.length)];
+                } else {
+                    // Prova a generare distrattori intelligenti basati sul criterio
+                    try {
+                        switch(criterio) {
+                            case 'alternanza':
+                                distrattore = generaDistrattoreAlternanza(corretta, sequenzaCorrente);
+                                break;
+                            case 'rotazione':
+                                distrattore = generaDistrattoreRotazione(corretta, sequenzaCorrente);
+                                break;
+                            default:
+                                distrattore = simboliDisponibili[Math.floor(Math.random() * simboliDisponibili.length)];
+                        }
+                    } catch (e) {
+                        // Se qualcosa va storto, usa un distrattore casuale
+                        distrattore = simboliDisponibili[Math.floor(Math.random() * simboliDisponibili.length)];
+                    }
+                }
+                
+                // Assicurati che il distrattore sia valido e non duplicato
+                if (distrattore && !opzioni.includes(distrattore)) {
+                    opzioni.push(distrattore);
+                } else {
+                    // Fallback a un distrattore casuale
+                    const fallback = simboliDisponibili[Math.floor(Math.random() * simboliDisponibili.length)];
+                    if (fallback && !opzioni.includes(fallback)) {
+                        opzioni.push(fallback);
+                    }
+                }
+                
+                tentativi++;
+            }
+            
+            // Se per qualche motivo non abbiamo 4 opzioni, riempiamo con simboli casuali
+            while (opzioni.length < 4) {
+                const simboloExtra = simboliDisponibili[Math.floor(Math.random() * simboliDisponibili.length)];
+                if (simboloExtra && !opzioni.includes(simboloExtra)) {
+                    opzioni.push(simboloExtra);
+                }
+            }
+            
+            // Assicurati che tutte le opzioni siano valide
+            opzioni = opzioni.filter(opzione => opzione && opzione !== undefined);
+            
+            // Se ancora non abbiamo 4 opzioni, usa valori di default
+            const defaultOptions = ['⭐', '🔺', '🔶', '🔷'];
+            while (opzioni.length < 4) {
+                const defaultOption = defaultOptions[opzioni.length];
+                if (!opzioni.includes(defaultOption)) {
+                    opzioni.push(defaultOption);
+                }
+            }
+            
+            // Mescola le opzioni
+            opzioni = opzioni.sort(() => Math.random() - 0.5);
+            
+            // Crea i bottoni
+            opzioni.forEach((opzione) => {
+                if (opzione) { // Controllo di sicurezza
+                    const bottone = document.createElement('button');
+                    bottone.className = 'bottone-opzione';
+                    bottone.innerHTML = opzione;
+                    bottone.onclick = () => verificaRisposta(opzione);
+                    opzioniContainer.appendChild(bottone);
+                }
+            });
+        }
+        
+        function generaDistrattoreAlternanza(corretta, sequenza) {
+            try {
+                // Trova il pattern di alternanza
+                const simboliUnici = [...new Set(sequenza.filter(s => s && s !== '❓'))];
+                
+                // Se non ci sono abbastanza simboli, restituisci uno casuale
+                if (simboliUnici.length < 2) {
+                    const gruppi = [...simboliINVALSI.forme, ...simboliINVALSI.colori];
+                    return gruppi[Math.floor(Math.random() * gruppi.length)] || '⭐';
+                }
+                
+                // Scegli uno dei due simboli dell'alternanza (ma non quello corretto)
+                const alternativo = simboliUnici.find(s => s !== corretta);
+                if (alternativo && Math.random() > 0.3) {
+                    return alternativo;
+                }
+                
+                // Altrimenti un simbolo simile
+                const similari = simboliINVALSI.forme.filter(s => 
+                    s && s !== corretta && s !== alternativo && 
+                    !sequenza.includes(s)
+                );
+                
+                return similari.length > 0 ? 
+                    similari[Math.floor(Math.random() * similari.length)] : 
+                    '🔺';
+            } catch (e) {
+                // Fallback in caso di errore
+                return '⭐';
+            }
+        }
+        
+        function generaDistrattoreRotazione(corretta, sequenza) {
+            try {
+                const direzioni = [...simboliINVALSI.direzioni];
+                const idxCorretta = direzioni.indexOf(corretta);
+                
+                if (idxCorretta !== -1 && direzioni.length > 0) {
+                    // Scegli una direzione vicina ma sbagliata
+                    const offset = Math.random() > 0.5 ? 1 : -1;
+                    const idxDistrattore = (idxCorretta + offset + direzioni.length) % direzioni.length;
+                    return direzioni[idxDistrattore];
+                }
+                
+                return direzioni.length > 0 ? 
+                    direzioni[Math.floor(Math.random() * direzioni.length)] : 
+                    '⬆️';
+            } catch (e) {
+                return '⬆️';
+            }
+        }
+        
+        // Verifica la risposta selezionata
+        function verificaRisposta(risposta) {
+            // Evita click multipli rapidi
+            if (rispostaInCorso) return;
+            rispostaInCorso = true;
+            
+            // Disabilita temporaneamente i bottoni per evitare click multipli
+            const bottoni = document.querySelectorAll('.bottone-opzione');
+            bottoni.forEach(b => b.disabled = true);
+            
+            if (risposta === rispostaCorretta) {
+                // Risposta corretta
+                punteggio += 10;
+                elemMessaggio.innerHTML = `BRAVISSIMO! <span style="font-size: 1.5rem;">${risposta}</span> è giusto! +10 punti`;
+                elemMessaggio.className = 'messaggio corretto';
+                
+                // Aggiorna display
+                elemPunteggio.textContent = punteggio;
+                
+                // Aumenta livello ogni 30 punti
+                const nuovoLivello = Math.floor(punteggio / 30) + 1;
+                if (nuovoLivello > livello) {
+                    livello = nuovoLivello;
+                    elemLivello.textContent = livello;
+                    elemMessaggio.innerHTML = `🎉 LIVELLO ${livello} SUPERATO! 🎉 +10 punti`;
+                    
+                    // Mostra nuovo criterio disponibile
+                    setTimeout(() => {
+                        elemMessaggio.innerHTML += `<br><small>Nuovi criteri disponibili!</small>`;
+                    }, 500);
+                }
+                
+                // Nuova domanda dopo 1.5 secondi
+                setTimeout(() => {
+                    generaSequenza();
+                    elemMessaggio.innerHTML = 'Continua così! Trova il prossimo simbolo.';
+                    elemMessaggio.className = 'messaggio';
+                    rispostaInCorso = false;
+                }, 1500);
+            } else {
+                // Risposta errata
+                vite--;
+                elemMessaggio.innerHTML = `OH NO! Era <span style="font-size: 1.5rem;">${rispostaCorretta}</span>. -1 vita`;
+                elemMessaggio.className = 'messaggio errato';
+                
+                // Aggiorna le vite
+                let viteCuori = '';
+                for (let i = 0; i < 3; i++) {
+                    viteCuori += i < vite ? '❤️' : '🤍';
+                }
+                elemVite.textContent = viteCuori;
+                
+                // Controlla se il gioco è finito
+                if (vite <= 0) {
+                    setTimeout(gameOver, 1500);
+                } else {
+                    // Nuova domanda dopo 1.5 secondi
+                    setTimeout(() => {
+                        generaSequenza();
+                        elemMessaggio.innerHTML = 'Riprova! Osserva bene la sequenza.';
+                        elemMessaggio.className = 'messaggio';
+                        rispostaInCorso = false;
+                    }, 1500);
+                }
+            }
+        }
+        
+        // Mostra l'aiuto
+        function mostraAiuto() {
+            if (aiutoUsato) return;
+            
+            aiutoUsato = true;
+            punteggio = Math.max(0, punteggio - 2); // -2 punti, ma non sotto zero
+            
+            elemMessaggio.innerHTML = `<strong>AIUTO:</strong> Criterio: ${criterioCorrente} - ${criterioCompleto}`;
+            elemMessaggio.className = 'messaggio aiuto';
+            elemPunteggio.textContent = punteggio;
+            
+            bottoneAiuto.disabled = true;
+            bottoneAiuto.textContent = '❌ AIUTINO USATO';
+        }
+        
+        // Mostra criterio completo in un messaggio
+        function mostraCriterioCompleto() {
+            elemMessaggio.innerHTML = `
+                <strong>CRITERIO ATTIVO:</strong> ${criterioCorrente}<br>
+                <small>${criterioCompleto}</small><br>
+                <small><em>Esempio: ${criteriSequenze[Object.keys(criteriSequenze).find(k => criteriSequenze[k].nome === criterioCorrente)]?.esempi[0] || ''}</em></small>
+            `;
+            elemMessaggio.className = 'messaggio aiuto';
+            
+            // Torna al messaggio normale dopo 5 secondi
+            setTimeout(() => {
+                elemMessaggio.innerHTML = 'Continua a giocare!';
+                elemMessaggio.className = 'messaggio';
+            }, 5000);
+        }
+        
+        // Fine del gioco
+        function gameOver() {
+            document.getElementById('punteggio-finale').textContent = punteggio;
+            gameOverScreen.style.display = 'flex';
+            rispostaInCorso = false;
+        }
+        
+        // Rigioca
+        function rigioca() {
+            // Resetta le variabili di gioco
+            punteggio = 0;
+            vite = 3;
+            livello = 1;
+            rispostaInCorso = false;
+            
+            // Aggiorna il display
+            elemPunteggio.textContent = punteggio;
+            elemVite.textContent = '❤️❤️❤️';
+            elemLivello.textContent = livello;
+            elemMessaggio.innerHTML = 'Pronto per una nuova partita!';
+            elemMessaggio.className = 'messaggio';
+            
+            // Nascondi schermata game over
+            gameOverScreen.style.display = 'none';
+            
+            // Genera una nuova sequenza
+            generaSequenza();
+        }
+        
+        // Inizializza il gioco quando la pagina è caricata
+        window.onload = function() {
+            generaSequenza();
+        };
+    </script>
+</body>
+</html>

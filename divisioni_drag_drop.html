@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divisioni in Colonna - Drag & Drop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            max-height: 98vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4facfe;
+            margin-bottom: 4px;
+            font-size: 1.2em;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 4px;
+            padding: 4px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.65em;
+            opacity: 0.9;
+        }
+
+        .score-value {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #4facfe;
+            margin: 2px 0;
+        }
+
+        .phase-indicator {
+            text-align: center;
+            padding: 2px 4px;
+            margin: 2px 0;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 8px;
+            font-size: 0.7em;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.2;
+        }
+
+        .digits-panel {
+            background: #e3f2fd;
+            padding: 6px;
+            border-radius: 10px;
+            margin: 4px 0;
+            text-align: center;
+        }
+
+        .digits-title {
+            font-size: 0.7em;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .digits-container {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .digit-tile {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: move;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .digit-tile:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .digit-tile.dragging {
+            opacity: 0.5;
+        }
+
+        .digit-tile.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .division-area {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 15px;
+            margin-bottom: 4px;
+            overflow-x: auto;
+        }
+
+        .division-classic {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            display: inline-block;
+            margin: 6px auto;
+        }
+
+        .division-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        .dividend-box {
+            display: flex;
+            gap: 1px;
+            padding-right: 6px;
+            border-right: 2px solid #333;
+            border-bottom: 2px solid #333;
+            padding-bottom: 2px;
+        }
+
+        .dividend-digit {
+            width: 28px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.95em;
+            position: relative;
+            padding: 2px 0;
+            transition: all 0.3s ease;
+        }
+
+        .dividend-digit.highlighted {
+            background: #fff3cd;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+            transform: scale(1.05);
+        }
+
+        .divisor-box {
+            padding: 2px 10px;
+            border-bottom: 2px solid #333;
+            font-weight: bold;
+            font-size: 0.95em;
+            text-align: center;
+        }
+
+        .quotient-box {
+            display: flex;
+            gap: 1px;
+            padding: 4px 0 0 0;
+            justify-content: center;
+        }
+
+        .drop-zone {
+            width: 28px;
+            height: 28px;
+            border: 2px dashed #4facfe;
+            border-radius: 4px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            background: #e3f2fd;
+            border-color: #1976d2;
+            border-style: solid;
+            transform: scale(1.05);
+        }
+
+        .drop-zone.filled {
+            background: #e8f5e9;
+            border-color: #43e97b;
+            border-style: solid;
+        }
+
+        .drop-zone.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .drop-zone.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .work-column {
+            margin-top: 4px;
+            padding-left: 0;
+        }
+
+        .step-row {
+            margin: 5px 0;
+            padding: 4px;
+            background: #fff;
+            border-left: 2px solid #4facfe;
+            border-radius: 4px;
+        }
+
+        .step-label {
+            font-size: 0.65em;
+            color: #666;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+
+        .calculation-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 2px 0;
+            font-size: 0.75em;
+        }
+
+        .calc-row {
+            display: flex;
+            gap: 1px;
+            align-items: center;
+            margin: 1px 0;
+        }
+
+        .number-display {
+            min-width: 40px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .operation-sign {
+            width: 20px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .drop-zone-small {
+            width: 26px;
+            height: 24px;
+            border: 2px dashed #43e97b;
+            border-radius: 4px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .drop-zone-small.drag-over {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+            border-style: solid;
+        }
+
+        .drop-zone-small.filled {
+            background: #e8f5e9;
+            border-color: #43e97b;
+            border-style: solid;
+        }
+
+        .drop-zone-result {
+            width: 24px;
+            height: 24px;
+            border: 2px dashed #ffc107;
+            border-radius: 4px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .drop-zone-result.drag-over {
+            background: #fff8e1;
+            border-color: #f57f17;
+            border-style: solid;
+        }
+
+        .drop-zone-result.filled {
+            background: #fff8e1;
+            border-color: #ffc107;
+            border-style: solid;
+        }
+
+        .subtraction-box {
+            border-top: 2px solid #333;
+            margin-top: 1px;
+            padding-top: 2px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        button {
+            padding: 6px 12px;
+            font-size: 0.8em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-new {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .btn-hint {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .message {
+            text-align: center;
+            padding: 4px;
+            margin-top: 4px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+            min-height: 30px;
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .message.points {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 260px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -130px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8em;
+            line-height: 1.3;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -4px;
+            border-width: 4px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tooltiptext strong {
+            color: #43e97b;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .tooltiptext ul {
+            margin: 6px 0;
+            padding-left: 18px;
+        }
+        
+        .tooltiptext li {
+            margin: 3px 0;
+        }
+
+        .help-text {
+            font-size: 0.65em;
+            color: #666;
+            font-style: italic;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Divisioni in Colonna - Drag & Drop 🎯</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Punteggio</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Operazioni</div>
+                <div class="score-value" id="operations">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label tooltip">
+                    Streak 🔥
+                    <span class="tooltiptext">
+                        <strong>Cos'è lo Streak?</strong>
+                        Lo Streak indica quante divisioni hai risolto correttamente di seguito, senza errori.
+                        <ul>
+                            <li>✅ Risolvi correttamente → Streak +1</li>
+                            <li>❌ Sbagli → Streak torna a 0</li>
+                        </ul>
+                        <strong>🎁 Bonus Punti:</strong>
+                        Con Streak ≥ 3 ricevi punti extra!<br>
+                        (Streak × 10 punti bonus)
+                    </span>
+                </div>
+                <div class="score-value" id="streak">0</div>
+            </div>
+        </div>
+
+        <div class="timer" id="timer">Tempo: 0s</div>
+
+        <div class="digits-panel">
+            <div class="digits-title">🎯 Trascina le cifre nelle caselle:</div>
+            <div class="digits-container" id="digitsContainer"></div>
+        </div>
+
+        <div class="division-area">
+            <div class="phase-indicator" id="phaseIndicator">Trascina le cifre giuste nelle caselle!</div>
+            <div style="display: flex; justify-content: center;">
+                <div id="operation"></div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-check" id="checkBtn">Controlla</button>
+            <button class="btn-reset" id="resetBtn">Ricomincia</button>
+            <button class="btn-new" id="newBtn">Nuova Divisione</button>
+            <button class="btn-hint" id="hintBtn">Aiuto</button>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        let dividend, divisor, quotient, remainder;
+        let startTime, timerInterval;
+        let score = 0, operations = 0, streak = 0;
+        let divisionSteps = [];
+        let draggedElement = null;
+        let usedDigits = new Set();
+
+        function generateDivision() {
+            divisor = Math.floor(Math.random() * 8) + 2;
+            quotient = Math.floor(Math.random() * 90) + 10;
+            remainder = Math.floor(Math.random() * divisor);
+            dividend = quotient * divisor + remainder;
+            
+            if (dividend > 999) {
+                quotient = Math.floor(Math.random() * 90) + 10;
+                remainder = Math.floor(Math.random() * divisor);
+                dividend = quotient * divisor + remainder;
+            }
+            
+            calculateSteps();
+            console.log('Divisione:', dividend, '÷', divisor, '=', quotient, 'resto', remainder);
+        }
+
+        function calculateSteps() {
+            divisionSteps = [];
+            const dividendStr = dividend.toString();
+            const quotientStr = quotient.toString();
+            let currentNumber = 0;
+            let position = 0;
+            let digitIndex = 0;
+            
+            let firstDigits = [];
+            while (currentNumber < divisor && digitIndex < dividendStr.length) {
+                firstDigits.push(digitIndex);
+                currentNumber = currentNumber * 10 + parseInt(dividendStr[digitIndex]);
+                digitIndex++;
+            }
+            
+            if (currentNumber >= divisor) {
+                const quotientDigit = parseInt(quotientStr[position]);
+                const product = quotientDigit * divisor;
+                const partialRemainder = currentNumber - product;
+                
+                divisionSteps.push({
+                    numberToDivide: currentNumber,
+                    quotientDigit: quotientDigit,
+                    product: product,
+                    remainder: partialRemainder,
+                    digitsTaken: digitIndex,
+                    highlightDigits: firstDigits,
+                    isFirst: true
+                });
+                
+                currentNumber = partialRemainder;
+                position++;
+            }
+            
+            for (let i = digitIndex; i < dividendStr.length; i++) {
+                currentNumber = currentNumber * 10 + parseInt(dividendStr[i]);
+                const quotientDigit = parseInt(quotientStr[position]);
+                const product = quotientDigit * divisor;
+                const partialRemainder = currentNumber - product;
+                
+                divisionSteps.push({
+                    numberToDivide: currentNumber,
+                    quotientDigit: quotientDigit,
+                    product: product,
+                    remainder: partialRemainder,
+                    digitsTaken: 1,
+                    digitBroughtDown: dividendStr[i],
+                    highlightDigits: [i],
+                    isFirst: false
+                });
+                
+                currentNumber = partialRemainder;
+                position++;
+            }
+        }
+
+        function calculateNeededDigits() {
+            const neededDigits = [];
+            
+            // Aggiungi cifre del quoziente principale (sopra)
+            const quotientStr = quotient.toString();
+            for (let digit of quotientStr) {
+                neededDigits.push(digit);
+            }
+            
+            // Per ogni passo della divisione
+            divisionSteps.forEach(step => {
+                // Cifra del quoziente nel passo "24 : 5 = [4]" (scrivi nel quoziente sopra)
+                neededDigits.push(step.quotientDigit.toString());
+                
+                // Cifra nella moltiplicazione "5 × [4]"
+                neededDigits.push(step.quotientDigit.toString());
+                
+                // Cifre del prodotto "= [2][0]"
+                const productStr = step.product.toString();
+                for (let digit of productStr) {
+                    neededDigits.push(digit);
+                }
+                
+                // Cifre nella sottrazione "24 - [2][0]"
+                for (let digit of productStr) {
+                    neededDigits.push(digit);
+                }
+                
+                // Cifre del resto parziale
+                const remainderStr = step.remainder.toString();
+                for (let digit of remainderStr) {
+                    neededDigits.push(digit);
+                }
+            });
+            
+            console.log('Cifre necessarie calcolate:', neededDigits);
+            console.log('Conteggio cifre:', neededDigits.reduce((acc, d) => {
+                acc[d] = (acc[d] || 0) + 1;
+                return acc;
+            }, {}));
+            
+            return neededDigits;
+        }
+
+        function renderDigitTiles() {
+            const container = document.getElementById('digitsContainer');
+            container.innerHTML = '';
+            
+            const neededDigits = calculateNeededDigits();
+            console.log('Cifre necessarie:', neededDigits);
+            
+            // Crea una tessera per ogni cifra necessaria
+            neededDigits.forEach((digit, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'digit-tile';
+                tile.textContent = digit;
+                tile.draggable = true;
+                tile.dataset.digit = digit;
+                tile.dataset.tileId = `tile-${digit}-${index}`;
+                
+                tile.addEventListener('dragstart', handleDragStart);
+                tile.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(tile);
+            });
+        }
+
+        function handleDragStart(e) {
+            if (e.target.classList.contains('used')) {
+                e.preventDefault();
+                return;
+            }
+            
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+            e.dataTransfer.setData('digit', e.target.dataset.digit);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('drop-zone') || 
+                e.target.classList.contains('drop-zone-small') || 
+                e.target.classList.contains('drop-zone-result')) {
+                e.target.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('drop-zone') || 
+                e.target.classList.contains('drop-zone-small') || 
+                e.target.classList.contains('drop-zone-result')) {
+                e.target.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            e.target.classList.remove('drag-over');
+            
+            const digit = e.dataTransfer.getData('digit');
+            
+            if (e.target.classList.contains('drop-zone') || 
+                e.target.classList.contains('drop-zone-small') || 
+                e.target.classList.contains('drop-zone-result')) {
+                
+                // Verifica se la cifra è corretta per questa casella
+                const expectedDigit = getExpectedDigit(e.target);
+                
+                if (expectedDigit !== null && digit !== expectedDigit) {
+                    // Cifra sbagliata! Mostra feedback
+                    e.target.classList.add('incorrect');
+                    setTimeout(() => {
+                        e.target.classList.remove('incorrect');
+                    }, 500);
+                    showMessage('❌ Cifra sbagliata! Riprova.', 'error');
+                    return false;
+                }
+                
+                // Rimuovi cifra precedente se presente
+                if (e.target.dataset.placedTileId) {
+                    const oldTile = document.querySelector(`[data-tile-id="${e.target.dataset.placedTileId}"]`);
+                    if (oldTile) {
+                        oldTile.classList.remove('used');
+                        oldTile.style.display = 'flex';
+                        usedDigits.delete(e.target.dataset.placedTileId);
+                    }
+                }
+                
+                e.target.textContent = digit;
+                e.target.classList.add('filled');
+                e.target.dataset.value = digit;
+                e.target.dataset.placedTileId = draggedElement.dataset.tileId;
+                
+                // Nascondi la tessera usata
+                draggedElement.classList.add('used');
+                draggedElement.style.display = 'none';
+                usedDigits.add(draggedElement.dataset.tileId);
+            }
+            
+            return false;
+        }
+
+        function getExpectedDigit(dropZone) {
+            const type = dropZone.dataset.type;
+            const step = parseInt(dropZone.dataset.step);
+            const pos = parseInt(dropZone.dataset.pos);
+            
+            if (type === 'quotient') {
+                // Quoziente principale
+                const quotientStr = quotient.toString();
+                return quotientStr[step];
+            }
+            
+            if (step !== undefined && divisionSteps[step]) {
+                const stepData = divisionSteps[step];
+                
+                if (type === 'quotient-step' || type === 'mult') {
+                    return stepData.quotientDigit.toString();
+                }
+                
+                if (type === 'product' || type === 'subtract') {
+                    const productStr = stepData.product.toString();
+                    if (pos !== undefined && pos < productStr.length) {
+                        return productStr[pos];
+                    }
+                    return productStr;
+                }
+                
+                if (type === 'remainder') {
+                    const remainderStr = stepData.remainder.toString();
+                    if (pos !== undefined && pos < remainderStr.length) {
+                        return remainderStr[pos];
+                    }
+                    return remainderStr;
+                }
+            }
+            
+            return null;
+        }
+
+        function renderDivision() {
+            const dividendStr = dividend.toString();
+            const quotientStr = quotient.toString();
+            
+            let html = '<div class="division-classic">';
+            
+            html += '<div class="division-header">';
+            html += '<div class="dividend-box">';
+            for (let i = 0; i < dividendStr.length; i++) {
+                html += `<div class="dividend-digit" id="dividend-digit-${i}">${dividendStr[i]}</div>`;
+            }
+            html += '</div>';
+            html += '<div style="display: flex; flex-direction: column;">';
+            html += `<div class="divisor-box">${divisor}</div>`;
+            html += '<div class="quotient-box">';
+            for (let i = 0; i < quotientStr.length; i++) {
+                html += `<div class="drop-zone" data-step="${i}" data-type="quotient"></div>`;
+            }
+            html += '</div></div></div>';
+            
+            html += '<div class="work-column">';
+            
+            for (let stepIdx = 0; stepIdx < divisionSteps.length; stepIdx++) {
+                const step = divisionSteps[stepIdx];
+                const digitsToHighlight = step.highlightDigits.join(',');
+                
+                html += `<div class="step-row" data-step="${stepIdx}" data-digits="${digitsToHighlight}">`;
+                
+                html += '<div class="step-label">';
+                if (step.isFirst) {
+                    if (step.digitsTaken > 1) {
+                        const firstDigits = dividendStr.substring(0, step.digitsTaken);
+                        html += `Passo ${stepIdx + 1}: Prendo ${firstDigits}`;
+                    } else {
+                        html += `Passo ${stepIdx + 1}: Prendo ${step.numberToDivide}`;
+                    }
+                } else {
+                    html += `Passo ${stepIdx + 1}: Abbasso ${step.digitBroughtDown}`;
+                }
+                html += '</div>';
+                
+                html += '<div class="calculation-line">';
+                html += `<span>${step.numberToDivide} : ${divisor} = </span>`;
+                html += `<div class="drop-zone-small" data-step="${stepIdx}" data-type="quotient-step"></div>`;
+                html += '</div>';
+                
+                html += '<div class="calculation-line" style="margin-top: 5px;">';
+                html += `<span>${divisor} × </span>`;
+                html += `<div class="drop-zone-small" data-step="${stepIdx}" data-type="mult"></div>`;
+                html += `<span> = </span>`;
+                
+                const productStr = step.product.toString();
+                if (productStr.length === 1) {
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="0" data-type="product"></div>`;
+                } else {
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="0" data-type="product"></div>`;
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="1" data-type="product"></div>`;
+                }
+                html += '</div>';
+                
+                html += '<div style="margin-top: 8px; padding: 5px; background: #f8f9fa; border-radius: 5px;">';
+                html += '<div class="calc-row">';
+                html += `<div class="number-display">${step.numberToDivide}</div>`;
+                html += '</div>';
+                html += '<div class="calc-row">';
+                html += '<span class="operation-sign">−</span>';
+                
+                if (productStr.length === 1) {
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="0" data-type="subtract"></div>`;
+                } else {
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="0" data-type="subtract"></div>`;
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="1" data-type="subtract"></div>`;
+                }
+                html += '</div>';
+                html += '<div class="calc-row subtraction-box">';
+                
+                const remainderStr = step.remainder.toString();
+                if (remainderStr.length === 1 || step.remainder === 0) {
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="0" data-type="remainder" style="border-color: #e91e63;"></div>`;
+                } else {
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="0" data-type="remainder" style="border-color: #e91e63;"></div>`;
+                    html += `<div class="drop-zone-result" data-step="${stepIdx}" data-pos="1" data-type="remainder" style="border-color: #e91e63;"></div>`;
+                }
+                html += '<span class="help-text">resto</span>';
+                html += '</div></div>';
+                
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            html += '<div style="margin-top: 5px; padding: 3px; background: #fff3cd; border-radius: 5px; text-align: center; font-size: 0.75em;">';
+            html += `<strong>Resto finale: ${remainder}</strong>`;
+            html += '</div></div>';
+            
+            document.getElementById('operation').innerHTML = html;
+            setupDropZones();
+            
+            // Evidenzia prime cifre
+            const firstStep = document.querySelector('.step-row');
+            if (firstStep) {
+                const digits = firstStep.dataset.digits;
+                if (digits) {
+                    highlightDigits(digits.split(','));
+                }
+            }
+        }
+
+        function setupDropZones() {
+            const dropZones = document.querySelectorAll('.drop-zone, .drop-zone-small, .drop-zone-result');
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('drop', handleDrop);
+                
+                zone.addEventListener('click', function() {
+                    const stepIdx = this.dataset.step;
+                    if (stepIdx !== undefined) {
+                        const stepRow = document.querySelector(`.step-row[data-step="${stepIdx}"]`);
+                        if (stepRow) {
+                            const digits = stepRow.dataset.digits;
+                            if (digits) {
+                                highlightDigits(digits.split(','));
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function highlightDigits(digitIndices) {
+            document.querySelectorAll('.dividend-digit').forEach(d => {
+                d.classList.remove('highlighted');
+            });
+            
+            digitIndices.forEach(idx => {
+                const digit = document.getElementById(`dividend-digit-${idx}`);
+                if (digit) {
+                    digit.classList.add('highlighted');
+                }
+            });
+        }
+
+        function resetAllDropZones() {
+            const dropZones = document.querySelectorAll('.drop-zone, .drop-zone-small, .drop-zone-result');
+            dropZones.forEach(zone => {
+                if (zone.dataset.placedTileId) {
+                    const tile = document.querySelector(`[data-tile-id="${zone.dataset.placedTileId}"]`);
+                    if (tile) {
+                        tile.classList.remove('used');
+                        tile.style.display = 'flex';
+                    }
+                }
+                zone.textContent = '';
+                zone.classList.remove('filled', 'correct', 'incorrect');
+                delete zone.dataset.value;
+                delete zone.dataset.placedTileId;
+            });
+            usedDigits.clear();
+            showMessage('');
+        }
+
+        function newDivision() {
+            generateDivision();
+            renderDigitTiles();
+            renderDivision();
+            usedDigits.clear();
+            startTimer();
+            showMessage('');
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById('timer').textContent = `Tempo: ${elapsed}s`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            return Math.floor((Date.now() - startTime) / 1000);
+        }
+
+        function checkAnswer() {
+            let allCorrect = true;
+            let emptyFields = false;
+            
+            // Verifica quoziente
+            const quotientZones = document.querySelectorAll('[data-type="quotient"]');
+            const quotientStr = quotient.toString();
+            quotientZones.forEach((zone, idx) => {
+                if (!zone.dataset.value) {
+                    emptyFields = true;
+                } else {
+                    const isCorrect = zone.dataset.value === quotientStr[idx];
+                    zone.classList.toggle('correct', isCorrect);
+                    zone.classList.toggle('incorrect', !isCorrect);
+                    if (!isCorrect) allCorrect = false;
+                }
+            });
+            
+            // Verifica ogni passaggio
+            divisionSteps.forEach((step, stepIdx) => {
+                const quotStepZone = document.querySelector(`[data-step="${stepIdx}"][data-type="quotient-step"]`);
+                if (quotStepZone) {
+                    if (!quotStepZone.dataset.value) {
+                        emptyFields = true;
+                    } else {
+                        const isCorrect = parseInt(quotStepZone.dataset.value) === step.quotientDigit;
+                        quotStepZone.classList.toggle('correct', isCorrect);
+                        quotStepZone.classList.toggle('incorrect', !isCorrect);
+                        if (!isCorrect) allCorrect = false;
+                    }
+                }
+                
+                const multZone = document.querySelector(`[data-step="${stepIdx}"][data-type="mult"]`);
+                if (multZone) {
+                    if (!multZone.dataset.value) {
+                        emptyFields = true;
+                    } else {
+                        const isCorrect = parseInt(multZone.dataset.value) === step.quotientDigit;
+                        multZone.classList.toggle('correct', isCorrect);
+                        multZone.classList.toggle('incorrect', !isCorrect);
+                        if (!isCorrect) allCorrect = false;
+                    }
+                }
+                
+                const productZones = document.querySelectorAll(`[data-step="${stepIdx}"][data-type="product"]`);
+                if (productZones.length > 0) {
+                    let userProduct = '';
+                    productZones.forEach(z => {
+                        if (!z.dataset.value) {
+                            emptyFields = true;
+                        } else {
+                            userProduct += z.dataset.value;
+                        }
+                    });
+                    if (userProduct) {
+                        const isCorrect = parseInt(userProduct) === step.product;
+                        productZones.forEach(z => {
+                            z.classList.toggle('correct', isCorrect);
+                            z.classList.toggle('incorrect', !isCorrect);
+                        });
+                        if (!isCorrect) allCorrect = false;
+                    }
+                }
+                
+                const subZones = document.querySelectorAll(`[data-step="${stepIdx}"][data-type="subtract"]`);
+                if (subZones.length > 0) {
+                    let userSub = '';
+                    subZones.forEach(z => {
+                        if (!z.dataset.value) {
+                            emptyFields = true;
+                        } else {
+                            userSub += z.dataset.value;
+                        }
+                    });
+                    if (userSub) {
+                        const isCorrect = parseInt(userSub) === step.product;
+                        subZones.forEach(z => {
+                            z.classList.toggle('correct', isCorrect);
+                            z.classList.toggle('incorrect', !isCorrect);
+                        });
+                        if (!isCorrect) allCorrect = false;
+                    }
+                }
+                
+                const remZones = document.querySelectorAll(`[data-step="${stepIdx}"][data-type="remainder"]`);
+                if (remZones.length > 0) {
+                    let userRem = '';
+                    remZones.forEach(z => {
+                        if (!z.dataset.value) {
+                            emptyFields = true;
+                        } else {
+                            userRem += z.dataset.value;
+                        }
+                    });
+                    if (userRem) {
+                        const isCorrect = parseInt(userRem) === step.remainder;
+                        remZones.forEach(z => {
+                            z.classList.toggle('correct', isCorrect);
+                            z.classList.toggle('incorrect', !isCorrect);
+                        });
+                        if (!isCorrect) allCorrect = false;
+                    }
+                }
+            });
+            
+            if (emptyFields) {
+                showMessage('📝 Completa tutte le caselle trascinando le cifre!', 'error');
+                return;
+            }
+            
+            const elapsed = stopTimer();
+            operations++;
+            document.getElementById('operations').textContent = operations;
+            
+            if (allCorrect) {
+                let points = 100;
+                if (elapsed < 30) points += 50;
+                else if (elapsed < 60) points += 25;
+                else if (elapsed < 90) points += 10;
+                
+                score += points;
+                streak++;
+                
+                if (streak >= 3) {
+                    const bonusPoints = streak * 10;
+                    score += bonusPoints;
+                    points += bonusPoints;
+                }
+                
+                document.getElementById('score').textContent = score;
+                document.getElementById('streak').textContent = streak;
+                
+                showMessage(`🎉 Perfetto! +${points} punti (${elapsed}s) 🌟`, 'success');
+                
+                setTimeout(() => newDivision(), 3000);
+            } else {
+                streak = 0;
+                document.getElementById('streak').textContent = streak;
+                showMessage('❌ Controlla le caselle rosse. Riprova! 💪', 'error');
+            }
+        }
+
+        function showHint() {
+            let hint = `💡 ${dividend} ÷ ${divisor} = ${quotient}`;
+            if (remainder > 0) {
+                hint += ` resto ${remainder}`;
+            }
+            showMessage(hint, 'points');
+        }
+
+        function showMessage(text, type = '') {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message';
+            if (type) messageEl.classList.add(type);
+            if (text) messageEl.classList.add('show');
+            
+            if (text && type !== 'error') {
+                setTimeout(() => {
+                    messageEl.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+        document.getElementById('resetBtn').addEventListener('click', resetAllDropZones);
+        document.getElementById('newBtn').addEventListener('click', newDivision);
+        document.getElementById('hintBtn').addEventListener('click', showHint);
+
+        newDivision();
+    </script>
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giochi di Matematica - Scuola Primaria</title>
+    <style>
+        /* RESET & VARIABILI */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+        }
+        
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --dark: #2D3047;
+            --light: #F7FFF7;
+            --teacher: #9D4EDD;
+            --instructions: #4ECDC4;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* HEADER GAMER STYLE */
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveGrid 20s linear infinite;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+        
+        .title {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 var(--dark);
+            letter-spacing: 1px;
+            position: relative;
+            background: linear-gradient(45deg, #FFD166, #FF9E6D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #e0e0ff;
+        }
+        
+        /* TEACHER & INSTRUCTIONS BUTTONS - TOP RIGHT */
+        .header-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+        }
+        
+        .header-btn {
+            background: var(--teacher);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .instructions-btn {
+            background: var(--instructions);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+        
+        .header-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(157, 78, 221, 0.6);
+        }
+        
+        .instructions-btn:hover {
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.6);
+        }
+        
+        /* GAMES GRID - GAMER STYLE */
+        .games-section {
+            background: rgba(45, 48, 71, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 209, 102, 0.3);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: var(--accent);
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+        
+        .game-card {
+            background: linear-gradient(145deg, #3a3d5d, #2d3047);
+            border-radius: 20px;
+            padding: 25px 15px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px rgba(255, 209, 102, 0.4);
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+            filter: drop-shadow(2px 2px 0 #000);
+        }
+        
+        .game-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--light);
+        }
+        
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #2d3047, #3a3d5d);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 3px solid var(--teacher);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .instructions-modal {
+            border-color: var(--instructions);
+            max-width: 600px;
+        }
+        
+        .modal-title {
+            color: var(--teacher);
+            margin-bottom: 20px;
+            font-size: 2rem;
+            text-align: center;
+        }
+        
+        .instructions-title {
+            color: var(--instructions);
+        }
+        
+        .modal-text {
+            color: #e0e0ff;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .instructions-content {
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .instructions-content h3 {
+            color: var(--accent);
+            margin: 20px 0 10px 0;
+            font-size: 1.3rem;
+        }
+        
+        .instructions-content ul {
+            margin: 10px 0 20px 20px;
+            color: #e0e0ff;
+        }
+        
+        .instructions-content li {
+            margin: 8px 0;
+        }
+        
+        .code-block {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid var(--instructions);
+            font-family: 'Courier New', monospace;
+            color: #FFD166;
+            overflow-x: auto;
+        }
+        
+        .icons-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+        
+        .icon-example {
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .close-modal {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+        
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-buttons { 
+                position: static; 
+                justify-content: center;
+                margin: 15px 0;
+                flex-wrap: wrap;
+            }
+            .header-btn { padding: 10px 20px; }
+        }
+        
+        @media (max-width: 480px) {
+            .title { font-size: 2rem; }
+            .games-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-buttons">
+                <button class="header-btn instructions-btn" onclick="openInstructionsModal()">
+                    <span>❓</span> ISTRUZIONI
+                </button>
+                <button class="header-btn" onclick="openTeacherModal()">
+                    <span>👨‍🏫</span> AREA INSEGNANTE
+                </button>
+            </div>
+            
+            <h1 class="title">GIOCHI DI MATEMATICA</h1>
+            <p class="subtitle">PER LA SCUOLA PRIMARIA - Scegli un gioco per imparare divertendoti!</p>
+        </header>
+        
+        <!-- GAMES GRID -->
+        <section class="games-section">
+            <h2 class="section-title">🎮 SCEGLI IL TUO GIOCO 🎮</h2>
+            
+            <div class="games-grid">
+                <!-- GIOCHI ESISTENTI -->
+                <a href="addizione%20in%20colonna.html" class="game-card">
+                    <span class="game-icon">➕</span>
+                    <div class="game-name">Addizione in Colonna</div>
+                </a>
+                
+                <a href="divisioni%20con%20virgola.html" class="game-card">
+                    <span class="game-icon">➗</span>
+                    <div class="game-name">Divisioni con Virgola</div>
+                </a>
+                
+                <a href="divisioni_drag_drop.html" class="game-card">
+                    <span class="game-icon">🎯</span>
+                    <div class="game-name">Divisioni Drag & Drop</div>
+                </a>
+                
+                <a href="moltiplicazioni.html" class="game-card">
+                    <span class="game-icon">✖️</span>
+                    <div class="game-name">Moltiplicazioni</div>
+                </a>
+                
+                <a href="ordinamenti.html" class="game-card">
+                    <span class="game-icon">📊</span>
+                    <div class="game-name">Ordinamenti</div>
+                </a>
+                
+                <a href="succesioni 4.html" class="game-card">
+                    <span class="game-icon">🔢</span>
+                    <div class="game-name">Successioni 4</div>
+                </a>
+                
+                <a href="successioni%20numeriche%205.html" class="game-card">
+                    <span class="game-icon">🎲</span>
+                    <div class="game-name">Successioni 5</div>
+                </a>
+                
+                <a href="console-matematica.html" class="game-card">
+                    <span class="game-icon">🧮</span>
+                    <div class="game-name">Calcolatrice</div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- FOOTER -->
+        <footer>
+            <p>Piattaforma educativa per la scuola primaria © 2024</p>
+        </footer>
+    </div>
+    
+    <!-- TEACHER MODAL -->
+    <div id="teacherModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">👨‍🏫 AREA INSEGNANTE</h2>
+            <p class="modal-text">
+                <strong>Gestione della piattaforma</strong>
+            </p>
+            <p style="color: #e0e0ff; text-align: left; line-height: 1.6;">
+                Per aggiungere nuovi giochi, clicca sul pulsante <strong>"❓ ISTRUZIONI"</strong> in alto a destra per la guida dettagliata passo-passo.
+            </p>
+            <button class="close-modal" onclick="closeTeacherModal()">CHIUDI</button>
+        </div>
+    </div>
+    
+    <!-- INSTRUCTIONS MODAL -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content instructions-modal">
+            <h2 class="modal-title instructions-title">📘 ISTRUZIONI: COME AGGIUNGERE UN NUOVO GIOCO</h2>
+            
+            <div class="instructions-content">
+                <h3>🎯 Passo 1: Carica il file del gioco su GitHub</h3>
+                <ul>
+                    <li>Vai su <strong>GitHub</strong> nel tuo repository</li>
+                    <li>Clicca <strong>"Add file" → "Upload files"</strong></li>
+                    <li>Trascina il file <strong>HTML del gioco</strong> (es. "nuovo-gioco.html")</li>
+                    <li>Clicca <strong>"Commit changes"</strong></li>
+                </ul>
+                
+                <h3>🛠️ Passo 2: Aggiungi il gioco alla homepage</h3>
+                <ul>
+                    <li>Apri <strong>index.html</strong> in modalità modifica (pulsante ✏️)</li>
+                    <li>Cerca questa sezione: <code>&lt;div class="games-grid"&gt;</code></li>
+                    <li><strong>DOPO l'ultimo gioco</strong>, aggiungi questo codice:</li>
+                </ul>
+                
+                <div class="code-block">
+                    &lt;a href="<strong>NOME-FILE.html</strong>" class="game-card"&gt;<br>
+                    &nbsp;&nbsp;&lt;span class="game-icon"&gt;<strong>🎯</strong>&lt;/span&gt;<br>
+                    &nbsp;&nbsp;&lt;div class="game-name"&gt;<strong>NOME GIOCO</strong>&lt;/div&gt;<br>
+                    &lt;/a&gt;
+                </div>
+                
+                <h3>🎨 Passo 3: Personalizza (sostituisci i valori)</h3>
+                <ul>
+                    <li><strong>NOME-FILE.html</strong> → Il nome esatto del file che hai caricato</li>
+                    <li><strong>🎯</strong> → Scegli un'icona tra quelle qui sotto</li>
+                    <li><strong>NOME GIOCO</strong> → Il nome che apparirà sotto l'icona</li>
+                </ul>
+                
+                <h3>✨ Icone disponibili:</h3>
+                <div class="icons-list">
+                    <span class="icon-example">➕</span>
+                    <span class="icon-example">➖</span>
+                    <span class="icon-example">✖️</span>
+                    <span class="icon-example">➗</span>
+                    <span class="icon-example">🧮</span>
+                    <span class="icon-example">🎯</span>
+                    <span class="icon-example">🧠</span>
+                    <span class="icon-example">🎲</span>
+                    <span class="icon-example">📊</span>
+                    <span class="icon-example">🔢</span>
+                    <span class="icon-example">⭐</span>
+                    <span class="icon-example">🏆</span>
+                </div>
+                
+                <h3>✅ Passo 4: Salva e verifica</h3>
+                <ul>
+                    <li>Clicca <strong>"Commit changes"</strong></li>
+                    <li>Attendi <strong>1 minuto</strong></li>
+                    <li>Ricarica la pagina del sito</li>
+                    <li>Il nuovo gioco apparirà automaticamente!</li>
+                </ul>
+            </div>
+            
+            <button class="close-modal" onclick="closeInstructionsModal()">CHIUDI</button>
+        </div>
+    </div>
+
+    <script>
+        // MODAL FUNCTIONS
+        function openTeacherModal() {
+            document.getElementById('teacherModal').style.display = 'flex';
+        }
+        
+        function closeTeacherModal() {
+            document.getElementById('teacherModal').style.display = 'none';
+        }
+        
+        function openInstructionsModal() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+        }
+        
+        function closeInstructionsModal() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+        
+        // Close modal clicking outside
+        window.onclick = function(event) {
+            const teacherModal = document.getElementById('teacherModal');
+            const instructionsModal = document.getElementById('instructionsModal');
+            
+            if (event.target === teacherModal) {
+                closeTeacherModal();
+            }
+            if (event.target === instructionsModal) {
+                closeInstructionsModal();
+            }
+        }
+        
+        // GAME CARD EFFECTS
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.2s ease';
+            });
+        });
+    </script>
+</body>
+</html>

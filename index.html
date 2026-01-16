@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TITOLO OTTIMIZZATO PER SEO -->
+    <title>Giochi Matematici per Bambini - Scuola Primaria | Matematica Divertente</title>
+    
+    <!-- DESCRIZIONE PER SEO -->
+    <meta name="description" content="Giochi di matematica gratuiti per bambini della scuola primaria. Addizioni, divisioni, moltiplicazioni, successioni numeriche e calcolo della media. Impara divertendoti!">
+    
+    <!-- PAROLE CHIAVE -->
+    <meta name="keywords" content="giochi matematica, matematica bambini, scuola primaria, giochi educativi, addizioni, divisioni, moltiplicazioni, successioni numeriche, calcolo media">
+    
+    <!-- AUTORE -->
+    <meta name="author" content="Scuola Primaria">
+    
+    <!-- OPEN GRAPH (per social media) -->
+    <meta property="og:title" content="Giochi Matematici per Bambini - Scuola Primaria">
+    <meta property="og:description" content="Giochi di matematica gratuiti e divertenti per bambini">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://giochimatematici.vercel.app">
+    
+    <style>
+        /* RESET & VARIABILI */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+        }
+        
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --dark: #2D3047;
+            --light: #F7FFF7;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* HEADER GAMER STYLE */
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            border: 3px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: moveGrid 20s linear infinite;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+        
+        .title {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 var(--dark);
+            letter-spacing: 1px;
+            position: relative;
+            background: linear-gradient(45deg, #FFD166, #FF9E6D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #e0e0ff;
+            line-height: 1.5;
+        }
+        
+        /* SEO TEXT (visibile ma discreto) */
+        .seo-text {
+            text-align: center;
+            margin: 15px auto 0;
+            max-width: 900px;
+            font-size: 1.1rem;
+            color: #c0c0ff;
+            padding: 0 10px;
+        }
+        
+        /* GAMES GRID - GAMER STYLE */
+        .games-section {
+            background: rgba(45, 48, 71, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 209, 102, 0.3);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            color: var(--accent);
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+        
+        .game-card {
+            background: linear-gradient(145deg, #3a3d5d, #2d3047);
+            border-radius: 20px;
+            padding: 25px 15px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px rgba(255, 209, 102, 0.4);
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+            filter: drop-shadow(2px 2px 0 #000);
+        }
+        
+        .game-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--light);
+        }
+        
+        /* FOOTER CON INFO SEO */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .footer-links {
+            margin: 10px 0;
+        }
+        
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .section-title { font-size: 1.8rem; }
+            .seo-text { font-size: 1rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .title { font-size: 2rem; }
+            .games-grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER OTTIMIZZATO SEO -->
+        <header class="header">
+            <h1 class="title">GIOCHI MATEMATICI PER BAMBINI</h1>
+            <p class="subtitle">PER LA SCUOLA PRIMARIA - Scegli un gioco per imparare divertendoti!</p>
+            
+            <!-- TESTO SEO (visibile ma discreto) -->
+            <div class="seo-text">
+                Piattaforma educativa con giochi di matematica gratuiti per bambini della scuola primaria. 
+                Esercizi interattivi su addizioni, divisioni, moltiplicazioni, successioni numeriche e calcolo della media.
+            </div>
+        </header>
+        
+        <!-- GAMES GRID -->
+        <section class="games-section">
+            <h2 class="section-title">🎮 GIOCHI DI MATEMATICA EDUCATIVI 🎮</h2>
+            
+            <div class="games-grid">
+                <a href="addizione%20in%20colonna.html" class="game-card">
+                    <span class="game-icon">➕</span>
+                    <div class="game-name">Addizione in Colonna</div>
+                </a>
+                
+                <a href="divisioni%20con%20virgola.html" class="game-card">
+                    <span class="game-icon">➗</span>
+                    <div class="game-name">Divisioni con Virgola</div>
+                </a>
+                
+                <a href="divisioni_drag_drop.html" class="game-card">
+                    <span class="game-icon">🎯</span>
+                    <div class="game-name">Divisioni Drag & Drop</div>
+                </a>
+                
+                <a href="moltiplicazioni.html" class="game-card">
+                    <span class="game-icon">✖️</span>
+                    <div class="game-name">Moltiplicazioni</div>
+                </a>
+                
+                <a href="ordinamenti.html" class="game-card">
+                    <span class="game-icon">📊</span>
+                    <div class="game-name">Ordinamenti</div>
+                </a>
+                
+                <a href="succesioni 4.html" class="game-card">
+                    <span class="game-icon">🔢</span>
+                    <div class="game-name">Successioni 4</div>
+                </a>
+                
+                <a href="successioni%20numeriche%205.html" class="game-card">
+                    <span class="game-icon">🎲</span>
+                    <div class="game-name">Successioni 5</div>
+                </a>
+                
+                <a href="Media.html" class="game-card">
+                    <span class="game-icon">🧮</span>
+                    <div class="game-name">Calcolo Media</div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- FOOTER CON INFO AGGIUNTIVE -->
+        <footer>
+            <p><strong>GiochiMatematici.vercel.app</strong> - Piattaforma educativa per la scuola primaria © 2024</p>
+            
+            <div class="footer-links">
+                <span>Giochi di matematica per bambini:</span>
+                <a href="addizione%20in%20colonna.html">Addizioni</a>
+                <a href="divisioni%20con%20virgola.html">Divisioni</a>
+                <a href="moltiplicazioni.html">Moltiplicazioni</a>
+                <a href="Media.html">Calcolo Media</a>
+            </div>
+            
+            <p>Risorse gratuite per l'insegnamento della matematica nella scuola primaria.</p>
+        </footer>
+    </div>
+
+    <script>
+        // GAME CARD EFFECTS
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.2s ease';
+            });
+        });
+        
+        // GOOGLE ANALYTICS (se vuoi aggiungerlo dopo)
+        // window.dataLayer = window.dataLayer || [];
+        // function gtag(){dataLayer.push(arguments);}
+        // gtag('js', new Date());
+        // gtag('config', 'TUO-ID-GA');
+    </script>
+</body>
+</html>

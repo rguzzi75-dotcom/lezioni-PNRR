@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divisioni in Colonna - Stile Quaderno</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .punteggio {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .punteggio-item {
+            text-align: center;
+        }
+
+        .punteggio-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .punteggio-valore {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .istruzioni {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #856404;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        /* PANNELLO CIFRE */
+        .cifre-disponibili {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cifre-title {
+            text-align: center;
+            color: #1976d2;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .cifre-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cifra-tile {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .cifra-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .cifra-tile:active {
+            transform: scale(0.95);
+        }
+
+        .cifra-tile.selected {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(245, 87, 108, 0.6);
+        }
+
+        .cifra-tile.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #95a5a6;
+        }
+
+        /* QUADERNO QUADRETTATO */
+        .quaderno {
+            background: white;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 49px, #e0e0e0 49px, #e0e0e0 50px),
+                repeating-linear-gradient(90deg, transparent, transparent 49px, #e0e0e0 49px, #e0e0e0 50px);
+            background-size: 50px 50px;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+            min-height: 400px;
+        }
+
+        /* GRIGLIA PER POSIZIONAMENTO */
+        .griglia {
+            display: grid;
+            grid-template-columns: repeat(12, 50px);
+            grid-template-rows: repeat(12, 50px);
+            position: relative;
+        }
+
+        .cella {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .cella.numero-fisso {
+            color: #333;
+        }
+
+        .cella.divisore {
+            color: #e74c3c;
+        }
+
+        .casella-input {
+            width: 45px;
+            height: 45px;
+            border: 3px dashed #4caf50;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            font-size: 1.6em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .casella-input:hover {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+            transform: scale(1.05);
+        }
+
+        .casella-input.filled {
+            background: #c8e6c9;
+            border-color: #4caf50;
+            border-style: solid;
+        }
+
+        .casella-input.correct {
+            background: #81c784;
+            border-color: #2e7d32;
+            animation: pulse 0.5s;
+        }
+
+        .casella-input.incorrect {
+            background: #ffcdd2;
+            border-color: #d32f2f;
+            border-style: solid;
+            animation: shake 0.3s;
+        }
+
+        /* MEDIA QUERY PER MOBILE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .cella {
+                width: 35px;
+                height: 35px;
+                font-size: 1.3em;
+            }
+
+            .casella-input {
+                width: 35px;
+                height: 35px;
+                font-size: 1.3em;
+            }
+
+            .cifra-tile {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5em;
+            }
+
+            .etichetta {
+                font-size: 0.75em !important;
+                margin-left: 120px !important;
+            }
+
+            .quaderno {
+                padding: 15px;
+                background-size: 35px 35px;
+                overflow-x: auto;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 0.95em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .cella {
+                width: 30px;
+                height: 30px;
+                font-size: 1.1em;
+            }
+
+            .casella-input {
+                width: 30px;
+                height: 30px;
+                font-size: 1.1em;
+            }
+
+            .cifra-tile {
+                width: 35px;
+                height: 35px;
+                font-size: 1.3em;
+            }
+
+            .etichetta {
+                font-size: 0.65em !important;
+                margin-left: 80px !important;
+            }
+
+            .quaderno {
+                padding: 10px;
+                background-size: 30px 30px;
+            }
+
+            .punteggio {
+                padding: 10px;
+            }
+
+            .punteggio-label {
+                font-size: 0.75em;
+            }
+
+            .punteggio-valore {
+                font-size: 1.2em;
+            }
+
+            button {
+                padding: 8px 15px;
+                font-size: 0.85em;
+            }
+
+            .istruzioni {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* LINEE DELLA DIVISIONE */
+        .linea-orizzontale {
+            position: absolute;
+            height: 3px;
+            background: #333;
+        }
+
+        .linea-verticale {
+            position: absolute;
+            width: 3px;
+            background: #333;
+        }
+
+        .angolo-divisione {
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background: #333;
+            transform: rotate(-25deg);
+            transform-origin: left center;
+        }
+
+        /* ETICHETTE */
+        .etichetta {
+            position: absolute;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .etichetta.passo {
+            color: #2196f3;
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            font-size: 1em;
+        }
+
+        /* SIMBOLI */
+        .simbolo {
+            font-size: 1.8em;
+            color: #666;
+        }
+
+        .simbolo.divisione {
+            color: #e74c3c;
+            font-size: 2em;
+        }
+
+        /* PULSANTI */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        /* MESSAGGI */
+        .messaggio {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .messaggio.show {
+            opacity: 1;
+        }
+
+        .messaggio.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .messaggio.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .messaggio.info {
+            background: #cce5ff;
+            color: #004085;
+            border: 2px solid #b8daff;
+        }
+
+        /* HELPER VISIVI */
+        .freccia-abbasso {
+            position: absolute;
+            color: #ff9800;
+            font-size: 1.5em;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📓 Divisioni in Colonna</h1>
+
+        <div class="punteggio">
+            <div class="punteggio-item">
+                <div class="punteggio-label">Punteggio</div>
+                <div class="punteggio-valore" id="score">0</div>
+            </div>
+            <div class="punteggio-item">
+                <div class="punteggio-label">Divisioni</div>
+                <div class="punteggio-valore" id="operations">0</div>
+            </div>
+            <div class="punteggio-item">
+                <div class="punteggio-label">Serie 🔥</div>
+                <div class="punteggio-valore" id="streak">0</div>
+            </div>
+        </div>
+
+        <div class="istruzioni" id="istruzioni">
+            👆 Clicca su una cifra, poi clicca su una casella verde per inserirla
+        </div>
+
+        <div class="cifre-disponibili">
+            <div class="cifre-title">✨ CIFRE DISPONIBILI ✨</div>
+            <div class="cifre-container" id="cifre-container"></div>
+        </div>
+
+        <div class="quaderno" id="quaderno"></div>
+
+        <div class="button-group">
+            <button class="btn-check" id="checkBtn">✅ Controlla</button>
+            <button class="btn-reset" id="resetBtn">🔄 Ricomincia</button>
+        </div>
+
+        <div class="messaggio" id="messaggio"></div>
+    </div>
+
+    <script>
+        // CONFIGURAZIONE
+        let dividend, divisor, quotient, remainder;
+        let passi = [];
+
+        // STATO GIOCO
+        let selectedCifra = null;
+        let casellePiene = new Map();
+        let cifreDisponibili = [];
+        let currentStep = 0;
+        let score = 0;
+        let operations = 0;
+        let streak = 0;
+        let startTime;
+
+        // Dimensione celle dinamica in base allo schermo
+        function getCellSize() {
+            const width = window.innerWidth;
+            if (width <= 480) return 30;
+            if (width <= 768) return 35;
+            return 52; // Desktop
+        }
+
+        let CELL_SIZE = getCellSize();
+
+        // Aggiorna dimensione celle al resize
+        window.addEventListener('resize', () => {
+            const newSize = getCellSize();
+            if (newSize !== CELL_SIZE) {
+                CELL_SIZE = newSize;
+                renderQuaderno();
+            }
+        });
+
+        function generaNuovaDivisione() {
+            divisor = Math.floor(Math.random() * 5) + 4; // 4-8
+            const q1 = Math.floor(Math.random() * 8) + 1; // 1-8
+            const q2 = Math.floor(Math.random() * 9); // 0-8
+            quotient = q1 * 10 + q2;
+            remainder = Math.floor(Math.random() * divisor);
+            dividend = quotient * divisor + remainder;
+            
+            if (dividend < 100) {
+                dividend += divisor * 10;
+                quotient += 10;
+            }
+            
+            calcolaPassi();
+        }
+
+        function calcolaPassi() {
+            const dividendStr = dividend.toString();
+            const quotientStr = quotient.toString();
+            passi = [];
+            
+            // PASSO 1
+            const primo_numero = parseInt(dividendStr.substring(0, 2));
+            const prima_cifra_quoziente = parseInt(quotientStr[0]);
+            const primo_prodotto = prima_cifra_quoziente * divisor;
+            const primo_resto = primo_numero - primo_prodotto;
+            
+            passi.push({
+                numero: primo_numero,
+                quotientDigit: prima_cifra_quoziente,
+                prodotto: primo_prodotto,
+                resto: primo_resto
+            });
+            
+            // PASSO 2
+            const secondo_numero = primo_resto * 10 + parseInt(dividendStr[2]);
+            const seconda_cifra_quoziente = parseInt(quotientStr[1]);
+            const secondo_prodotto = seconda_cifra_quoziente * divisor;
+            const secondo_resto = secondo_numero - secondo_prodotto;
+            
+            passi.push({
+                numero: secondo_numero,
+                quotientDigit: seconda_cifra_quoziente,
+                prodotto: secondo_prodotto,
+                resto: secondo_resto
+            });
+        }
+
+        // INIZIALIZZAZIONE
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            
+            document.getElementById('checkBtn').addEventListener('click', verificaSoluzione);
+            document.getElementById('resetBtn').addEventListener('click', resetGame);
+        });
+
+        function initGame() {
+            generaNuovaDivisione();
+            currentStep = 0;
+            casellePiene.clear();
+            
+            const quotientStr = quotient.toString();
+            cifreDisponibili = [quotientStr[0], quotientStr[1]];
+            
+            renderCifre();
+            renderQuaderno();
+            updatePunteggio();
+            mostraMessaggio(`Inserisci la prima cifra del quoziente: ${quotientStr[0]}`, 'info');
+            
+            startTime = Date.now();
+        }
+
+        function renderCifre() {
+            const container = document.getElementById('cifre-container');
+            container.innerHTML = '';
+            
+            cifreDisponibili.forEach((cifra, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'cifra-tile';
+                tile.textContent = cifra;
+                tile.dataset.cifra = cifra;
+                tile.dataset.index = index;
+                
+                tile.addEventListener('click', () => {
+                    if (tile.classList.contains('used')) {
+                        mostraMessaggio('⚠️ Questa cifra è già stata usata!', 'error');
+                        return;
+                    }
+                    
+                    document.querySelectorAll('.cifra-tile').forEach(t => t.classList.remove('selected'));
+                    
+                    if (selectedCifra === tile) {
+                        selectedCifra = null;
+                        mostraMessaggio('Selezione annullata', 'info');
+                    } else {
+                        tile.classList.add('selected');
+                        selectedCifra = tile;
+                        mostraMessaggio(`Cifra ${cifra} selezionata - Clicca su una casella verde`, 'info');
+                    }
+                });
+                
+                container.appendChild(tile);
+            });
+        }
+
+        function renderQuaderno() {
+            const quaderno = document.getElementById('quaderno');
+            quaderno.innerHTML = '';
+            
+            const dividendStr = dividend.toString();
+            const quotientStr = quotient.toString();
+            
+            let html = '<div style="position: relative; padding: 20px; min-height: 500px;">';
+            
+            // RIGA SUPERIORE: DIVIDENDO | DIVISORE con linea | QUOZIENTE
+            html += `
+                <div style="display: flex; align-items: flex-start; gap: 20px; margin-bottom: 30px;">
+                    <!-- DIVIDENDO -->
+                    <div style="display: flex; gap: 2px; font-size: 1.8em; font-family: 'Courier New', monospace;">
+                        <div class="cella numero-fisso">${dividendStr[0]}</div>
+                        <div class="cella numero-fisso">${dividendStr[1]}</div>
+                        <div class="cella numero-fisso">${dividendStr[2]}</div>
+                    </div>
+                    
+                    <!-- SEPARATORE VERTICALE -->
+                    <div style="width: 3px; height: 60px; background: #333;"></div>
+                    
+                    <!-- DIVISORE -->
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="cella divisore" style="font-size: 1.8em; font-family: 'Courier New', monospace; margin-bottom: 5px;">${divisor}</div>
+                        <!-- LINEA ORIZZONTALE SOPRA IL QUOZIENTE -->
+                        <div style="width: 120px; height: 3px; background: #333; margin-bottom: 10px;"></div>
+                        <!-- QUOZIENTE -->
+                        <div style="display: flex; gap: 5px;">
+                            <div class="casella-input" data-id="q0" data-correct="${quotientStr[0]}"></div>
+                            <div class="casella-input" data-id="q1" data-correct="${quotientStr[1]}"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // AREA PASSI (sotto il dividendo)
+            html += `<div style="margin-top: 20px; margin-left: 0px;">`;
+            
+            // PASSO 1
+            html += `<div id="step0" style="display:none; margin-bottom: 30px;">`;
+            // Rimosso: etichetta PASSO 1 che si sovrappone
+            
+            // Prodotto
+            const p0ProdStr = passi[0].prodotto.toString();
+            html += `<div style="display: flex; gap: 2px; align-items: center; margin-top: 5px;">`;
+            for (let i = 0; i < p0ProdStr.length; i++) {
+                html += `<div class="casella-input" data-id="s0-p${i}" data-correct="${p0ProdStr[i]}"></div>`;
+            }
+            html += `<div class="etichetta" style="margin-left: 300px; font-size: 0.9em; white-space: nowrap; color: #666;">← ${passi[0].quotientDigit} × ${divisor}</div>`;
+            html += `</div>`;
+            
+            // Linea sottrazione
+            html += `<div style="width: ${p0ProdStr.length * CELL_SIZE}px; height: 2px; background: #333; margin: 8px 0;"></div>`;
+            
+            // Resto + cifra abbassata (CASELLA INPUT)
+            const p0RestoVal = passi[0].resto;
+            const p0RestoStr = p0RestoVal.toString().padStart(2, '0');
+            const dividendCifra3 = dividendStr[2];
+            
+            html += `<div style="display: flex; gap: 2px; align-items: center; position: relative;">`;
+            // Due caselle per il resto
+            for (let i = 0; i < 2; i++) {
+                html += `<div class="casella-input" data-id="s0-r${i}" data-correct="${p0RestoStr[i]}"></div>`;
+            }
+            // Cifra abbassata come CASELLA INPUT (non numero fisso)
+            html += `<div class="casella-input" data-id="s0-abbassa" data-correct="${dividendCifra3}" style="margin-left: 10px;"></div>`;
+            // Freccia sopra la casella abbassata
+            html += `<div class="freccia-abbasso" style="position: absolute; left: ${(2 * CELL_SIZE) + 10 + (CELL_SIZE / 2)}px; top: -25px;">↓</div>`;
+            // Messaggio nascosto inizialmente, appare dopo il completamento del PASSO 1
+            html += `<div id="msg-abbasso" class="etichetta" style="position: absolute; left: ${(2 * CELL_SIZE) + 10 + CELL_SIZE + 10}px; top: 0px; font-size: 0.9em; white-space: nowrap; color: #ff9800; display: none;">← Abbasso il ${dividendCifra3}</div>`;
+            html += `</div>`;
+            html += `</div>`; // Fine PASSO 1
+            
+            // PASSO 2
+            html += `<div id="step1" style="display:none; margin-bottom: 30px;">`;
+            // Rimosso: etichetta PASSO 2 che si sovrappone
+            
+            // Prodotto - numero di caselle in base alle cifre effettive (NO padStart)
+            const p1ProdVal = passi[1].prodotto;
+            const p1ProdStr = p1ProdVal.toString(); // NO padStart, mantieni le cifre naturali
+            const numCaselleProdotto = p1ProdStr.length;
+            const p1NumStr = passi[1].numero.toString();
+            
+            // Il PASSO 2: il numero da dividere parte dalle caselle del resto del PASSO 1
+            // Il prodotto si allinea a destra rispetto al numero
+            const startNumero = (3 - p1NumStr.length) * CELL_SIZE;
+            const offsetProdotto = startNumero + Math.max(0, p1NumStr.length - numCaselleProdotto) * CELL_SIZE;
+            
+            html += `<div style="display: flex; gap: 2px; align-items: center; margin-top: 5px; margin-left: ${offsetProdotto}px;">`;
+            for (let i = 0; i < numCaselleProdotto; i++) {
+                html += `<div class="casella-input" data-id="s1-p${i}" data-correct="${p1ProdStr[i]}"></div>`;
+            }
+            html += `<div class="etichetta" style="margin-left: 300px; font-size: 0.9em; white-space: nowrap; color: #666;">← ${passi[1].quotientDigit} × ${divisor}</div>`;
+            html += `</div>`;
+            
+            // Linea sottrazione
+            html += `<div style="width: ${numCaselleProdotto * CELL_SIZE}px; height: 2px; background: #333; margin: 8px 0 8px ${offsetProdotto}px;"></div>`;
+            
+            // Resto finale - numero di caselle in base alle cifre effettive (NO padStart)
+            const p1RestoVal = passi[1].resto;
+            const p1RestoStr = p1RestoVal.toString(); // NO padStart, mantieni le cifre naturali
+            const numCaselleResto = p1RestoStr.length;
+            
+            // Allineamento: il resto si allinea a destra sotto il prodotto
+            const offsetResto = offsetProdotto + Math.max(0, numCaselleProdotto - numCaselleResto) * CELL_SIZE;
+            
+            html += `<div style="display: flex; gap: 2px; align-items: center; margin-left: ${offsetResto}px;">`;
+            for (let i = 0; i < numCaselleResto; i++) {
+                html += `<div class="casella-input" data-id="s1-r${i}" data-correct="${p1RestoStr[i]}"></div>`;
+            }
+            html += `<div class="etichetta" style="margin-left: 300px; font-size: 0.9em; color: #e74c3c; font-weight: bold; white-space: nowrap;">← RESTO FINALE!</div>`;
+            html += `</div>`;
+            html += `</div>`; // Fine PASSO 2
+            
+            html += `</div>`; // Fine area passi
+            html += '</div>'; // Fine container
+            
+            quaderno.innerHTML = html;
+            
+            // Aggiungi event listeners
+            quaderno.querySelectorAll('.casella-input').forEach(casella => {
+                casella.addEventListener('click', () => {
+                    // Se la casella è già piena, permetti di svuotarla per correggere
+                    if (casella.classList.contains('filled')) {
+                        const casellaId = casella.dataset.id;
+                        const dati = casellePiene.get(casellaId);
+                        
+                        if (dati && confirm('Vuoi cancellare questa cifra per correggerla?')) {
+                            // Rimuovi il contenuto
+                            casella.textContent = '';
+                            casella.classList.remove('filled', 'correct', 'incorrect');
+                            delete casella.dataset.value;
+                            
+                            // Rimuovi dalla mappa
+                            casellePiene.delete(casellaId);
+                            
+                            // Riabilita la cifra nel pannello (trova la prima cifra usata uguale)
+                            const cifraDaRiabilitare = dati.cifra;
+                            const tiles = document.querySelectorAll('.cifra-tile');
+                            for (let tile of tiles) {
+                                if (tile.dataset.cifra === cifraDaRiabilitare && tile.classList.contains('used')) {
+                                    tile.classList.remove('used');
+                                    break; // Riabilita solo la prima occorrenza
+                                }
+                            }
+                            
+                            mostraMessaggio('✏️ Cifra cancellata. Seleziona la cifra corretta', 'info');
+                        }
+                        return;
+                    }
+                    
+                    if (!selectedCifra) {
+                        mostraMessaggio('⚠️ Prima seleziona una cifra dal pannello sopra!', 'error');
+                        return;
+                    }
+                    
+                    inserisciCifra(casella, selectedCifra.dataset.cifra);
+                });
+            });
+        }
+
+        function inserisciCifra(casella, cifra) {
+            casella.textContent = cifra;
+            casella.classList.add('filled');
+            casella.dataset.value = cifra;
+            
+            casellePiene.set(casella.dataset.id, {
+                casella: casella,
+                cifra: cifra,
+                correct: casella.dataset.correct
+            });
+            
+            if (selectedCifra) {
+                selectedCifra.classList.add('used');
+                selectedCifra.classList.remove('selected');
+                selectedCifra = null;
+            }
+            
+            verificaProgressione();
+        }
+
+        function verificaProgressione() {
+            const quotientStr = quotient.toString();
+            const q0 = document.querySelector('[data-id="q0"]');
+            const q1 = document.querySelector('[data-id="q1"]');
+            
+            if (q0 && q0.classList.contains('filled') && q0.dataset.value === quotientStr[0] && currentStep === 0) {
+                mostraMessaggio('✅ Perfetto! Ora completa il PASSO 1', 'success');
+                mostraPasso(0);
+            }
+            
+            if (q1 && q1.classList.contains('filled') && q1.dataset.value === quotientStr[1] && currentStep === 1) {
+                mostraMessaggio('✅ Ottimo! Ora completa il PASSO 2', 'success');
+                mostraPasso(1);
+            }
+            
+            // Controlla se prodotto e resto del PASSO 1 sono completati (senza casella abbassata)
+            const step0ProdottoRestoComplete = controllaProdottoRestoCompleto(0);
+            const step0Complete = controllaPassoCompleto(0);
+            const step1Complete = controllaPassoCompleto(1);
+            
+            // Mostra messaggio "Abbasso" quando prodotto e resto sono completi
+            if (step0ProdottoRestoComplete && currentStep === 1) {
+                const msgAbbasso = document.getElementById('msg-abbasso');
+                if (msgAbbasso && msgAbbasso.style.display === 'none') {
+                    msgAbbasso.style.display = 'inline-block';
+                    mostraMessaggio(`✅ Ora abbassa il ${dividend.toString()[2]}!`, 'success');
+                }
+            }
+            
+            if (step0Complete && currentStep === 1) {
+                // PASSO 1 completato (inclusa casella abbassata)
+                mostraMessaggio(`✅ PASSO 1 completato! Ora inserisci ${quotientStr[1]} nel quoziente`, 'success');
+            }
+            
+            if (step1Complete && currentStep === 2) {
+                mostraMessaggio('🎉 DIVISIONE COMPLETATA! Clicca su CONTROLLA', 'success');
+            }
+        }
+
+        function controllaProdottoRestoCompleto(stepNum) {
+            // Controlla solo le caselle di prodotto e resto, NON la casella abbassata
+            const prefisso = `s${stepNum}-`;
+            const caselleCheck = [];
+            
+            // Prodotto: s0-p0, s0-p1, ...
+            const prodottoStr = passi[stepNum].prodotto.toString();
+            for (let i = 0; i < prodottoStr.length; i++) {
+                caselleCheck.push(`${prefisso}p${i}`);
+            }
+            
+            // Resto: s0-r0, s0-r1
+            caselleCheck.push(`${prefisso}r0`);
+            caselleCheck.push(`${prefisso}r1`);
+            
+            // NON include s0-abbassa
+            
+            for (let id of caselleCheck) {
+                const casella = document.querySelector(`[data-id="${id}"]`);
+                if (!casella || !casella.classList.contains('filled')) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function mostraPasso(stepNum) {
+            const stepDiv = document.getElementById(`step${stepNum}`);
+            if (stepDiv) {
+                stepDiv.style.display = 'block';
+                currentStep = stepNum + 1;
+                
+                const passo = passi[stepNum];
+                const quotientDigitStr = passo.quotientDigit.toString();
+                
+                // Prodotto: mantiene le cifre naturali (senza padStart)
+                const prodottoStr = passo.prodotto.toString();
+                
+                // Per il PASSO 1, il resto deve essere sempre a 2 cifre (con zero davanti)
+                // Per il PASSO 2, il resto mantiene le sue cifre naturali (senza zero davanti)
+                let restoStr;
+                if (stepNum === 0) {
+                    restoStr = passo.resto.toString().padStart(2, '0');
+                } else {
+                    restoStr = passo.resto.toString(); // NO padStart per PASSO 2
+                }
+                
+                // Aggiungi quotient digit
+                cifreDisponibili.push(quotientDigitStr);
+                
+                // Aggiungi cifre del prodotto
+                for (let cifra of prodottoStr) {
+                    cifreDisponibili.push(cifra);
+                }
+                
+                // Aggiungi cifre del resto
+                for (let cifra of restoStr) {
+                    cifreDisponibili.push(cifra);
+                }
+                
+                // Aggiungi la cifra da abbassare per il PASSO 1
+                if (stepNum === 0) {
+                    const dividendStr = dividend.toString();
+                    cifreDisponibili.push(dividendStr[2]); // Terza cifra del dividendo
+                }
+                
+                renderCifre();
+            }
+        }
+
+        function controllaPassoCompleto(stepNum) {
+            const prefisso = `s${stepNum}-`;
+            const caselle = document.querySelectorAll(`[data-id^="${prefisso}"]`);
+            
+            for (let casella of caselle) {
+                if (!casella.classList.contains('filled')) {
+                    return false;
+                }
+            }
+            
+            return caselle.length > 0;
+        }
+
+        function verificaSoluzione() {
+            let corrette = 0;
+            let errate = 0;
+            
+            casellePiene.forEach((data) => {
+                const casella = data.casella;
+                const isCorrect = data.cifra === data.correct;
+                
+                if (isCorrect) {
+                    casella.classList.add('correct');
+                    casella.classList.remove('incorrect');
+                    corrette++;
+                } else {
+                    casella.classList.add('incorrect');
+                    casella.classList.remove('correct');
+                    errate++;
+                }
+            });
+            
+            if (errate === 0 && corrette > 0) {
+                const totaleCaselle = document.querySelectorAll('.casella-input').length;
+                
+                if (corrette === totaleCaselle) {
+                    const tempo = Math.floor((Date.now() - startTime) / 1000);
+                    const punti = Math.max(100 - tempo + (streak * 10), 10);
+                    
+                    score += punti;
+                    operations++;
+                    streak++;
+                    
+                    updatePunteggio();
+                    
+                    // Messaggio corretto con tutte le variabili definite
+                    const restoFinale = passi[passi.length - 1].resto;
+                    mostraMessaggio(`🎉 PERFETTO! ${dividend} ÷ ${divisor} = ${quotient} con resto ${restoFinale}. +${punti} punti! Serie: ${streak} 🔥`, 'success');
+                    
+                    setTimeout(() => nuovaPartita(), 5000);
+                } else {
+                    mostraMessaggio(`✅ Corretto finora! Mancano ${totaleCaselle - corrette} caselle`, 'success');
+                }
+            } else if (errate > 0) {
+                streak = 0;
+                updatePunteggio();
+                mostraMessaggio(`❌ ${errate} errori! Controlla le caselle rosse`, 'error');
+            } else {
+                mostraMessaggio('⚠️ Inserisci almeno una cifra prima di controllare!', 'error');
+            }
+        }
+
+        function resetGame() {
+            casellePiene.forEach((data) => {
+                data.casella.textContent = '';
+                data.casella.classList.remove('filled', 'correct', 'incorrect');
+                delete data.casella.dataset.value;
+            });
+            
+            casellePiene.clear();
+            selectedCifra = null;
+            
+            document.querySelectorAll('#step0, #step1').forEach(step => {
+                step.style.display = 'none';
+            });
+            
+            initGame();
+        }
+
+        function nuovaPartita() {
+            resetGame();
+        }
+
+        function updatePunteggio() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('operations').textContent = operations;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function mostraMessaggio(testo, tipo) {
+            const msg = document.getElementById('messaggio');
+            msg.textContent = testo;
+            msg.className = `messaggio show ${tipo}`;
+            
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gioca con le addizioni</title>
+    <title>Addizioni</title>
     <style>
         * {
             margin: 0;
@@ -493,6 +493,23 @@
             color: #dc3545;
             font-size: 1rem;
         }
+        
+        /* Indicatore aiuti utilizzati */
+        .aiuti-utilizzati {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #856404;
+            font-weight: bold;
+        }
+        
+        .icona-aiuto {
+            color: #ffa500;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body onload="inizializzaGioco()">
@@ -523,6 +540,14 @@
                 <span id="contatore-consecutive">0</span>
                 <span class="cuore-consecutivo">❤️</span>
             </div>
+            
+            <!-- Indicatore aiuti utilizzati in questa operazione -->
+            <div class="aiuti-utilizzati" id="aiuti-utilizzati">
+                <span>Aiuti utilizzati in questa operazione:</span>
+                <span id="contatore-aiuti">0</span>
+                <span class="icona-aiuto">🧠</span>
+                <span>(costo: -2 punti ciascuno)</span>
+            </div>
         </div>
         
         <div class="sezione-colonna">
@@ -535,8 +560,8 @@
         </div>
         
         <div class="controlli">
-            <button class="bottone bottone-aiuto" onclick="mostraAiuto()">
-                🧠 Aiuto
+            <button class="bottone bottone-aiuto" onclick="mostraAiuto()" id="bottone-aiuto">
+                🧠 Aiuto (-2 punti)
             </button>
             <button class="bottone bottone-verifica" onclick="verificaOperazione()" id="bottone-verifica">
                 ✓ Verifica
@@ -580,12 +605,12 @@
                 <h3>🏆 Sistema dei Punteggi e Vite</h3>
                 <div class="punteggio-info">
                     <div class="punteggio-item">
-                        <div>Operazione corretta:</div>
-                        <div class="value">+10 punti</div>
+                        <div>Operazione completata:</div>
+                        <div class="value">Max punti = numero di cifre</div>
                     </div>
                     <div class="punteggio-item">
                         <div>Aiuto utilizzato:</div>
-                        <div class="value">-1 punto</div>
+                        <div class="value">-2 punti ciascuno</div>
                     </div>
                     <div class="punteggio-item">
                         <div>Errore:</div>
@@ -596,6 +621,14 @@
                         <div class="value">+1 vita</div>
                     </div>
                 </div>
+                <p><strong>📊 Punteggio per operazione:</strong></p>
+                <ul class="modal-list">
+                    <li><strong>2 cifre</strong>: Massimo 2 punti</li>
+                    <li><strong>3 cifre</strong>: Massimo 3 punti</li>
+                    <li><strong>4 cifre</strong>: Massimo 4 punti</li>
+                    <li><strong>5 cifre</strong>: Massimo 5 punti</li>
+                </ul>
+                <p><strong>⚠️ Attenzione:</strong> Se usi troppi aiuti, potresti finire con 0 punti per quell'operazione!</p>
                 <p><strong>✨ Bonus Vita:</strong> Ogni 5 risposte consecutive corrette, recuperi una vita (massimo 3 vite).</p>
             </div>
             
@@ -621,6 +654,11 @@
         
         // VARIABILI PER IL RECUPERO VITE
         let operazioniCorretteConsecutive = 0;
+        
+        // VARIABILI PER IL PUNTEGGIO DINAMICO
+        let aiutiUtilizzatiOperazioneCorrente = 0;
+        let punteggioBaseOperazioneCorrente = 0; // Dipende dal numero di cifre
+        let numeroCifreOperazioneCorrente = 0;
         
         let numCifreTotali = 0;
         let colonnaAttiva = 0;
@@ -657,6 +695,7 @@
             gameOver = false;
             haSbagliatoQuestaOperazione = false;
             operazioniCorretteConsecutive = 0; // Reset contatore
+            aiutiUtilizzatiOperazioneCorrente = 0; // Reset aiuti
             modalitaGioco = 'interi';
             verificaEseguita = false;
             aggiornaUI();
@@ -673,6 +712,7 @@
             modalitaGioco = nuovaModalita;
             verificaEseguita = false;
             haSbagliatoQuestaOperazione = false;
+            aiutiUtilizzatiOperazioneCorrente = 0; // Reset aiuti
             
             document.querySelectorAll('.bottone-modalita').forEach(btn => {
                 btn.classList.remove('attiva');
@@ -693,11 +733,16 @@
             
             verificaEseguita = false;
             haSbagliatoQuestaOperazione = false;
+            aiutiUtilizzatiOperazioneCorrente = 0; // Reset aiuti per la nuova operazione
             nascondiMessaggio();
             
             if (modalitaGioco === 'interi') {
                 // Genera numeri con 2-5 cifre
                 const cifre = Math.floor(Math.random() * 4) + 2; // 2-5 cifre
+                numeroCifreOperazioneCorrente = cifre;
+                
+                // Imposta il punteggio base in base al numero di cifre
+                punteggioBaseOperazioneCorrente = cifre; // 2, 3, 4 o 5 punti max
                 
                 // Genera due numeri casuali
                 numero1 = generaNumeroCasuale(cifre);
@@ -716,7 +761,10 @@
                 }
                 
             } else {
-                // Numeri decimali
+                // Numeri decimali - consideriamo 3 cifre (es: 12,34 ha 2 cifre intere + 2 decimali)
+                numeroCifreOperazioneCorrente = 3; // Consideriamo un livello medio
+                punteggioBaseOperazioneCorrente = 3; // 3 punti max per i decimali
+                
                 numero1 = generaNumeroDecimale();
                 numero2 = generaNumeroDecimale();
                 
@@ -734,6 +782,9 @@
             
             aggiornaColonna();
             document.getElementById("bottone-verifica").disabled = false;
+            
+            // Aggiorna l'indicatore degli aiuti
+            aggiornaUI();
         }
 
         function preparaNumeriPerColonna() {
@@ -863,14 +914,26 @@
             document.getElementById("punteggio").textContent = punteggio;
             document.getElementById("vite").textContent = vite;
             document.getElementById("contatore-consecutive").textContent = operazioniCorretteConsecutive;
+            document.getElementById("contatore-aiuti").textContent = aiutiUtilizzatiOperazioneCorrente;
             
             // Mostra/nascondi l'indicatore di risposte consecutive
-            const indicatore = document.getElementById("risposte-consecutive");
+            const indicatoreConsecutive = document.getElementById("risposte-consecutive");
             if (operazioniCorretteConsecutive > 0) {
-                indicatore.style.display = "flex";
+                indicatoreConsecutive.style.display = "flex";
             } else {
-                indicatore.style.display = "none";
+                indicatoreConsecutive.style.display = "none";
             }
+            
+            // Mostra/nascondi l'indicatore degli aiuti
+            const indicatoreAiuti = document.getElementById("aiuti-utilizzati");
+            if (aiutiUtilizzatiOperazioneCorrente > 0) {
+                indicatoreAiuti.style.display = "flex";
+            } else {
+                indicatoreAiuti.style.display = "none";
+            }
+            
+            // Aggiorna il testo del bottone aiuto
+            document.getElementById("bottone-aiuto").innerHTML = `🧠 Aiuto (-2 punti)`;
         }
 
         function aggiornaColonna() {
@@ -1137,6 +1200,42 @@
             aggiornaColonna();
         }
 
+        function mostraAiuto() {
+            if (gameOver) {
+                mostraMessaggio("Game Over! Clicca 'Nuova' per ricominciare", "errato");
+                return;
+            }
+            
+            // Controlla se ha abbastanza punti (non può andare troppo in negativo PRIMA dell'operazione)
+            // Permettiamo comunque l'aiuto, ma segnaliamo che potrebbe finire con 0 punti
+            if (punteggio <= 0 && aiutiUtilizzatiOperazioneCorrente >= 1) {
+                mostraMessaggio("Attenzione! Potresti finire con 0 punti per questa operazione!", "errato");
+                return;
+            }
+            
+            // Incrementa contatore aiuti
+            aiutiUtilizzatiOperazioneCorrente++;
+            
+            // Calcola quanti punti verrebbero sottratti
+            const puntiDaSottrarre = 2;
+            
+            // Mostra il messaggio di aiuto
+            if (modalitaRiporto) {
+                const riportoCorretto = riportiCorretti[colonnaAttiva] || 0;
+                if (riportoCorretto === 1) {
+                    mostraMessaggio(`Aiuto: riporto = 1 (-${puntiDaSottrarre} punti, totale aiuti: ${aiutiUtilizzatiOperazioneCorrente})`, "info");
+                } else {
+                    mostraMessaggio(`Aiuto: nessun riporto (-${puntiDaSottrarre} punti, totale aiuti: ${aiutiUtilizzatiOperazioneCorrente})`, "info");
+                }
+            } else {
+                const risultatoCorrettoColonna = risultatiCorretti[colonnaAttiva];
+                mostraMessaggio(`Aiuto: risultato = ${risultatoCorrettoColonna} (-${puntiDaSottrarre} punti, totale aiuti: ${aiutiUtilizzatiOperazioneCorrente})`, "info");
+            }
+            
+            // Aggiorna UI
+            aggiornaUI();
+        }
+
         function verificaOperazione() {
             if (gameOver) return;
             
@@ -1160,19 +1259,40 @@
             const tuttoCorretto = controllaSeCorretto();
             
             if (tuttoCorretto) {
-                punteggio += 10;
+                // CALCOLA IL PUNTEGGIO FINALE PER QUESTA OPERAZIONE
+                // Punteggio base (dipende dal numero di cifre) - (aiuti * 2)
+                const puntiGuadagnati = punteggioBaseOperazioneCorrente - (aiutiUtilizzatiOperazioneCorrente * 2);
+                
+                // Il punteggio NON può essere negativo per questa operazione
+                const puntiFinali = Math.max(0, puntiGuadagnati);
+                
+                // Aggiungi al punteggio totale
+                punteggio += puntiFinali;
                 operazioniCorretteConsecutive++;
+                
+                // Prepara il messaggio
+                let messaggioPunti = `✓ Corretto!`;
+                if (puntiFinali > 0) {
+                    messaggioPunti += ` +${puntiFinali} punti`;
+                } else {
+                    messaggioPunti += ` 0 punti (troppi aiuti!)`;
+                }
+                
+                if (modalitaGioco === 'interi') {
+                    messaggioPunti += ` (${numeroCifreOperazioneCorrente} cifre, ${aiutiUtilizzatiOperazioneCorrente} aiuti)`;
+                } else {
+                    messaggioPunti += ` (decimali, ${aiutiUtilizzatiOperazioneCorrente} aiuti)`;
+                }
                 
                 // RECUPERA UNA VITA OGNI 5 RISPOSTE CONSECUTIVE CORRETTE
                 if (operazioniCorretteConsecutive >= 5 && vite < 3) {
                     vite++;
                     operazioniCorretteConsecutive = 0; // Reset contatore dopo aver dato la vita
-                    mostraMessaggio(`✓ Corretto! +10 punti. 🎉 5 risposte consecutive corrette! Vita recuperata!`, "corretto");
-                } else {
-                    mostraMessaggio(`✓ Corretto! +10 punti`, "corretto");
+                    messaggioPunti += ` 🎉 5 risposte consecutive! Vita recuperata!`;
                 }
                 
-                setTimeout(nuovaOperazione, 1500);
+                mostraMessaggio(messaggioPunti, "corretto");
+                setTimeout(nuovaOperazione, 2000);
                 verificaEseguita = true;
             } else {
                 // Reset contatore risposte consecutive se sbaglia
@@ -1198,28 +1318,6 @@
             }
             
             aggiornaUI();
-        }
-
-        function mostraAiuto() {
-            if (gameOver || punteggio <= 0) {
-                mostraMessaggio("Non hai abbastanza punti per usare l'aiuto", "errato");
-                return;
-            }
-            
-            punteggio--;
-            aggiornaUI();
-            
-            if (modalitaRiporto) {
-                const riportoCorretto = riportiCorretti[colonnaAttiva] || 0;
-                if (riportoCorretto === 1) {
-                    mostraMessaggio("Aiuto: riporto = 1", "info");
-                } else {
-                    mostraMessaggio("Aiuto: nessun riporto", "info");
-                }
-            } else {
-                const risultatoCorrettoColonna = risultatiCorretti[colonnaAttiva];
-                mostraMessaggio(`Aiuto: risultato = ${risultatoCorrettoColonna}`, "info");
-            }
         }
 
         // FUNZIONI PER LA MODALE ISTRUZIONI

@@ -186,6 +186,16 @@
             color: var(--light);
         }
         
+        /* COMMENTI SECTION */
+        .comments-section {
+            background: rgba(45, 48, 71, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+        
         /* FOOTER CON INFO SEO */
         footer {
             text-align: center;
@@ -209,18 +219,70 @@
             text-decoration: underline;
         }
         
+        /* ADMIN SECTION (nascosta di default) */
+        #admin-section {
+            display: none;
+            background: rgba(45, 48, 71, 0.95);
+            border: 3px solid #FFD166;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 209, 102, 0.3);
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .title { font-size: 2.5rem; }
             .games-grid { grid-template-columns: repeat(2, 1fr); }
             .section-title { font-size: 1.8rem; }
             .seo-text { font-size: 1rem; }
+            .admin-stats { grid-template-columns: 1fr; }
         }
         
         @media (max-width: 480px) {
             .title { font-size: 2rem; }
             .games-grid { grid-template-columns: 1fr; }
             .section-title { font-size: 1.6rem; }
+        }
+        
+        /* PASSWORD INPUT */
+        #admin-password-input {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(45, 48, 71, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--accent);
+        }
+        
+        #admin-password {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #4ECDC4;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 150px;
+        }
+        
+        #admin-password::placeholder {
+            color: #aaa;
         }
     </style>
 </head>
@@ -295,25 +357,255 @@
             </div>
         </section>
         
+        <!-- SEZIONE COMMENTI ANONIMI -->
+        <section class="comments-section">
+            <h2 class="section-title"><i class="fas fa-comments"></i> COMMENTI ANONIMI</h2>
+            <p style="text-align: center; color: #c0c0ff; margin-bottom: 25px; font-size: 1.1rem;">
+                <i class="fas fa-user-secret"></i> I tuoi commenti sono completamente anonimi e visibili solo all'amministratore.
+            </p>
+            
+            <!-- GOOGLE FORM EMBED -->
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdjoOGYOvur-lKibrs6gHTklV275BMYvo7BR82axc1ybUiN2A/viewform?embedded=true" 
+                    width="100%" 
+                    height="537" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0"
+                    style="border-radius: 10px; max-width: 640px; display: block; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                Caricamento…
+            </iframe>
+        </section>
+        
+        <!-- SEZIONE AMMINISTRATORE (NASCOSTA - VISIBILE SOLO CON PASSWORD) -->
+        <div id="admin-section">
+            <h2 style="color: #FFD166; text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-user-shield"></i> AREA AMMINISTRATORE
+            </h2>
+            
+            <div class="admin-stats">
+                <div class="stat-box">
+                    <h3 style="color: #4ECDC4;"><i class="fas fa-eye"></i> VISITE TOTALI</h3>
+                    <p style="font-size: 2.5rem; color: #FFD166; margin: 10px 0;" id="visit-count">0</p>
+                    <p style="color: #aaa; font-size: 0.9rem;">(contatore per questo dispositivo)</p>
+                </div>
+                
+                <div class="stat-box">
+                    <h3 style="color: #4ECDC4;"><i class="fas fa-comment-dots"></i> COMMENTI RICEVUTI</h3>
+                    <p style="font-size: 2.5rem; color: #FFD166; margin: 10px 0;" id="comment-count">0</p>
+                    <p style="color: #aaa; font-size: 0.9rem;">
+                        <a href="https://docs.google.com/spreadsheets/" target="_blank" style="color: #4ECDC4;">
+                            <i class="fas fa-external-link-alt"></i> Vedi tutti i commenti
+                        </a>
+                    </p>
+                </div>
+                
+                <div class="stat-box">
+                    <h3 style="color: #4ECDC4;"><i class="fas fa-history"></i> ULTIMO ACCESSO</h3>
+                    <p style="font-size: 1.5rem; color: #FFD166; margin: 10px 0;" id="last-visit">-</p>
+                    <p style="color: #aaa; font-size: 0.9rem;">Data e ora dell'ultima visita</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button onclick="resetStats()" style="
+                    background: #FF6B6B;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    margin: 0 10px;
+                ">
+                    <i class="fas fa-redo"></i> Reset Statistiche
+                </button>
+                
+                <button onclick="hideAdminSection()" style="
+                    background: #4ECDC4;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    margin: 0 10px;
+                ">
+                    <i class="fas fa-times"></i> Nascondi Area
+                </button>
+            </div>
+        </div>
+        
         <!-- FOOTER CON INFO AGGIUNTIVE -->
         <footer>
             <p><i class="fas fa-laptop-code"></i> <strong>GiochiMatematici.vercel.app</strong> - Piattaforma educativa per la scuola primaria © RG 2026</p>
+            <div class="footer-links">
+                <a href="javascript:void(0)" onclick="showAdminSection()">
+                    <i class="fas fa-chart-bar"></i> Statistiche
+                </a>
+            </div>
         </footer>
     </div>
 
+    <!-- PASSWORD INPUT (in basso a destra) -->
+    <div id="admin-password-input">
+        <input type="password" 
+               id="admin-password" 
+               placeholder="Password admin"
+               onkeypress="if(event.key === 'Enter') checkAdminPassword()">
+    </div>
+
     <script>
-        // GAME CARD EFFECTS
-        document.querySelectorAll('.game-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transition = 'all 0.2s ease';
+        // ===========================================
+        // FUNZIONI PER IL CONTATORE VISITE
+        // ===========================================
+        
+        // Contatore visite usando localStorage
+        function updateVisitCounter() {
+            let visitCount = localStorage.getItem('visitCount');
+            
+            if (!visitCount) {
+                visitCount = 0;
+            } else {
+                visitCount = parseInt(visitCount);
+            }
+            
+            // Incrementa il contatore
+            visitCount++;
+            
+            // Salva nel localStorage
+            localStorage.setItem('visitCount', visitCount);
+            
+            // Salva l'ultima visita
+            const now = new Date();
+            localStorage.setItem('lastVisit', now.toISOString());
+            
+            // Aggiorna il display (se la sezione admin è visibile)
+            if (document.getElementById('admin-section').style.display === 'block') {
+                document.getElementById('visit-count').textContent = visitCount;
+                document.getElementById('last-visit').textContent = 
+                    now.toLocaleDateString('it-IT') + ' ' + now.toLocaleTimeString('it-IT');
+            }
+            
+            // Salva anche il numero di visite nella sessione corrente
+            sessionStorage.setItem('currentSessionVisits', 
+                (parseInt(sessionStorage.getItem('currentSessionVisits') || 0) + 1).toString());
+            
+            console.log('Visite totali:', visitCount);
+        }
+        
+        // ===========================================
+        // FUNZIONI PER L'AREA AMMINISTRATORE
+        // ===========================================
+        
+        // Password di accesso (cambiarla se necessario)
+        const ADMIN_PASSWORD = "O_Mpq_&9473_!";
+        
+        // Controlla la password
+        function checkAdminPassword() {
+            const passwordInput = document.getElementById('admin-password');
+            const password = passwordInput.value;
+            
+            if (password === ADMIN_PASSWORD) {
+                // Mostra la sezione admin
+                document.getElementById('admin-section').style.display = 'block';
+                
+                // Aggiorna le statistiche
+                updateAdminStats();
+                
+                // Nascondi l'input password
+                document.getElementById('admin-password-input').style.display = 'none';
+                
+                // Salva in sessionStorage che l'utente è autenticato
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                
+                // Pulisci il campo password
+                passwordInput.value = '';
+                
+                // Messaggio di conferma
+                console.log('Accesso area amministratore consentito');
+            } else {
+                alert('Password errata!');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+        
+        // Mostra l'area amministratore (richiede password)
+        function showAdminSection() {
+            document.getElementById('admin-password-input').style.display = 'block';
+            document.getElementById('admin-password').focus();
+        }
+        
+        // Nasconde l'area amministratore
+        function hideAdminSection() {
+            document.getElementById('admin-section').style.display = 'none';
+            document.getElementById('admin-password-input').style.display = 'block';
+            sessionStorage.removeItem('adminAuthenticated');
+        }
+        
+        // Aggiorna le statistiche nell'area admin
+        function updateAdminStats() {
+            const visitCount = localStorage.getItem('visitCount') || '0';
+            const lastVisit = localStorage.getItem('lastVisit');
+            
+            document.getElementById('visit-count').textContent = visitCount;
+            
+            if (lastVisit) {
+                const lastVisitDate = new Date(lastVisit);
+                document.getElementById('last-visit').textContent = 
+                    lastVisitDate.toLocaleDateString('it-IT') + ' ' + 
+                    lastVisitDate.toLocaleTimeString('it-IT');
+            }
+            
+            // Puoi aggiungere qui il conteggio dei commenti dal Google Sheet
+            // Per ora mettiamo un valore fittizio
+            document.getElementById('comment-count').textContent = 
+                Math.floor(visitCount / 10); // Simula commenti (1 ogni 10 visite)
+        }
+        
+        // Resetta le statistiche
+        function resetStats() {
+            if (confirm('Sei sicuro di voler resettare tutte le statistiche?')) {
+                localStorage.removeItem('visitCount');
+                localStorage.removeItem('lastVisit');
+                sessionStorage.removeItem('currentSessionVisits');
+                updateAdminStats();
+                alert('Statistiche resettate!');
+            }
+        }
+        
+        // ===========================================
+        // INIZIALIZZAZIONE AL CARICAMENTO DELLA PAGINA
+        // ===========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Aggiorna il contatore visite
+            updateVisitCounter();
+            
+            // Controlla se l'utente è già autenticato in questa sessione
+            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+                document.getElementById('admin-section').style.display = 'block';
+                document.getElementById('admin-password-input').style.display = 'none';
+                updateAdminStats();
+            }
+            
+            // Effetti visivi per le card dei giochi
+            document.querySelectorAll('.game-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transition = 'all 0.2s ease';
+                });
             });
         });
         
-        // GOOGLE ANALYTICS (se vuoi aggiungerlo dopo)
-        // window.dataLayer = window.dataLayer || [];
-        // function gtag(){dataLayer.push(arguments);}
-        // gtag('js', new Date());
-        // gtag('config', 'TUO-ID-GA');
+        // ===========================================
+        // GOOGLE ANALYTICS (se vuoi aggiungerlo in futuro)
+        // ===========================================
+        /*
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'TUO-ID-GA');
+        */
     </script>
 </body>
 </html>

@@ -723,16 +723,16 @@
                     // Scrolla fino al messaggio di conferma
                     confirmationMessage.scrollIntoView({ behavior: 'smooth' });
                     
-                    // Invia il form dopo 1.5 secondi (per far vedere il messaggio)
+                    // Invia il form dopo 5 secondi (per far vedere il messaggio)
                     setTimeout(() => {
                         this.submit();
-                    }, 1500);
+                    }, 5000);
                     
-                    // Resetta il form dopo 5 secondi
+                    // Resetta il form dopo 8 secondi
                     setTimeout(() => {
                         this.reset();
                         confirmationMessage.style.display = 'none';
-                    }, 5000);
+                    }, 8000);
                     
                     // Log per debugging
                     console.log('Commento anonimo inviato');
@@ -787,6 +787,7 @@
     </script>
 </body>
 </html>
+
 
 
 

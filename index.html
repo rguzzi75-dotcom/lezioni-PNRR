@@ -284,6 +284,75 @@
         #admin-password::placeholder {
             color: #aaa;
         }
+        
+        /* FORM COMMENTI STILI AGGIUNTIVI */
+        .comment-form-container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: #2D3047;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 2px solid #4ECDC4;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #3a3d5d;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        .comment-textarea:focus {
+            border-color: #4ECDC4;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+        }
+        
+        .submit-button {
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .confirmation-message {
+            display: none;
+            max-width: 640px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(78, 205, 196, 0.2);
+            border-radius: 10px;
+            border-left: 5px solid #4ECDC4;
+            text-align: center;
+        }
+        
+        .privacy-notice {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 209, 102, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #c0c0ff;
+        }
     </style>
 </head>
 <body>
@@ -357,23 +426,88 @@
             </div>
         </section>
         
-        <!-- SEZIONE COMMENTI ANONIMI -->
+        <!-- SEZIONE COMMENTI ANONIMI - FORM COMPLETAMENTE ANONIMO -->
         <section class="comments-section">
             <h2 class="section-title"><i class="fas fa-comments"></i> COMMENTI ANONIMI</h2>
             <p style="text-align: center; color: #c0c0ff; margin-bottom: 25px; font-size: 1.1rem;">
-                <i class="fas fa-user-secret"></i> I tuoi commenti sono completamente anonimi e visibili solo all'amministratore.
+                <i class="fas fa-user-secret"></i> Tutti i commenti sono completamente anonimi. Nessun dato personale viene raccolto.
             </p>
             
-            <!-- GOOGLE FORM EMBED -->
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdjoOGYOvur-lKibrs6gHTklV275BMYvo7BR82axc1ybUiN2A/viewform?embedded=true" 
-                    width="100%" 
-                    height="537" 
-                    frameborder="0" 
-                    marginheight="0" 
-                    marginwidth="0"
-                    style="border-radius: 10px; max-width: 640px; display: block; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-                Caricamento…
-            </iframe>
+            <!-- FORM ANONIMO CON FORMSUBMIT -->
+            <div class="comment-form-container">
+                <form action="https://formsubmit.co/rguzzi75@gmail.com" method="POST" id="comment-form">
+                    <!-- Campo nascosto per il soggetto -->
+                    <input type="hidden" name="_subject" value="Nuovo commento anonimo - Giochi Matematici">
+                    
+                    <!-- Disabilita captcha -->
+                    <input type="hidden" name="_captcha" value="false">
+                    
+                    <!-- Reindirizzamento dopo invio -->
+                    <input type="hidden" name="_next" value="https://rguzzi75-dotcom.github.io/lezioni-PNRR/">
+                    
+                    <!-- Campo commento -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="
+                            display: block;
+                            color: #FFD166;
+                            font-weight: bold;
+                            margin-bottom: 10px;
+                            font-size: 1.1rem;
+                        ">
+                            <i class="fas fa-edit"></i> Scrivi il tuo commento: *
+                        </label>
+                        <textarea name="message" 
+                                  class="comment-textarea"
+                                  rows="6"
+                                  placeholder="Scrivi qui il tuo commento, suggerimento o segnalazione bug..."
+                                  required></textarea>
+                    </div>
+                    
+                    <!-- Pulsante invio -->
+                    <div style="text-align: center;">
+                        <button type="submit" class="submit-button">
+                            <i class="fas fa-paper-plane"></i> INVIA COMMENTO ANONIMO
+                        </button>
+                    </div>
+                    
+                    <!-- Note sulla privacy -->
+                    <div class="privacy-notice">
+                        <i class="fas fa-shield-alt"></i> 
+                        <strong>Privacy garantita:</strong> 
+                        Non viene memorizzato alcun dato personale. Il commento viene inviato in modo completamente anonimo.
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Messaggio di conferma (nascosto inizialmente) -->
+            <div id="confirmation-message" class="confirmation-message">
+                <h3 style="color: #FFD166; margin-bottom: 10px;">
+                    <i class="fas fa-check-circle"></i> Commento inviato con successo!
+                </h3>
+                <p style="color: #c0c0ff; margin: 0;">
+                    Grazie per il tuo contributo. Il commento è stato inviato in modo anonimo e sarà visibile solo all'amministratore.
+                </p>
+            </div>
+            
+            <!-- Istruzioni -->
+            <div style="
+                max-width: 640px;
+                margin: 20px auto 0 auto;
+                background: rgba(255, 209, 102, 0.1);
+                border-radius: 8px;
+                padding: 15px;
+                border-left: 4px solid #FFD166;
+            ">
+                <h4 style="color: #FFD166; margin-bottom: 10px; font-size: 1.1rem;">
+                    <i class="fas fa-graduation-cap"></i> Come inviare un commento:
+                </h4>
+                <ol style="color: #c0c0ff; margin: 0; padding-left: 20px; font-size: 0.95rem;">
+                    <li>Scrivi il tuo commento nella casella di testo</li>
+                    <li>Clicca il pulsante <strong>"INVIA COMMENTO ANONIMO"</strong></li>
+                    <li>Non è necessario accedere a nessun account</li>
+                    <li>Il commento sarà visibile solo all'amministratore</li>
+                </ol>
+            </div>
         </section>
         
         <!-- SEZIONE AMMINISTRATORE (NASCOSTA - VISIBILE SOLO CON PASSWORD) -->
@@ -391,10 +525,10 @@
                 
                 <div class="stat-box">
                     <h3 style="color: #4ECDC4;"><i class="fas fa-comment-dots"></i> COMMENTI RICEVUTI</h3>
-                    <p style="font-size: 2.5rem; color: #FFD166; margin: 10px 0;" id="comment-count">0</p>
+                    <p style="font-size: 2.5rem; color: #FFD166; margin: 10px 0;" id="comment-count">Email</p>
                     <p style="color: #aaa; font-size: 0.9rem;">
-                        <a href="https://docs.google.com/spreadsheets/" target="_blank" style="color: #4ECDC4;">
-                            <i class="fas fa-external-link-alt"></i> Vedi tutti i commenti
+                        <a href="mailto:rguzzi75@gmail.com" style="color: #4ECDC4;">
+                            <i class="fas fa-envelope"></i> Controlla la tua email
                         </a>
                     </p>
                 </div>
@@ -556,11 +690,6 @@
                     lastVisitDate.toLocaleDateString('it-IT') + ' ' + 
                     lastVisitDate.toLocaleTimeString('it-IT');
             }
-            
-            // Puoi aggiungere qui il conteggio dei commenti dal Google Sheet
-            // Per ora mettiamo un valore fittizio
-            document.getElementById('comment-count').textContent = 
-                Math.floor(visitCount / 10); // Simula commenti (1 ogni 10 visite)
         }
         
         // Resetta le statistiche
@@ -575,10 +704,41 @@
         }
         
         // ===========================================
-        // INIZIALIZZAZIONE AL CARICAMENTO DELLA PAGINA
+        // FUNZIONI PER IL FORM COMMENTI
         // ===========================================
         
+        // Gestione dell'invio del form commenti
         document.addEventListener('DOMContentLoaded', function() {
+            const commentForm = document.getElementById('comment-form');
+            const confirmationMessage = document.getElementById('confirmation-message');
+            
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    // Previeni il comportamento predefinito
+                    e.preventDefault();
+                    
+                    // Mostra il messaggio di conferma
+                    confirmationMessage.style.display = 'block';
+                    
+                    // Scrolla fino al messaggio di conferma
+                    confirmationMessage.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Invia il form dopo 1.5 secondi (per far vedere il messaggio)
+                    setTimeout(() => {
+                        this.submit();
+                    }, 1500);
+                    
+                    // Resetta il form dopo 5 secondi
+                    setTimeout(() => {
+                        this.reset();
+                        confirmationMessage.style.display = 'none';
+                    }, 5000);
+                    
+                    // Log per debugging
+                    console.log('Commento anonimo inviato');
+                });
+            }
+            
             // Aggiorna il contatore visite
             updateVisitCounter();
             
@@ -595,17 +755,35 @@
                     this.style.transition = 'all 0.2s ease';
                 });
             });
+            
+            // Effetto per il textarea del commento
+            const commentTextarea = document.querySelector('.comment-textarea');
+            if (commentTextarea) {
+                commentTextarea.addEventListener('focus', function() {
+                    this.style.borderColor = '#4ECDC4';
+                    this.style.background = 'rgba(255,255,255,0.1)';
+                });
+                
+                commentTextarea.addEventListener('blur', function() {
+                    this.style.borderColor = '#3a3d5d';
+                    this.style.background = 'rgba(255,255,255,0.05)';
+                });
+            }
+            
+            // Effetto per il pulsante di invio
+            const submitButton = document.querySelector('.submit-button');
+            if (submitButton) {
+                submitButton.addEventListener('mouseover', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+                });
+                
+                submitButton.addEventListener('mouseout', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+                });
+            }
         });
-        
-        // ===========================================
-        // GOOGLE ANALYTICS (se vuoi aggiungerlo in futuro)
-        // ===========================================
-        /*
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'TUO-ID-GA');
-        */
     </script>
 </body>
 </html>

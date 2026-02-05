@@ -260,16 +260,17 @@
             .section-title { font-size: 1.6rem; }
         }
         
-        /* PASSWORD INPUT */
+        /* PASSWORD INPUT - MODIFICATO: nascosto di default */
         #admin-password-input {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            background: rgba(45, 48, 71, 0.9);
+            background: rgba(45, 48, 71, 0.95);
             padding: 10px;
             border-radius: 8px;
             border: 1px solid var(--accent);
+            display: none; /* NASCOSTO DI DEFAULT */
         }
         
         #admin-password {
@@ -430,7 +431,7 @@
         <section class="comments-section">
             <h2 class="section-title"><i class="fas fa-comments"></i>COMMENTI</h2>
             <p style="text-align: center; color: #c0c0ff; margin-bottom: 25px; font-size: 1.1rem;">
-                <i class="fas fa-user-secret"></i> .
+                <i class="fas fa-user-secret"></i> I commenti sono completamente anonimi e visibili solo all'amministratore
             </p>
             
             <!-- FORM CON FORMSUBMIT -->
@@ -454,7 +455,7 @@
                             margin-bottom: 10px;
                             font-size: 1.1rem;
                         ">
-                            <i class="fas fa-edit"></i>:
+                            <i class="fas fa-edit"></i> Scrivi il tuo commento:
                         </label>
                         <textarea name="message" 
                                   class="comment-textarea"
@@ -466,7 +467,7 @@
                     <!-- Pulsante invio -->
                     <div style="text-align: center;">
                         <button type="submit" class="submit-button">
-                            <i class="fas fa-paper-plane"></i> INVIA
+                            <i class="fas fa-paper-plane"></i> INVIA COMMENTO
                         </button>
                     </div>
                     
@@ -503,7 +504,7 @@
                 </h4>
                 <ol style="color: #c0c0ff; margin: 0; padding-left: 20px; font-size: 0.95rem;">
                     <li>Scrivi il tuo commento nella casella di testo</li>
-                    <li>Clicca il pulsante <strong>"INVIA"</strong></li>
+                    <li>Clicca il pulsante <strong>"INVIA COMMENTO"</strong></li>
                     <li>Non è necessario accedere a nessun account</li>
                     <li>Il commento sarà visibile solo all'amministratore</li>
                 </ol>
@@ -569,23 +570,35 @@
             </div>
         </div>
         
-        <!-- FOOTER CON INFO AGGIUNTIVE -->
+        <!-- FOOTER CON INFO AGGIUNTIVE - MODIFICATO -->
         <footer>
             <p><i class="fas fa-laptop-code"></i> <strong>GiochiMatematici.vercel.app</strong> - Piattaforma educativa per la scuola primaria © RG 2026</p>
             <div class="footer-links">
-                <a href="javascript:void(0)" onclick="showAdminSection()">
-                    <i class="fas fa-chart-bar"></i> Statistiche
+                <a href="javascript:void(0)" onclick="togglePasswordField()">
+                    <i class="fas fa-chart-bar"></i> Statistiche Admin
                 </a>
             </div>
         </footer>
     </div>
 
-    <!-- PASSWORD INPUT (in basso a destra) -->
+    <!-- PASSWORD INPUT (in basso a destra) - MODIFICATO: nascondi di default -->
     <div id="admin-password-input">
         <input type="password" 
                id="admin-password" 
                placeholder="Password admin"
                onkeypress="if(event.key === 'Enter') checkAdminPassword()">
+        <button onclick="document.getElementById('admin-password-input').style.display='none'" 
+                style="
+                    margin-left: 5px; 
+                    background: #FF6B6B; 
+                    color: white; 
+                    border: none; 
+                    border-radius: 3px; 
+                    padding: 5px 10px; 
+                    cursor: pointer;
+                ">
+            X
+        </button>
     </div>
 
     <script>
@@ -634,6 +647,19 @@
         // Password di accesso (cambiarla se necessario)
         const ADMIN_PASSWORD = "O_Mpq_&9473_!";
         
+        // ===========================================
+        // FUNZIONE PER MOSTRARE/NASCONDERE CAMPO PASSWORD
+        // ===========================================
+        function togglePasswordField() {
+            const field = document.getElementById('admin-password-input');
+            if (field.style.display === 'none' || field.style.display === '') {
+                field.style.display = 'block';
+                document.getElementById('admin-password').focus();
+            } else {
+                field.style.display = 'none';
+            }
+        }
+        
         // Controlla la password
         function checkAdminPassword() {
             const passwordInput = document.getElementById('admin-password');
@@ -664,16 +690,15 @@
             }
         }
         
-        // Mostra l'area amministratore (richiede password)
+        // Funzione mostrata nel footer (ora usa togglePasswordField)
         function showAdminSection() {
-            document.getElementById('admin-password-input').style.display = 'block';
-            document.getElementById('admin-password').focus();
+            togglePasswordField();
         }
         
         // Nasconde l'area amministratore
         function hideAdminSection() {
             document.getElementById('admin-section').style.display = 'none';
-            document.getElementById('admin-password-input').style.display = 'block';
+            // Non mostrare il campo password qui
             sessionStorage.removeItem('adminAuthenticated');
         }
         
@@ -723,16 +748,16 @@
                     // Scrolla fino al messaggio di conferma
                     confirmationMessage.scrollIntoView({ behavior: 'smooth' });
                     
-                    // Invia il form dopo 5 secondi (per far vedere il messaggio)
+                    // Invia il form dopo 3 secondi
                     setTimeout(() => {
                         this.submit();
-                    }, 8000);
+                    }, 3000);
                     
-                    // Resetta il form dopo 8 secondi
+                    // Resetta il form dopo 15 secondi
                     setTimeout(() => {
                         this.reset();
                         confirmationMessage.style.display = 'none';
-                    }, 10000);
+                    }, 15000);
                     
                     // Log per debugging
                     console.log('Commento anonimo inviato');

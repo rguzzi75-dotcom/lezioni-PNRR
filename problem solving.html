@@ -1,0 +1,3928 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tabelle e Grafici - Quinta Primaria</title>
+    <style>
+        /* STILI COMPLETI – OTTIMIZZATI PER VERTICALE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #1a1a2e, #16213e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+            color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        .game-container {
+            background: linear-gradient(145deg, #2d3047, #1f2235);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            border: 2px solid #3a3f5c;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            max-height: 98vh;
+            overflow-y: auto;
+        }
+        
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b00, #ffa500, #ff6b00);
+            z-index: 1;
+        }
+        
+        .game-header {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #ffa500;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, #ff6b00, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            padding: 0 5px;
+        }
+        
+        .tipo-domanda-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0 10px 0;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .tipo-domanda-btn {
+            padding: 8px 16px;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            background: rgba(74, 144, 226, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: bold;
+            min-width: 100px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tipo-domanda-btn:hover {
+            background: rgba(74, 144, 226, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .tipo-domanda-btn.attiva {
+            background: #4a90e2;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 12px rgba(74, 144, 226, 0.5);
+            border: 2px solid #5aa0f0;
+        }
+        
+        .cruscotto-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 8px;
+            padding: 6px;
+            margin: 6px 0;
+            border: 2px solid #3a3f5c;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5),
+                        0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+        
+        .cruscotto-container::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            border-radius: 5px;
+            pointer-events: none;
+        }
+        
+        .indicatore-cruscotto {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            padding: 0 5px;
+        }
+        
+        .display-container {
+            position: relative;
+            width: 80px;
+            height: 40px;
+            margin-bottom: 3px;
+            background: linear-gradient(145deg, #0a0e14, #05070a);
+            border-radius: 5px;
+            border: 2px solid #1a3b5d;
+            box-shadow: 
+                inset 0 0 8px rgba(0, 20, 40, 0.8),
+                0 3px 4px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(0, 100, 200, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .display-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.03) 0px,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .display-7segmenti {
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 
+                0 0 6px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.4);
+            letter-spacing: 0.6px;
+            position: relative;
+            z-index: 2;
+            transform: skew(-1deg);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .display-7segmenti.giallo {
+            color: #ffcc00;
+            text-shadow: 
+                0 0 6px rgba(255, 204, 0, 0.8),
+                0 0 10px rgba(255, 204, 0, 0.4);
+        }
+        
+        .display-7segmenti.verde {
+            color: #00ff00;
+            text-shadow: 
+                0 0 6px rgba(0, 255, 0, 0.8),
+                0 0 10px rgba(0, 255, 0, 0.4);
+        }
+        
+        .display-7segmenti.tempo {
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+        
+        .display-title {
+            margin-top: 3px;
+            font-size: 0.75rem;
+            color: #ffcc00;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(255, 204, 0, 0.5);
+            letter-spacing: 0.2px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+        }
+        
+        .istruzioni-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 0 5px;
+        }
+        
+        .istruzioni-btn {
+            padding: 7px 14px;
+            background: linear-gradient(145deg, #ffa500, #ff8c00);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            line-height: 1.2;
+            width: 100%;
+            max-width: 110px;
+        }
+        
+        .istruzioni-btn:hover {
+            background: linear-gradient(145deg, #ff8c00, #e67e00);
+            transform: translateY(-2px);
+        }
+        
+        /* Raggruppamento vite + errori */
+        .vite-errori-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0;
+            width: 100%;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .vite-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .vita {
+            width: 22px;
+            height: 22px;
+            background: #ff4757;
+            clip-path: polygon(50% 0%, 100% 35%, 82% 100%, 18% 100%, 0% 35%);
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+            transition: all 0.3s ease;
+        }
+        
+        .vita.persa {
+            background: #3a3f5c;
+            transform: scale(0.8);
+        }
+        
+        .errori-indicatore {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: #ffcc00;
+            font-weight: bold;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .pallino-errore {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3a3f5c;
+            border: 1px solid #ff4757;
+        }
+        
+        .pallino-errore.attivo {
+            background: #ff4757;
+            box-shadow: 0 0 5px rgba(255, 71, 87, 0.8);
+        }
+        
+        .sezione-gioco {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            position: relative;
+        }
+        
+        .area-domanda {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 33, 57, 0.8);
+            border: 2px solid #4a90e2;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 6px 0;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 800px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .testo-domanda {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffcc00;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            padding: 0 10px;
+        }
+        
+        .tabella-container, .grafico-container {
+            width: 90%;
+            max-width: 450px;
+            margin: 15px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 2px solid #4a90e2;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        
+        .tabella-visuale {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            font-size: 0.9rem;
+        }
+        
+        .tabella-visuale th {
+            background: rgba(74, 144, 226, 0.5);
+            color: white;
+            padding: 8px;
+            border: 1px solid #4a90e2;
+            text-align: center;
+        }
+        
+        .tabella-visuale td {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            padding: 8px;
+            border: 1px solid #4a90e2;
+            text-align: center;
+        }
+        
+        .grafico-visuale {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .grafico-barre {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 180px;
+            width: 100%;
+            padding: 10px;
+            border-bottom: 2px solid #4a90e2;
+            border-left: 2px solid #4a90e2;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .barra {
+            width: 30px;
+            background: linear-gradient(to top, #ff6b6b, #ffa500);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .valore-barra {
+            position: absolute;
+            top: -25px;
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .etichetta-barra {
+            position: absolute;
+            bottom: -25px;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .grafico-torta {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ff6b6b 0% 25%,
+                #4ecdc4 25% 50%,
+                #ffa500 50% 75%,
+                #9370db 75% 100%
+            );
+            margin: 15px auto;
+            position: relative;
+        }
+        
+        .grafico-torta::before {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: #2d3047;
+            border-radius: 50%;
+            top: 45px;
+            left: 45px;
+        }
+        
+        .legenda-grafico {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .elemento-legenda {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .colore-legenda {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        .grafico-linee {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border-bottom: 2px solid #4a90e2;
+            border-left: 2px solid #4a90e2;
+            margin-bottom: 40px;
+            box-sizing: border-box;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .punto-linea {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .linea-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .etichetta-linea {
+            position: absolute;
+            bottom: -35px;
+            color: white;
+            font-size: 0.8rem;
+            transform: translateX(-50%);
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .valore-linea {
+            position: absolute;
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transform: translateX(-50%) translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .asse-y {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #4a90e2;
+            font-size: 0.7rem;
+        }
+        
+        .opzioni-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+        
+        .opzione-btn {
+            padding: 12px 5px;
+            background: linear-gradient(145deg, #3a3f5c, #2d3047);
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .opzione-btn:hover {
+            background: linear-gradient(145deg, #4a4f6c, #3d4057);
+            transform: translateY(-3px);
+            border-color: #5aa0f0;
+        }
+        
+        .opzione-btn.selezionata {
+            background: linear-gradient(145deg, #28a745, #1e7e34);
+            border-color: #32cd32;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+        }
+        
+        .opzione-btn.errata {
+            background: linear-gradient(145deg, #dc3545, #c82333);
+            border-color: #ff4757;
+        }
+        
+        .opzione-btn.parzialmente-corretta {
+            background: linear-gradient(145deg, #ffc107, #ff9800);
+            border-color: #ffca28;
+        }
+        
+        .risposta-aperta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .risposta-input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .casella-risposta {
+            width: 80px;
+            height: 60px;
+            margin: 0 5px;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid #4a90e2;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+        
+        .casella-risposta:focus {
+            border-color: #ffa500;
+            box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .casella-risposta.corretta {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.2);
+        }
+        
+        .casella-risposta.errata {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.2);
+        }
+        
+        .messaggio-verifica {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px dashed #ffc107;
+            border-radius: 6px;
+            padding: 8px 10px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            color: white;
+            width: 90%;
+            max-width: 450px;
+            margin: 6px auto;
+            text-align: center;
+        }
+        
+        .messaggio-verifica.mostra {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .messaggio-corretto {
+            background: rgba(40, 167, 69, 0.3);
+            border-color: #28a745;
+            color: #90ee90;
+        }
+        
+        .messaggio-errato {
+            background: rgba(220, 53, 69, 0.3);
+            border-color: #dc3545;
+            color: #ff6b6b;
+        }
+        
+        .messaggio-parziale {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #ffc107;
+            color: #ffd166;
+        }
+        
+        .messaggio-info {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #ffc107;
+            color: #ffd166;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .messaggio-info:hover {
+            background: rgba(255, 193, 7, 0.4);
+        }
+        
+        .messaggio-game-over {
+            background: rgba(108, 117, 125, 0.3);
+            border-color: #495057;
+            color: white;
+            font-size: 0.8rem;
+            padding: 10px;
+        }
+        
+        .messaggio-wow {
+            background: linear-gradient(145deg, #ff0080, #ff00ff);
+            border: 2px solid #ff00ff;
+            color: #ffffff;
+            animation: rainbow 2s infinite;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .messaggio-ahi {
+            background: linear-gradient(145deg, #ff0000, #ff4500);
+            border: 2px solid #ff0000;
+            color: #ffffff;
+            animation: shake 0.5s ease-in-out;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        
+        @keyframes rainbow {
+            0%, 100% { 
+                background: linear-gradient(145deg, #ff0080, #ff00ff);
+                box-shadow: 0 0 12px rgba(255, 0, 255, 0.8);
+            }
+            25% { 
+                background: linear-gradient(145deg, #00ffff, #0080ff);
+                box-shadow: 0 0 12px rgba(0, 255, 255, 0.8);
+            }
+            50% { 
+                background: linear-gradient(145deg, #00ff80, #00ff00);
+                box-shadow: 0 0 12px rgba(0, 255, 0, 0.8);
+            }
+            75% { 
+                background: linear-gradient(145deg, #ffff00, #ff8000);
+                box-shadow: 0 0 12px rgba(255, 255, 0, 0.8);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .controlli {
+            display: none;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+            animation: fadeIn 0.5s ease 0.3s both;
+        }
+        
+        .bottone {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(145deg, #4a90e2, #3a7bd5);
+            color: white;
+            transition: all 0.2s;
+            min-width: 90px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            font-size: 0.85rem;
+            line-height: 1.2;
+            flex: 1;
+            max-width: 140px;
+        }
+        
+        .bottone:hover {
+            background: linear-gradient(145deg, #3a7bd5, #2a6bc5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 7px rgba(0, 0, 0, 0.4);
+        }
+        
+        .bottone-verifica {
+            background: linear-gradient(145deg, #28a745, #1e7e34);
+        }
+        
+        .bottone-verifica:hover {
+            background: linear-gradient(145deg, #1e7e34, #156d2b);
+        }
+        
+        .bottone-aiuto {
+            background: linear-gradient(145deg, #ffa500, #ff8c00);
+        }
+        
+        .bottone-aiuto:hover {
+            background: linear-gradient(145deg, #ff8c00, #e67e00);
+        }
+        
+        .bottone-nuova {
+            background: linear-gradient(145deg, #9370db, #7b5fcf);
+        }
+        
+        .bottone-nuova:hover {
+            background: linear-gradient(145deg, #7b5fcf, #6a4fcb);
+        }
+        
+        .tastiera-container {
+            display: none;
+            background: rgba(30, 33, 57, 0.8);
+            border-radius: 6px;
+            padding: 8px;
+            border: 2px solid #4a90e2;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+            margin-top: 8px;
+            animation: fadeIn 0.5s ease 0.6s both;
+        }
+        
+        .tastiera-numerica {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .tasto-numero {
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #3a3f5c, #2d3047);
+            cursor: pointer;
+            color: #ffffff;
+            transition: all 0.2s;
+            flex: 0 0 auto;
+        }
+        
+        .tasto-numero:hover {
+            background: linear-gradient(145deg, #4a4f6c, #3d4057);
+            transform: translateY(-2px);
+        }
+        
+        .tasto-cancella {
+            background: linear-gradient(145deg, #ff4757, #ff3742);
+            color: white;
+            border-color: #dc3545;
+            font-size: 0.9rem;
+            width: 60px;
+        }
+        
+        .tasto-cancella:hover {
+            background: linear-gradient(145deg, #ff3742, #ff2732);
+        }
+        
+        .risposte-consecutive, .aiuti-utilizzati {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 0.65rem;
+            color: #a0a0c0;
+            font-weight: bold;
+        }
+        
+        .cuore-consecutivo {
+            color: #ff4757;
+            font-size: 0.8rem;
+        }
+        
+        .icona-aiuto {
+            color: #ffa500;
+            font-size: 0.8rem;
+        }
+        
+        .messaggio-avvio {
+            background: linear-gradient(145deg, #4a90e2, #3a7bd5);
+            border: 3px solid #ffa500;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px auto;
+            max-width: 450px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            animation: pulse-glow 2s infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                            0 0 0px rgba(255, 165, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                            0 0 20px rgba(255, 165, 0, 0.8);
+            }
+        }
+        
+        .messaggio-avvio:hover {
+            transform: scale(1.03);
+            background: linear-gradient(145deg, #3a7bd5, #2a6bc5);
+        }
+        
+        .messaggio-avvio h2 {
+            color: #ffcc00;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .messaggio-avvio p {
+            color: white;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            text-align: center;
+        }
+        
+        .messaggio-avvio .istruzione-principale {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+        
+        .messaggio-avvio .istruzione-gioco {
+            font-size: 0.9rem;
+            color: #ffd166;
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px dashed #ffc107;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            width: 90%;
+            max-width: 350px;
+        }
+        
+        .icona-play {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #2d3047, #1f2235);
+            border-radius: 6px;
+            padding: 10px;
+            width: 95%;
+            max-width: 450px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 2px solid #4a90e2;
+            position: relative;
+            color: white;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 5px;
+        }
+        
+        .modal-title {
+            color: #ffa500;
+            font-size: 0.9rem;
+        }
+        
+        .close-modal {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-section {
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        
+        .modal-section h3 {
+            color: #4a90e2;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            border-left: 3px solid #ffa500;
+            padding-left: 4px;
+        }
+        
+        .modal-section p {
+            margin-bottom: 4px;
+            line-height: 1.2;
+            font-size: 0.7rem;
+            color: #d0d0e0;
+        }
+        
+        .modal-list {
+            list-style-type: decimal;
+            padding-left: 12px;
+            margin: 5px 0;
+            color: #d0d0e0;
+        }
+        
+        .modal-list li {
+            margin-bottom: 4px;
+            line-height: 1.2;
+            font-size: 0.7rem;
+        }
+        
+        .punteggio-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .punteggio-item {
+            background: rgba(74, 144, 226, 0.2);
+            padding: 4px;
+            border-radius: 4px;
+            border: 2px solid #4a90e2;
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .punteggio-item .value {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 0.75rem;
+        }
+        
+        .multi-selezione-info {
+            font-size: 0.9rem;
+            color: #ffcc00;
+            margin: 10px 0;
+            padding: 5px 10px;
+            background: rgba(255, 204, 0, 0.1);
+            border-radius: 5px;
+            border: 1px dashed #ffcc00;
+        }
+        
+        .messaggio-suggerimento {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            border: 2px solid #3498db;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+            animation: pulse-suggerimento 2s infinite;
+        }
+        
+        @keyframes pulse-suggerimento {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(52, 152, 219, 0.8);
+            }
+        }
+        
+        .bottone-cambia-sezione {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            border: 2px solid #2980b9;
+            margin-top: 8px;
+        }
+        
+        .bottone-cambia-sezione:hover {
+            background: linear-gradient(145deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+        }
+        
+        .bottone-prossima {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            border: 2px solid #2980b9;
+        }
+        
+        .bottone-prossima:hover {
+            background: linear-gradient(145deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+        }
+        
+        /* ========== MEDIA QUERY – OTTIMIZZAZIONE VERTICALE ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 2px;
+                align-items: flex-start;
+            }
+            
+            .game-container {
+                padding: 6px;
+                margin: 2px auto;
+                border-radius: 10px;
+                max-height: 96vh;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+                margin-bottom: 6px;
+            }
+            
+            .tipo-domanda-container {
+                margin: 6px 0 8px 0;
+                gap: 8px;
+            }
+            
+            .tipo-domanda-btn {
+                padding: 7px 14px;
+                font-size: 0.8rem;
+                min-width: 85px;
+            }
+            
+            .cruscotto-container {
+                padding: 5px;
+                margin: 4px 0;
+            }
+            
+            .display-container {
+                width: 75px;
+                height: 36px;
+            }
+            
+            .display-7segmenti {
+                font-size: 1.3rem;
+            }
+            
+            .display-7segmenti.tempo {
+                font-size: 0.9rem;
+            }
+            
+            .display-title {
+                font-size: 0.7rem;
+                padding: 2px 5px;
+            }
+            
+            .istruzioni-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                max-width: 100px;
+            }
+            
+            .area-domanda {
+                padding: 12px;
+                margin: 4px 0;
+            }
+            
+            .testo-domanda {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+            }
+            
+            .opzioni-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .opzione-btn {
+                padding: 10px;
+                font-size: 1rem;
+            }
+            
+            .vita {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .errori-indicatore {
+                font-size: 0.65rem;
+                gap: 4px;
+            }
+            
+            .pallino-errore {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .controlli {
+                gap: 6px;
+                margin: 6px 0;
+            }
+            
+            .bottone {
+                padding: 7px 10px;
+                min-width: 80px;
+                font-size: 0.8rem;
+                max-width: 120px;
+            }
+            
+            .messaggio-avvio {
+                padding: 12px;
+                margin: 8px auto;
+            }
+            
+            .messaggio-avvio h2 {
+                font-size: 1.2rem;
+            }
+            
+            .messaggio-avvio p {
+                font-size: 0.85rem;
+            }
+            
+            .tastiera-container {
+                padding: 6px;
+            }
+            
+            .tasto-numero {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .tasto-cancella {
+                width: 70px;
+                font-size: 0.9rem;
+                height: 45px;
+            }
+            
+            .casella-risposta {
+                width: 70px;
+                height: 55px;
+                font-size: 1.8rem;
+            }
+            
+            .messaggio-verifica {
+                padding: 6px 8px;
+                min-height: 35px;
+                font-size: 0.75rem;
+                margin: 4px auto;
+            }
+            
+            .grafico-linee {
+                height: 180px;
+                margin-bottom: 35px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 5px;
+                max-height: 94vh;
+            }
+            
+            h1 {
+                font-size: 1.1rem;
+                margin-bottom: 4px;
+            }
+            
+            .tipo-domanda-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+                margin: 4px 0 6px 0;
+            }
+            
+            .tipo-domanda-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                min-width: 0;
+                width: 100%;
+            }
+            
+            .cruscotto-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                align-items: center;
+                gap: 4px;
+                padding: 4px;
+            }
+            
+            .indicatore-cruscotto, .istruzioni-container {
+                flex: none;
+                width: 100%;
+                padding: 0;
+            }
+            
+            .display-container {
+                width: 70px;
+                height: 34px;
+            }
+            
+            .display-7segmenti {
+                font-size: 1.2rem;
+            }
+            
+            .display-7segmenti.tempo {
+                font-size: 0.85rem;
+            }
+            
+            .display-title {
+                font-size: 0.65rem;
+                padding: 2px 4px;
+            }
+            
+            .istruzioni-btn {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+                max-width: 90px;
+            }
+            
+            .vite-errori-row {
+                flex-wrap: nowrap;
+                gap: 8px;
+            }
+            
+            .vite-container {
+                gap: 6px;
+                flex-shrink: 0;
+            }
+            
+            .vita {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .errori-indicatore {
+                justify-content: flex-end;
+                font-size: 0.6rem;
+                gap: 3px;
+                min-width: 0;
+            }
+            
+            .errori-indicatore span:last-child {
+                display: none;
+            }
+            
+            .opzioni-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            
+            .opzione-btn {
+                padding: 8px 4px;
+                font-size: 0.95rem;
+            }
+            
+            .controlli {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            
+            .bottone {
+                width: 100%;
+                max-width: none;
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .testo-domanda {
+                font-size: 1.1rem;
+            }
+            
+            .messaggio-avvio {
+                padding: 10px;
+            }
+            
+            .messaggio-avvio h2 {
+                font-size: 1.1rem;
+            }
+            
+            .messaggio-avvio p {
+                font-size: 0.8rem;
+            }
+            
+            .icona-play {
+                font-size: 1.8rem;
+            }
+            
+            .tasto-numero {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+            }
+            
+            .tasto-cancella {
+                width: 75px;
+                height: 48px;
+            }
+            
+            .casella-risposta {
+                width: 65px;
+                height: 50px;
+                font-size: 1.6rem;
+            }
+            
+            .messaggio-verifica {
+                font-size: 0.7rem;
+                padding: 5px 6px;
+                min-height: 30px;
+            }
+            
+            .modal-content {
+                padding: 8px;
+            }
+            
+            .grafico-linee {
+                height: 160px;
+                margin-bottom: 30px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .tipo-domanda-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 4px;
+            }
+            
+            .tipo-domanda-btn {
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+            
+            .cruscotto-container {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 2px;
+            }
+            
+            .display-container {
+                width: 65px;
+                height: 32px;
+            }
+            
+            .display-7segmenti {
+                font-size: 1.1rem;
+            }
+            
+            .vite-errori-row {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .errori-indicatore span:last-child {
+                display: none;
+            }
+            
+            .opzioni-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 4px;
+            }
+            
+            .opzione-btn {
+                padding: 6px 2px;
+                font-size: 0.85rem;
+            }
+            
+            .controlli {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 4px;
+            }
+            
+            .bottone {
+                padding: 6px 4px;
+                font-size: 0.75rem;
+            }
+            
+            .grafico-linee {
+                height: 150px;
+                margin-bottom: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>TABELLE E GRAFICI per la Scuola Primaria</h1>
+            
+            <div class="tipo-domanda-container">
+                <button class="tipo-domanda-btn attiva" id="tipo-tabelle">
+                    📊 Tabelle
+                </button>
+                <button class="tipo-domanda-btn" id="tipo-grafici">
+                    📈 Grafici
+                </button>
+                <button class="tipo-domanda-btn" id="tipo-conversione">
+                    🔄 Conversione
+                </button>
+                <button class="tipo-domanda-btn" id="tipo-interpretazione">
+                    🧠 Interpretazione
+                </button>
+            </div>
+            
+            <div class="cruscotto-container">
+                <div class="indicatore-cruscotto">
+                    <div class="display-container">
+                        <div class="display-7segmenti giallo" id="punteggio-display">0</div>
+                    </div>
+                    <div class="display-title">PUNTEGGIO</div>
+                </div>
+                
+                <div class="istruzioni-container">
+                    <button class="istruzioni-btn" id="istruzioni-btn" title="Istruzioni del gioco">
+                        📚 Istruzioni
+                    </button>
+                </div>
+                
+                <div class="indicatore-cruscotto">
+                    <div class="display-container">
+                        <div class="display-7segmenti verde tempo" id="tempo-display">10:00</div>
+                    </div>
+                    <div class="display-title">TEMPO</div>
+                </div>
+            </div>
+            
+            <!-- RIGA UNICA PER VITE ED ERRORI -->
+            <div class="vite-errori-row">
+                <div class="vite-container" id="vite-container"></div>
+                
+                <div class="errori-indicatore" id="errori-indicatore">
+                    <span>Errori consecutivi:</span>
+                    <div class="pallino-errore" id="errore-1"></div>
+                    <div class="pallino-errore" id="errore-2"></div>
+                    <div class="pallino-errore" id="errore-3"></div>
+                    <span>(perdi 1 vita al 3° errore)</span>
+                </div>
+            </div>
+            
+            <div class="risposte-consecutive" id="risposte-consecutive">
+                <span>Risposte consecutive corrette:</span>
+                <span id="contatore-consecutive">0</span>
+                <span class="cuore-consecutivo">❤️</span>
+            </div>
+            
+            <div class="aiuti-utilizzati" id="aiuti-utilizzati">
+                <span>Aiuti utilizzati in questa domanda:</span>
+                <span id="contatore-aiuti">0</span>
+                <span class="icona-aiuto">🧠</span>
+                <span>(costo: -2 punti ciascuno)</span>
+            </div>
+        </div>
+        
+        <div class="sezione-gioco">
+            <div class="messaggio-avvio" id="messaggio-avvio">
+                <div class="icona-play">📊</div>
+                <h2>Pronti per il mondo di tabelle e grafici?</h2>
+                <p>Impara a leggere, interpretare e costruire tabelle e grafici!</p>
+                <div class="istruzione-gioco">
+                    Alcune domande hanno più risposte corrette!<br>
+                    Clicca su tutte le opzioni che ritieni corrette.
+                </div>
+                <p class="istruzione-principale">Clicca qui per iniziare a giocare!</p>
+            </div>
+            
+            <div class="area-domanda" id="area-domanda"></div>
+            
+            <div class="messaggio-verifica" id="messaggio-verifica"></div>
+        </div>
+        
+        <div class="controlli" id="controlli-gioco">
+            <button class="bottone bottone-aiuto" id="bottone-aiuto">
+                🧠 Aiuto (-2)
+            </button>
+            <button class="bottone bottone-verifica" id="bottone-verifica">
+                ✓ Verifica
+            </button>
+            <button class="bottone bottone-prossima" id="bottone-prossima" style="display: none;">
+                ⏭️ Prossima
+            </button>
+            <button class="bottone bottone-nuova" id="bottone-nuova">
+                🔄 Nuova Partita
+            </button>
+        </div>
+        
+        <div class="tastiera-container" id="tastiera-container">
+            <div class="tastiera-numerica" id="tastiera-numerica"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    📚 Istruzioni del Gioco - Tabelle e Grafici INVALSI
+                </div>
+                <button class="close-modal" id="close-modal">✕</button>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🎯 Come Giocare</h3>
+                <p>Impara a lavorare con tabelle e grafici:</p>
+                <ol class="modal-list">
+                    <li>Scegli il tipo di domanda (Tabelle, Grafici, Conversione, Interpretazione)</li>
+                    <li>Leggi attentamente la domanda e osserva tabelle e grafici</li>
+                    <li>Per domande a scelta multipla: clicca sulla risposta corretta</li>
+                    <li>Per domande con più risposte: clicca su TUTTE le risposte corrette</li>
+                    <li>Per vero/falso: clicca su VERO o FALSO</li>
+                    <li>Per risposte aperte: scrivi il numero o la parola corretta</li>
+                    <li>Premi "Verifica" per controllare la risposta</li>
+                    <li>Dopo la verifica, premi "Prossima" per passare alla domanda successiva</li>
+                </ol>
+            </div>
+            
+            <div class="modal-section">
+                <h3>📊 Tipi di Domande</h3>
+                <p><strong>Tabelle:</strong> Lettura di dati da tabelle, calcolo di totali, medie, differenze</p>
+                <p><strong>Grafici:</strong> Lettura di dati da grafici a barre, lineari, a torta</p>
+                <p><strong>Conversione:</strong> Trasformazione di dati da tabella a grafico e viceversa</p>
+                <p><strong>Interpretazione:</strong> Comprensione e analisi di dati presentati in tabelle o grafici</p>
+                <p><strong>Vero/Falso:</strong> Affermazioni da valutare come vere o false</p>
+                <p><strong>Scelta Multipla:</strong> 4 opzioni, una sola corretta</p>
+                <p><strong>Scelta Multipla Multipla:</strong> 4 opzioni, più risposte corrette possibili</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>📈 Tipi di Grafici Studiati</h3>
+                <p><strong>Grafico a barre:</strong> Confronta quantità diverse con barre di altezze diverse</p>
+                <ul class="modal-list">
+                    <li>Asse verticale: valori numerici</li>
+                    <li>Asse orizzontale: categorie</li>
+                </ul>
+                <p><strong>Grafico a linee:</strong> Mostra cambiamenti nel tempo</p>
+                <ul class="modal-list">
+                    <li>Asse orizzontale: tempo (giorni, mesi, anos)</li>
+                    <li>Asse verticale: valori</li>
+                    <li>Punti collegati da linee</li>
+                </ul>
+                <p><strong>Grafico a torta:</strong> Mostra parti di un tutto</p>
+                <ul class="modal-list">
+                    <li>Ogni settore è una parte percentuale</li>
+                    <li>La somma di tutte le parti è 100%</li>
+                </ul>
+                <p><strong>Tabelle:</strong> Dati organizzati in righe e colonne</p>
+                <ul class="modal-list">
+                    <li>Righe: oggetti o categorie</li>
+                    <li>Colonne: caratteristiche o misure</li>
+                </ul>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🏆 Sistema dei Punteggi e Vite</h3>
+                <div class="punteggio-info">
+                    <div class="punteggio-item">
+                        <div>Risposta corretta:</div>
+                        <div class="value">+2 punti</div>
+                    </div>
+                    <div class="punteggio-item">
+                        <div>Aiuto utilizzato:</div>
+                        <div class="value">-2 punti ciascuno</div>
+                    </div>
+                    <div class="punteggio-item">
+                        <div>Domande con più risposte:</div>
+                        <div class="value">+3 punti se tutte corrette</div>
+                    </div>
+                    <div class="punteggio-item">
+                        <div>5 risposte corrette consecutive:</div>
+                        <div class="value">+1 vita</div>
+                    </div>
+                </div>
+                <p><strong>⚠️ Attenzione:</strong> Se usi troppi aiuti, potresti finire con 0 punti per quella domanda!</p>
+                <p><strong>✨ Bonus Vita:</strong> Ogni 5 risposte consecutive corrette, recuperi una vita (massimo 3 vite).</p>
+                <p><strong>🔄 Sistema Errori:</strong> Perdi una vita solo dopo 3 errori consecutivi. Ogni risposta corretta resetta il contatore errori.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>⏱️ Tempo</h3>
+                <p>Hai 10 minuti per rispondere a quante più domande possibili!</p>
+                <p>Il timer diventa rosso quando mancano meno di 60 secondi.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🎓 Obiettivo Didattico</h3>
+                <p>Questo gioco promuove il potenziamento delle competenze di base di matematica per la quinta classe della scuola primaria, sviluppando:</p>
+                <ul class="modal-list">
+                    <li>Lettura e interpretazione di tabelle e grafici</li>
+                    <li>Calcolo di totali, differenze e medie da dati</li>
+                    <li>Conversione tra tabelle e grafici</li>
+                    <li>Comprensione di grafici a barre, lineari e a torta</li>
+                    <li>Analisi critica di dati presentati visivamente</li>
+                    <li>Applicazione di concetti matematici a situazioni reali</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VARIABILI GLOBALI ====================
+        let punteggio = 0;
+        let vite = 3;
+        let tipoGioco = 'tabelle';
+        let verificaEseguita = false;
+        let gameOver = false;
+        let haSbagliatoQuestaDomanda = false;
+        
+        let operazioniCorretteConsecutive = 0;
+        let aiutiUtilizzatiDomandaCorrente = 0;
+        let rispostaCorrente = null;
+        let opzioniSelezionate = [];
+        let rispostaAperta = "";
+        
+        let tempoRimanente = 600;
+        let timerInterval;
+        let timerAttivo = false;
+        const TEMPO_TOTALE = 600;
+        
+        let timeoutBenvenuto = null;
+        let giocoIniziato = false;
+        
+        let erroriConsecutivi = 0;
+        
+        let domandeConsecutiveStessaSezione = 0;
+        let haMostratoSuggerimentoCambioSezione = false;
+        const LIMITE_DOMANDE_PRIMA_SUGGERIMENTO = 8;
+        
+        // ==================== TUTTE LE DOMANDE (80) ====================
+        const tutteLeDomande = {
+            tabelle: [
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "La tabella mostra i voti di matematica di 5 alunni. Chi ha preso il voto più alto?",
+                    tabella: {
+                        intestazioni: ["Alunno", "Voto"],
+                        righe: [
+                            ["Marco", "8"],
+                            ["Anna", "9"],
+                            ["Luca", "7"],
+                            ["Sofia", "10"],
+                            ["Giovanni", "6"]
+                        ]
+                    },
+                    opzioni: ["Marco", "Anna", "Sofia", "Giovanni"],
+                    risposta: 2,
+                    spiegazione: "Sofia ha preso 10, che è il voto più alto nella tabella.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanto vale il totale dei voti nella tabella? Scrivi il numero.",
+                    tabella: {
+                        intestazioni: ["Alunno", "Voto"],
+                        righe: [
+                            ["Marco", "8"],
+                            ["Anna", "9"],
+                            ["Luca", "7"],
+                            ["Sofia", "10"],
+                            ["Giovanni", "6"]
+                        ]
+                    },
+                    risposta: "40",
+                    spiegazione: "Totale = 8 + 9 + 7 + 10 + 6 = 40",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste affermazioni sulla tabella sono corrette? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Frutto", "Quantità venduta (kg)"],
+                        righe: [
+                            ["Mele", "25"],
+                            ["Pere", "18"],
+                            ["Banane", "32"],
+                            ["Arance", "15"]
+                        ]
+                    },
+                    opzioni: [
+                        "Le banane sono il frutto più venduto",
+                        "Le mele sono vendute più delle pere",
+                        "Le arance sono vendute più delle banane",
+                        "La differenza tra mele e pere è di 7 kg"
+                    ],
+                    risposte: [0, 1, 3],
+                    spiegazione: "Banane: 32 kg (più venduto); Mele: 25 kg > Pere: 18 kg; Differenza mele-pere: 25-18=7 kg; Arance: 15 kg < Banane: 32 kg.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "In una tabella, i dati sono organizzati in righe e colonne.",
+                    risposta: true,
+                    spiegazione: "Le tabelle organizzano i dati in righe (orizzontali) e colonne (verticali) per una lettura chiara.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Qual è la media dei voti nella tabella?",
+                    tabella: {
+                        intestazioni: ["Alunno", "Voto"],
+                        righe: [
+                            ["Marco", "8"],
+                            ["Anna", "9"],
+                            ["Luca", "7"],
+                            ["Sofia", "10"],
+                            ["Giovanni", "6"]
+                        ]
+                    },
+                    opzioni: ["7", "8", "9", "10"],
+                    risposta: 1,
+                    spiegazione: "Totale = 40, Numero alunni = 5, Media = 40 ÷ 5 = 8",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "La tabella mostra le temperature di una settimana. Qual è la temperatura più bassa?",
+                    tabella: {
+                        intestazioni: ["Giorno", "Temperatura (°C)"],
+                        righe: [
+                            ["Lunedì", "18"],
+                            ["Martedì", "20"],
+                            ["Mercoledì", "16"],
+                            ["Giovedì", "22"],
+                            ["Venerdì", "19"],
+                            ["Sabato", "21"],
+                            ["Domenica", "17"]
+                        ]
+                    },
+                    opzioni: ["Lunedì", "Mercoledì", "Venerdì", "Domenica"],
+                    risposta: 1,
+                    spiegazione: "Mercoledì ha 16°C, che è la temperatura più bassa.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti kg in totale di frutta sono stati venduti? Scrivi il numero.",
+                    tabella: {
+                        intestazioni: ["Frutto", "Quantità venduta (kg)"],
+                        righe: [
+                            ["Mele", "25"],
+                            ["Pere", "18"],
+                            ["Banane", "32"],
+                            ["Arance", "15"]
+                        ]
+                    },
+                    risposta: "90",
+                    spiegazione: "Totale = 25 + 18 + 32 + 15 = 90 kg",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste sono caratteristiche di una tabella? (Scegli tutte quelle corrette)",
+                    opzioni: [
+                        "Organizza dati in righe e colonne",
+                        "Mostra dati in modo visivo immediato",
+                        "Può avere un titolo",
+                        "Le intestazioni descrivono il contenuto delle colonne",
+                        "È sempre colorata"
+                    ],
+                    risposte: [0, 2, 3],
+                    spiegazione: "Le tabelle organizzano dati in righe/colonne, possono avere un titolo e intestazioni descrittive. Non sono sempre visivamente immediate come i grafici e non sono sempre colorate.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "In una tabella, la somma dei valori di una colonna si chiama totale.",
+                    risposta: true,
+                    spiegazione: "Il totale si calcola sommando tutti i valori numerici di una colonna.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Qual è la differenza tra il voto più alto e quello più basso?",
+                    tabella: {
+                        intestazioni: ["Alunno", "Voto"],
+                        righe: [
+                            ["Marco", "8"],
+                            ["Anna", "9"],
+                            ["Luca", "7"],
+                            ["Sofia", "10"],
+                            ["Giovanni", "6"]
+                        ]
+                    },
+                    opzioni: ["2", "3", "4", "5"],
+                    risposta: 2,
+                    spiegazione: "Voto più alto: 10, Voto più basso: 6, Differenza: 10 - 6 = 4",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "La tabella mostra i libri letti da 4 amici in un mese. Chi ha letto più libri?",
+                    tabella: {
+                        intestazioni: ["Nome", "Libri letti"],
+                        righe: [
+                            ["Paolo", "3"],
+                            ["Maria", "5"],
+                            ["Giorgio", "2"],
+                            ["Elena", "4"]
+                        ]
+                    },
+                    opzioni: ["Paolo", "Maria", "Giorgio", "Elena"],
+                    risposta: 1,
+                    spiegazione: "Maria ha letto 5 libri, che è il numero più alto.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti libri in totale sono stati letti dai 4 amici? Scrivi il numero.",
+                    tabella: {
+                        intestazioni: ["Nome", "Libri letti"],
+                        righe: [
+                            ["Paolo", "3"],
+                            ["Maria", "5"],
+                            ["Giorgio", "2"],
+                            ["Elena", "4"]
+                        ]
+                    },
+                    risposta: "14",
+                    spiegazione: "Totale = 3 + 5 + 2 + 4 = 14 libri",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste affermazioni sulla tabella delle temperature sono corrette? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Giorno", "Temperatura (°C)"],
+                        righe: [
+                            ["Lunedì", "18"],
+                            ["Martedì", "20"],
+                            ["Mercoledì", "16"],
+                            ["Giovedì", "22"],
+                            ["Venerdì", "19"]
+                        ]
+                    },
+                    opzioni: [
+                        "La temperatura più alta è giovedì",
+                        "La differenza tra la temperatura più alta e più bassa è 6°C",
+                        "La temperatura media è 19°C",
+                        "Martedì è più caldo di lunedì"
+                    ],
+                    risposte: [0, 1, 3],
+                    spiegazione: "Giovedì: 22°C (più alta); Differenza: 22-16=6°C; Media: (18+20+16+22+19)/5=19, non 19 esatto (19,2); Martedì 20°C > Lunedì 18°C.",
+                    difficolta: 3
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Una tabella può essere usata per confrontare dati di categorie diverse.",
+                    risposta: true,
+                    spiegazione: "Le tabelle sono utili per confrontare dati di diverse categorie organizzandoli in righe e colonne.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Qual è la temperatura media della settimana?",
+                    tabella: {
+                        intestazioni: ["Giorno", "Temperatura (°C)"],
+                        righe: [
+                            ["Lunedì", "18"],
+                            ["Martedì", "20"],
+                            ["Mercoledì", "16"],
+                            ["Giovedì", "22"],
+                            ["Venerdì", "19"],
+                            ["Sabato", "21"],
+                            ["Domenica", "17"]
+                        ]
+                    },
+                    opzioni: ["18°C", "19°C", "20°C", "21°C"],
+                    risposta: 1,
+                    spiegazione: "Totale = 18+20+16+22+19+21+17 = 133, Media = 133 ÷ 7 = 19°C",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "La tabella mostra i preferiti di una classe. Quale sport è il meno preferito?",
+                    tabella: {
+                        intestazioni: ["Sport", "Preferenze"],
+                        righe: [
+                            ["Calcio", "12"],
+                            ["Pallavolo", "8"],
+                            ["Basket", "6"],
+                            ["Tennis", "4"]
+                        ]
+                    },
+                    opzioni: ["Calcio", "Pallavolo", "Basket", "Tennis"],
+                    risposta: 3,
+                    spiegazione: "Tennis ha solo 4 preferenze, che è il numero più basso.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti alunni in totale hanno espresso una preferenza? Scrivi il numero.",
+                    tabella: {
+                        intestazioni: ["Sport", "Preferenze"],
+                        righe: [
+                            ["Calcio", "12"],
+                            ["Pallavolo", "8"],
+                            ["Basket", "6"],
+                            ["Tennis", "4"]
+                        ]
+                    },
+                    risposta: "30",
+                    spiegazione: "Totale = 12 + 8 + 6 + 4 = 30 alunni",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste operazioni si possono fare con i dati di una tabella? (Scegli tutte quelle corrette)",
+                    opzioni: [
+                        "Calcolare il totale di una colonna",
+                        "Trovare il valore massimo",
+                        "Trovare il valore minimo",
+                        "Calcolare la media",
+                        "Disegnare un'immagine"
+                    ],
+                    risposte: [0, 1, 2, 3],
+                    spiegazione: "Con i dati di una tabella si possono calcolare totali, massimi, minimi e medie. Disegnare un'immagine non è un'operazione matematica sui dati.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "In una tabella, le righe di solito rappresentano categorie diverse.",
+                    risposta: true,
+                    spiegazione: "Nelle tabelle, ogni riga tipicamente rappresenta una categoria, un oggetto o un individuo diverso.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Qual è la differenza tra lo sport più preferito e quello meno preferito?",
+                    tabella: {
+                        intestazioni: ["Sport", "Preferenze"],
+                        righe: [
+                            ["Calcio", "12"],
+                            ["Pallavolo", "8"],
+                            ["Basket", "6"],
+                            ["Tennis", "4"]
+                        ]
+                    },
+                    opzioni: ["6", "7", "8", "9"],
+                    risposta: 2,
+                    spiegazione: "Più preferito: Calcio (12), Meno preferito: Tennis (4), Differenza: 12 - 4 = 8",
+                    difficolta: 2
+                }
+            ],
+            grafici: [
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a barre mostra le vendite di gelati in una settimana. In quale giorno sono stati venduti più gelati?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Lunedì", valore: 35},
+                            {etichetta: "Martedì", valore: 40},
+                            {etichetta: "Mercoledì", valore: 55},
+                            {etichetta: "Giovedì", valore: 30},
+                            {etichetta: "Venerdì", valore: 60},
+                            {etichetta: "Sabato", valore: 75},
+                            {etichetta: "Domenica", valore: 80}
+                        ]
+                    },
+                    opzioni: ["Martedì", "Venerdì", "Sabato", "Domenica"],
+                    risposta: 3,
+                    spiegazione: "Domenica ha la barra più alta con 80 gelati venduti.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti gelati sono stati venduti in totale mercoledì e giovedì? Scrivi il numero.",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Lunedì", valore: 35},
+                            {etichetta: "Martedì", valore: 40},
+                            {etichetta: "Mercoledì", valore: 55},
+                            {etichetta: "Giovedì", valore: 30},
+                            {etichetta: "Venerdì", valore: 60},
+                            {etichetta: "Sabato", valore: 75},
+                            {etichetta: "Domenica", valore: 80}
+                        ]
+                    },
+                    risposta: "85",
+                    spiegazione: "Mercoledì: 55 + Giovedì: 30 = 85 gelati",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste affermazioni sul grafico a barre sono corrette? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Lunedì", valore: 35},
+                            {etichetta: "Martedì", valore: 40},
+                            {etichetta: "Mercoledì", valore: 55}
+                        ]
+                    },
+                    opzioni: [
+                        "Le barre possono essere verticali o orizzontali",
+                        "L'altezza della barra rappresenta il valore",
+                        "Le barre devono essere tutte dello stesso colore",
+                        "Serve per confrontare dati di categorie diverse"
+                    ],
+                    risposte: [0, 1, 3],
+                    spiegazione: "I grafici a barre possono essere verticali/orizzontali, l'altezza rappresenta il valore, e servono per confrontare categorie. Le barre possono avere colori diversi.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Un grafico a torta mostra come un intero è diviso in parti.",
+                    risposta: true,
+                    spiegazione: "Il grafico a torta (o diagramma circolare) mostra le parti percentuali di un intero.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a torta mostra le preferenze per i colori in una classe. Qual è il colore più preferito?",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "Rosso", valore: 30, colore: "#ff6b6b"},
+                            {etichetta: "Blu", valore: 25, colore: "#4a90e2"},
+                            {etichetta: "Verde", valore: 20, colore: "#4ecdc4"},
+                            {etichetta: "Giallo", valore: 25, colore: "#ffcc00"}
+                        ]
+                    },
+                    opzioni: ["Rosso", "Blu", "Verde", "Giallo"],
+                    risposta: 0,
+                    spiegazione: "Rosso ha la fetta più grande con il 30% delle preferenze.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a linee mostra la temperatura di una settimana. In quale giorno la temperatura era più bassa?",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "Lunedì", valore: 16},
+                            {etichetta: "Martedì", valore: 18},
+                            {etichetta: "Mercoledì", valore: 20},
+                            {etichetta: "Giovedì", valore: 22},
+                            {etichetta: "Venerdì", valore: 19}
+                        ]
+                    },
+                    opzioni: ["Lunedì", "Martedì", "Mercoledì", "Giovedì"],
+                    risposta: 0,
+                    spiegazione: "Lunedì ha il punto più basso con 16°C.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti gradi è aumentata la temperatura da mercoledì a giovedì? Scrivi il numero.",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "Lunedì", valore: 18},
+                            {etichetta: "Martedì", valore: 20},
+                            {etichetta: "Mercoledì", valore: 16},
+                            {etichetta: "Giovedì", valore: 22},
+                            {etichetta: "Venerdì", valore: 19}
+                        ]
+                    },
+                    risposta: "6",
+                    spiegazione: "Mercoledì: 16°C, Giovedì: 22°C, Aumento: 22 - 16 = 6°C",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di questi sono tipi di grafici? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Esempio", valore: 50}
+                        ]
+                    },
+                    opzioni: [
+                        "Grafico a barre",
+                        "Grafico a linee",
+                        "Grafico a torta",
+                        "Grafico a triangolo",
+                        "Grafico a cerchi"
+                    ],
+                    risposte: [0, 1, 2],
+                    spiegazione: "I principali tipi di grafici sono a barre, a linee e a torta. Gli altri non sono tipi standard di grafici.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Un grafico a linee è utile per mostrare cambiamenti nel tempo.",
+                    risposta: true,
+                    spiegazione: "I grafici a linee sono particolarmente adatti per mostrare trend e cambiamenti nel tempo.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a barre mostra i libri letti da 4 amici. Chi ha letto meno libri?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Paolo", valore: 3},
+                            {etichetta: "Maria", valore: 5},
+                            {etichetta: "Giorgio", valore: 2},
+                            {etichetta: "Elena", valore: 4}
+                        ]
+                    },
+                    opzioni: ["Paolo", "Maria", "Giorgio", "Elena"],
+                    risposta: 2,
+                    spiegazione: "Giorgio ha la barra più bassa con 2 libri.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti libri in totale hanno letto Paolo e Maria? Scrivi il numero.",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Paolo", valore: 3},
+                            {etichetta: "Maria", valore: 5},
+                            {etichetta: "Giorgio", valore: 2},
+                            {etichetta: "Elena", valore: 4}
+                        ]
+                    },
+                    risposta: "8",
+                    spiegazione: "Paolo: 3 + Maria: 5 = 8 libri",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste affermazioni sul grafico a torta sono corrette? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "Rosso", valore: 30, colore: "#ff6b6b"},
+                            {etichetta: "Blu", valore: 25, colore: "#4a90e2"},
+                            {etichetta: "Verde", valore: 20, colore: "#4ecdc4"},
+                            {etichetta: "Giallo", valore: 25, colore: "#ffcc00"}
+                        ]
+                    },
+                    opzioni: [
+                        "Mostra parti di un intero",
+                        "La somma di tutte le parti è 100%",
+                        "Le parti sono rappresentate da settori circolari",
+                        "È utile per confrontare molte categorie diverse"
+                    ],
+                    risposte: [0, 1, 2],
+                    spiegazione: "Il grafico a torta mostra parti di un intero che sommano a 100%, rappresentate da settori. Non è il migliore per confrontare molte categorie (meglio il grafico a barre).",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "In un grafico a barre, le barre possono avere larghezze diverse.",
+                    risposta: false,
+                    spiegazione: "In un grafico a barre, le barre dovrebbero avere la stessa larghezza per un confronto corretto. È l'altezza che varia in base al valore.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a linee mostra le vendite di un negozio in 5 mesi. In quale mese le vendite sono state più alte?",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "Gennaio", valore: 1200},
+                            {etichetta: "Febbraio", valore: 1000},
+                            {etichetta: "Marzo", valore: 1500},
+                            {etichetta: "Aprile", valore: 1300},
+                            {etichetta: "Maggio", valore: 1700}
+                        ]
+                    },
+                    opzioni: ["Gennaio", "Marzo", "Aprile", "Maggio"],
+                    risposta: 3,
+                    spiegazione: "Maggio ha il punto più alto con 1700 vendite.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a torta mostra come 40 alunni vanno a scuola. Quanti vanno a piedi?",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "Autobus", valore: 15, colore: "#ff6b6b"},
+                            {etichetta: "A piedi", valore: 10, colore: "#4a90e2"},
+                            {etichetta: "Bicicletta", valore: 8, colore: "#4ecdc4"},
+                            {etichetta: "Auto", valore: 7, colore: "#ffcc00"}
+                        ]
+                    },
+                    opzioni: ["8", "10", "15", "7"],
+                    risposta: 1,
+                    spiegazione: "La fetta 'A piedi' rappresenta 10 alunni.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti alunni in totale vanno a scuola in autobus o in auto? Scrivi il numero.",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "Autobus", valore: 15, colore: "#ff6b6b"},
+                            {etichetta: "A piedi", valore: 10, colore: "#4a90e2"},
+                            {etichetta: "Bicicletta", valore: 8, colore: "#4ecdc4"},
+                            {etichetta: "Auto", valore: 7, colore: "#ffcc00"}
+                        ]
+                    },
+                    risposta: "22",
+                    spiegazione: "Autobus: 15 + Auto: 7 = 22 alunni",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di questi elementi sono presenti in un grafico? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Esempio", valore: 50}
+                        ]
+                    },
+                    opzioni: [
+                        "Titolo",
+                        "Assi (per grafici a barre e linee)",
+                        "Legenda",
+                        "Scale numeriche",
+                        "Colori"
+                    ],
+                    risposte: [0, 1, 2, 3, 4],
+                    spiegazione: "Tutti questi elementi possono essere presenti in un grafico per renderlo chiaro e comprensibile.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Un grafico a linee può mostrare più linee per confrontare diverse serie di dati.",
+                    risposta: true,
+                    spiegazione: "I grafici a linee possono avere più linee di colori diversi per confrontare diverse serie di dati nello stesso grafico.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Il grafico a barre mostra i voti di una classe. Qual è il voto più frequente?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "6", valore: 2},
+                            {etichetta: "7", valore: 5},
+                            {etichetta: "8", valore: 8},
+                            {etichetta: "9", valore: 4},
+                            {etichetta: "10", valore: 1}
+                        ]
+                    },
+                    opzioni: ["6", "7", "8", "9"],
+                    risposta: 2,
+                    spiegazione: "Il voto 8 ha la barra più alta con 8 alunni.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Quanti alunni in totale hanno preso un voto uguale o superiore a 8? Scrivi il numero.",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "6", valore: 2},
+                            {etichetta: "7", valore: 5},
+                            {etichetta: "8", valore: 8},
+                            {etichetta: "9", valore: 4},
+                            {etichetta: "10", valore: 1}
+                        ]
+                    },
+                    risposta: "13",
+                    spiegazione: "Voto 8: 8 alunni + Voto 9: 4 alunni + Voto 10: 1 alunno = 13 alunni",
+                    difficolta: 3
+                }
+            ],
+            conversione: [
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in una tabella leggiamo: Mele=25kg, Pere=18kg, Banane=32kg, Arance=15kg, quale barra sarà la più alta in un grafico a barre?",
+                    tabella: {
+                        intestazioni: ["Frutto", "Quantità (kg)"],
+                        righe: [
+                            ["Mele", "25"],
+                            ["Pere", "18"],
+                            ["Banane", "32"],
+                            ["Arance", "15"]
+                        ]
+                    },
+                    opzioni: ["Mele", "Pere", "Banane", "Arance"],
+                    risposta: 2,
+                    spiegazione: "Banane ha il valore più alto (32kg), quindi avrà la barra più alta.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste affermazioni sulla conversione tabella-grafico sono corrette? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Categoria", "Valore"],
+                        righe: [
+                            ["A", "10"],
+                            ["B", "20"],
+                            ["C", "30"]
+                        ]
+                    },
+                    opzioni: [
+                        "Da una tabella si può costruire un grafico",
+                        "Da un grafico si può ricostruire una tabella",
+                        "La conversione mantiene gli stessi valori",
+                        "Il tipo di grafico non influenza la leggibilità"
+                    ],
+                    risposte: [0, 1, 2],
+                    spiegazione: "Tabella e grafico sono rappresentazioni diverse degli stessi dati, convertibili tra loro mantenendo i valori. Il tipo di grafico influenza la leggibilità.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Per convertire una tabella in grafico a torta, i dati devono essere parti di un totale.",
+                    risposta: true,
+                    spiegazione: "Il grafico a torta richiede dati che siano parti di un intero (percentuali o frazioni).",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se un grafico a barre mostra: Calcio=12, Pallavolo=8, Basket=6, Tennis=4, qual è il totale delle preferenze?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Calcio", valore: 12},
+                            {etichetta: "Pallavolo", valore: 8},
+                            {etichetta: "Basket", valore: 6},
+                            {etichetta: "Tennis", valore: 4}
+                        ]
+                    },
+                    opzioni: ["28", "30", "32", "34"],
+                    risposta: 1,
+                    spiegazione: "Totale = 12 + 8 + 6 + 4 = 30",
+                    difficolta: 2
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se in un grafico a torta il settore 'Rosso' è il 30% di 40 alunni, quanti alunni preferiscono il rosso? Scrivi il numero.",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "Rosso", valore: 30, colore: "#ff6b6b"},
+                            {etichetta: "Blu", valore: 25, colore: "#4a90e2"},
+                            {etichetta: "Verde", valore: 20, colore: "#4ecdc4"},
+                            {etichetta: "Giallo", valore: 25, colore: "#ffcc00"}
+                        ]
+                    },
+                    risposta: "12",
+                    spiegazione: "30% di 40 = 40 × 30/100 = 12 alunni",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Quale tipo di grafico è più adatto per mostrare l'andamento delle temperature in una settimana?",
+                    tabella: {
+                        intestazioni: ["Giorno", "Temperatura (°C)"],
+                        righe: [
+                            ["Lunedì", "18"],
+                            ["Martedì", "20"],
+                            ["Mercoledì", "16"],
+                            ["Giovedì", "22"],
+                            ["Venerdì", "19"]
+                        ]
+                    },
+                    opzioni: ["Grafico a barre", "Grafico a linee", "Grafico a torta", "Grafico a punti"],
+                    risposta: 1,
+                    spiegazione: "Il grafico a linee è il più adatto per mostrare cambiamenti nel tempo come le temperature giornaliere.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di questi dati si possono rappresentare bene con un grafico a torta? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Attività", "Tempo (ore)"],
+                        righe: [
+                            ["Studio", "3"],
+                            ["Gioco", "2"],
+                            ["TV", "1"],
+                            ["Sport", "2"]
+                        ]
+                    },
+                    opzioni: [
+                        "Preferenze per i colori in una classe",
+                        "Vendite mensili di un negozio",
+                        "Tempo dedicato a diverse attività in un giorno",
+                        "Altezze degli alunni di una classe"
+                    ],
+                    risposte: [0, 2],
+                    spiegazione: "Il grafico a torta è adatto per parti di un totale (preferenze, distribuzione del tempo). Non per serie temporali (vendite mensili) o dati non percentuali (altezze).",
+                    difficolta: 3
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Un grafico a barre può essere convertito in una tabella con due colonne.",
+                    risposta: true,
+                    spiegazione: "Un grafico a barre mostra categorie e valori, che corrispondono a due colonne in una tabella.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in una tabella la differenza tra il valore massimo e minimo è 8, nel grafico a barre quanto sarà la differenza di altezza?",
+                    tabella: {
+                        intestazioni: ["Prodotto", "Vendite"],
+                        righe: [
+                            ["A", "10"],
+                            ["B", "12"],
+                            ["C", "18"]
+                        ]
+                    },
+                    opzioni: ["Dipende dalla scala", "Sempre 8", "Il doppio", "La metà"],
+                    risposta: 0,
+                    spiegazione: "La differenza di altezza dipende dalla scala scelta per l'asse dei valori.",
+                    difficolta: 3
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se un grafico a linee mostra punti a (1,10), (2,15), (3,12), qual è il valore massimo? Scrivi il numero.",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "Punto 1", valore: 10},
+                            {etichetta: "Punto 2", valore: 15},
+                            {etichetta: "Punto 3", valore: 12}
+                        ]
+                    },
+                    risposta: "15",
+                    spiegazione: "Il punto più alto è a (2,15) con valore 15.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Quale tipo di grafico sarebbe più adatto per confrontare le vendite di 5 prodotti diversi?",
+                    tabella: {
+                        intestazioni: ["Prodotto", "Vendite"],
+                        righe: [
+                            ["A", "100"],
+                            ["B", "150"],
+                            ["C", "200"],
+                            ["D", "120"],
+                            ["E", "180"]
+                        ]
+                    },
+                    opzioni: ["Grafico a barre", "Grafico a linee", "Grafico a torta", "Grafico a dispersione"],
+                    risposta: 0,
+                    spiegazione: "Il grafico a barre è il migliore per confrontare valori di categorie diverse.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali informazioni sono necessarie per convertire un grafico in tabella? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "A", valore: 10},
+                            {etichetta: "B", valore: 20}
+                        ]
+                    },
+                    opzioni: [
+                        "Valori delle categorie",
+                        "Nomi delle categorie",
+                        "Colori usati nel grafico",
+                        "Titolo del grafico"
+                    ],
+                    risposte: [0, 1],
+                    spiegazione: "Per convertire un grafico in tabella servono i nomi delle categorie e i loro valori. Colori e titolo non sono dati essenziali.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Da un grafico a torta senza valori numerici si può comunque ricavare una tabella approssimativa.",
+                    risposta: true,
+                    spiegazione: "Si possono stimare le percentuali guardando le dimensioni relative dei settori, anche se non è preciso come con i valori numerici.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in una tabella ci sono 4 righe con valori 20, 25, 30, 35, qual è la media che si può calcolare?",
+                    tabella: {
+                        intestazioni: ["Elemento", "Valore"],
+                        righe: [
+                            ["A", "20"],
+                            ["B", "25"],
+                            ["C", "30"],
+                            ["D", "35"]
+                        ]
+                    },
+                    opzioni: ["25", "27.5", "30", "32.5"],
+                    risposta: 1,
+                    spiegazione: "Media = (20+25+30+35)/4 = 110/4 = 27.5",
+                    difficolta: 3
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se un grafico a barre mostra barre di altezze 4cm, 6cm, 8cm con scala 1cm=5 unità, qual è il valore della barra più alta? Scrivi il numero.",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "A", valore: 20},
+                            {etichetta: "B", valore: 30},
+                            {etichetta: "C", valore: 40}
+                        ]
+                    },
+                    risposta: "40",
+                    spiegazione: "Barra più alta: 8cm × 5 unità/cm = 40 unità",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Quale rappresentazione permette di vedere più facilmente quale valore è il doppio di un altro?",
+                    tabella: {
+                        intestazioni: ["Prodotto", "Valore"],
+                        righe: [
+                            ["A", "10"],
+                            ["B", "20"],
+                            ["C", "30"]
+                        ]
+                    },
+                    opzioni: ["Tabella", "Grafico a barre", "Grafico a linee", "Grafico a torta"],
+                    risposta: 1,
+                    spiegazione: "In un grafico a barre si vede immediatamente se una barra è il doppio di un'altra confrontando le altezze.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali vantaggi ha un grafico rispetto a una tabella? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Mese", "Vendite"],
+                        righe: [
+                            ["Gennaio", "100"],
+                            ["Febbraio", "150"],
+                            ["Marzo", "200"]
+                        ]
+                    },
+                    opzioni: [
+                        "Visualizzazione immediata delle differenze",
+                        "Facile confronto visivo",
+                        "Mostra tendenze a colpo d'occhio",
+                        "Contiene tutti i valori precisi"
+                    ],
+                    risposte: [0, 1, 2],
+                    spiegazione: "I grafici permettono visualizzazioni immediate, confronti visivi e mostrano tendenze. Le tabelle invece contengono valori precisi.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "È sempre possibile convertire qualsiasi tabella in un grafico a torta significativo.",
+                    risposta: false,
+                    spiegazione: "Non tutti i dati tabellari sono adatti per un grafico a torta, che richiede parti di un totale.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in un grafico a linee la linea sale costantemente, cosa significa?",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "1", valore: 10},
+                            {etichetta: "2", valore: 15},
+                            {etichetta: "3", valore: 20},
+                            {etichetta: "4", valore: 25}
+                        ]
+                    },
+                    opzioni: ["I valori stanno aumentando", "I valori stanno diminuendo", "I valori sono costanti", "Non si può dire"],
+                    risposta: 0,
+                    spiegazione: "Una linea che sale indica che i valori stanno aumentando nel tempo.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se da una tabella a due colonne si crea un grafico a barre, quante barre avrà? Scrivi il numero di righe della tabella.",
+                    tabella: {
+                        intestazioni: ["Frutto", "Quantità"],
+                        righe: [
+                            ["Mele", "25"],
+                            ["Pere", "18"],
+                            ["Banane", "32"],
+                            ["Arance", "15"]
+                        ]
+                    },
+                    risposta: "4",
+                    spiegazione: "Ogni riga della tabella corrisponde a una barra, quindi 4 barre.",
+                    difficolta: 2
+                }
+            ],
+            interpretazione: [
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in un grafico a barre la barra 'Inverno' è molto più alta delle altre, cosa significa?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Primavera", valore: 30},
+                            {etichetta: "Estate", valore: 50},
+                            {etichetta: "Autunno", valore: 40},
+                            {etichetta: "Inverno", valore: 80}
+                        ]
+                    },
+                    opzioni: [
+                        "L'inverno ha il valore più alto",
+                        "L'inverno ha il valore più basso",
+                        "Le stagioni hanno valori simili",
+                        "Il grafico è sbagliato"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Una barra più alta indica un valore più alto per quella categoria.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste sono domande di interpretazione che si possono fare su un grafico? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "A", valore: 10},
+                            {etichetta: "B", valore: 20}
+                        ]
+                    },
+                    opzioni: [
+                        "Qual è il valore massimo?",
+                        "Qual è la tendenza?",
+                        "Quali categorie hanno valori simili?",
+                        "Qual è la differenza tra due valori?"
+                    ],
+                    risposte: [0, 1, 2, 3],
+                    spiegazione: "Tutte queste sono domande di interpretazione che si possono fare analizzando un grafico.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Se in un grafico a torta un settore è molto piccolo, significa che quella categoria ha poca importanza.",
+                    risposta: false,
+                    spiegazione: "Un settore piccolo indica un valore basso rispetto al totale, ma non necessariamente poca importanza.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in un grafico a linee la linea scende bruscamente, cosa potrebbe essere successo?",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "1", valore: 100},
+                            {etichetta: "2", valore: 90},
+                            {etichetta: "3", valore: 40},
+                            {etichetta: "4", valore: 30}
+                        ]
+                    },
+                    opzioni: [
+                        "Una diminuzione improvvisa dei valori",
+                        "Un aumento improvviso dei valori",
+                        "Valori costanti",
+                        "Errore nel grafico"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Una discesa brusca della linea indica una diminuzione improvvisa dei valori.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se in una tabella la colonna 'Vendite' ha valori 100, 150, 200, 250, di quanto aumentano in media ogni volta? Scrivi il numero.",
+                    tabella: {
+                        intestazioni: ["Mese", "Vendite"],
+                        righe: [
+                            ["1", "100"],
+                            ["2", "150"],
+                            ["3", "200"],
+                            ["4", "250"]
+                        ]
+                    },
+                    risposta: "50",
+                    spiegazione: "Aumenti: 50, 50, 50. Media degli aumenti = 50",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se due barre in un grafico hanno altezze quasi uguali, cosa significa?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "A", valore: 48},
+                            {etichetta: "B", valore: 50},
+                            {etichetta: "C", valore: 30},
+                            {etichetta: "D", valore: 80}
+                        ]
+                    },
+                    opzioni: [
+                        "I due valori sono simili",
+                        "I due valori sono molto diversi",
+                        "Uno è il doppio dell'altro",
+                        "Non si può dire"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Barre di altezze simili indicano valori numerici simili.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali conclusioni si possono trarre da un grafico a linee che sale costantemente? (Scegli tutte quelle corrette)",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "1", valore: 10},
+                            {etichetta: "2", valore: 15},
+                            {etichetta: "3", valore: 20},
+                            {etichetta: "4", valore: 25}
+                        ]
+                    },
+                    opzioni: [
+                        "C'è una tendenza positiva",
+                        "I valori stanno aumentando",
+                        "Presto scenderà",
+                        "La crescita è costante"
+                    ],
+                    risposte: [0, 1],
+                    spiegazione: "Una linea che sale indica tendenza positiva e valori in aumento. Non si può prevedere se scenderà e la crescita potrebbe non essere costante.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Se in un grafico a torta due settori insieme formano metà del cerchio, insieme rappresentano il 50%.",
+                    risposta: true,
+                    spiegazione: "Metà cerchio = 180° = 50% del totale (360° = 100%).",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Cosa significa se in una tabella di temperature, il valore di venerdì è molto più alto di quello di giovedì?",
+                    tabella: {
+                        intestazioni: ["Giorno", "Temperatura (°C)"],
+                        righe: [
+                            ["Lunedì", "18"],
+                            ["Martedì", "20"],
+                            ["Mercoledì", "16"],
+                            ["Giovedì", "22"],
+                            ["Venerdì", "28"]
+                        ]
+                    },
+                    opzioni: [
+                        "Venerdì era più caldo di giovedì",
+                        "Venerdì era più freddo di giovedì",
+                        "La temperatura è rimasta costante",
+                        "C'è un errore nei dati"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Un valore più alto nella colonna temperature indica una temperatura più alta.",
+                    difficolta: 1
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se in un grafico a barre la barra A è alta 6cm e la barra B è alta 3cm, quante volte è più alto il valore di A rispetto a B? Scrivi il numero.",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "A", valore: 60},
+                            {etichetta: "B", valore: 30}
+                        ]
+                    },
+                    risposta: "2",
+                    spiegazione: "6cm ÷ 3cm = 2 volte (supponendo la stessa scala).",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in un grafico a linee la linea fa un picco e poi scende, cosa rappresenta?",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "1", valore: 10},
+                            {etichetta: "2", valore: 30},
+                            {etichetta: "3", valore: 15},
+                            {etichetta: "4", valore: 20}
+                        ]
+                    },
+                    opzioni: [
+                        "Un aumento seguito da una diminuzione",
+                        "Una diminuzione costante",
+                        "Valori costanti",
+                        "Dati non correlati"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Un picco rappresenta un massimo temporaneo, seguito da una discesa.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali domande sono utili per interpretare una tabella? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Categoria", "Valore"],
+                        righe: [
+                            ["A", "10"],
+                            ["B", "20"],
+                            ["C", "30"]
+                        ]
+                    },
+                    opzioni: [
+                        "Qual è il valore più alto?",
+                        "Qual è la differenza tra due valori?",
+                        "C'è una regolarità nei dati?",
+                        "Quali sono i colori usati?"
+                    ],
+                    risposte: [0, 1, 2],
+                    spiegazione: "Per interpretare una tabella si cercano valori estremi, differenze e regolarità. I colori non sono dati interpretativi.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Se in una tabella di vendite, i valori di dicembre sono molto alti, potrebbe essere per le festività natalizie.",
+                    risposta: true,
+                    spiegazione: "È un'interpretazione plausibile: dicembre ha spesso vendite alte per il Natale.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Cosa significa se in un grafico a torta il settore 'Altro' è grande quasi quanto gli altri settori?",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "Rosso", valore: 30, colore: "#ff6b6b"},
+                            {etichetta: "Blu", valore: 25, colore: "#4a90e2"},
+                            {etichetta: "Altro", valore: 45, colore: "#4ecdc4"}
+                        ]
+                    },
+                    opzioni: [
+                        "Molte categorie sono raggruppate insieme",
+                        "Una categoria domina sulle altre",
+                        "I dati sono distribuiti equamente",
+                        "Il grafico è sbagliato"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Un settore 'Altro' grande indica che molte categorie con valori piccoli sono state raggruppate.",
+                    difficolta: 3
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se in una tabella, ogni mese le vendite aumentano di 100 unità, quante ne venderà il sesto mese se il primo mese erano 500? Scrivi il numero.",
+                    tabella: {
+                        intestazioni: ["Mese", "Vendite"],
+                        righe: [
+                            ["1", "500"],
+                            ["2", "600"],
+                            ["3", "700"],
+                            ["4", "800"],
+                            ["5", "900"]
+                        ]
+                    },
+                    risposta: "1000",
+                    spiegazione: "Mese 1: 500, Mese 2: 600, Mese 3: 700, Mese 4: 800, Mese 5: 900, Mese 6: 1000",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Se in un grafico a barre le barre diventano progressivamente più alte da sinistra a destra, cosa indica?",
+                    grafico: {
+                        tipo: "barre",
+                        dati: [
+                            {etichetta: "Gennaio", valore: 100},
+                            {etichetta: "Febbraio", valore: 120},
+                            {etichetta: "Marzo", valore: 140},
+                            {etichetta: "Aprile", valore: 160}
+                        ]
+                    },
+                    opzioni: [
+                        "Una tendenza in aumento",
+                        "Una tendenza in diminuzione",
+                        "Valori casuali",
+                        "Valori costanti"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Barre progressivamente più alte indicano una tendenza in aumento.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "scelta_multipla_multi",
+                    domanda: "Quali di queste sono interpretazioni valide di dati? (Scegli tutte quelle corrette)",
+                    tabella: {
+                        intestazioni: ["Anno", "Vendite"],
+                        righe: [
+                            ["2020", "1000"],
+                            ["2021", "1200"],
+                            ["2022", "1400"]
+                        ]
+                    },
+                    opzioni: [
+                        "I dati mostrano un miglioramento nel tempo",
+                        "La categoria X ha performance migliori di Y",
+                        "C'è stata una fluttuazione nei valori",
+                        "I colori del grafico sono belli"
+                    ],
+                    risposte: [0, 1, 2],
+                    spiegazione: "Le prime tre sono interpretazioni valide dei dati. L'ultima è un giudizio estetico, non un'interpretazione.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "vero_falso",
+                    domanda: "Se due grafici mostrano gli stessi dati ma con scale diverse, possono dare impressioni diverse.",
+                    risposta: true,
+                    spiegazione: "Scale diverse possono esagerare o minimizzare le differenze, dando impressioni visive diverse.",
+                    difficolta: 3
+                },
+                {
+                    tipo: "scelta_multipla",
+                    domanda: "Cosa indica un grafico a linee molto irregolare, con molti picchi e valli?",
+                    grafico: {
+                        tipo: "linee",
+                        dati: [
+                            {etichetta: "1", valore: 10},
+                            {etichetta: "2", valore: 30},
+                            {etichetta: "3", valore: 15},
+                            {etichetta: "4", valore: 40},
+                            {etichetta: "5", valore: 20}
+                        ]
+                    },
+                    opzioni: [
+                        "Alta variabilità nei dati",
+                        "Dati costanti",
+                        "Tendenza chiara in aumento",
+                        "Errore nei dati"
+                    ],
+                    risposta: 0,
+                    spiegazione: "Una linea molto irregolare indica che i dati hanno alta variabilità, con molti cambiamenti.",
+                    difficolta: 2
+                },
+                {
+                    tipo: "risposta_aperta",
+                    domanda: "Se in un grafico a torta, 90° corrisponde al 25%, quanti gradi corrispondono al 100%? Scrivi il numero.",
+                    grafico: {
+                        tipo: "torta",
+                        dati: [
+                            {etichetta: "A", valore: 25, colore: "#ff6b6b"},
+                            {etichetta: "B", valore: 75, colore: "#4a90e2"}
+                        ]
+                    },
+                    risposta: "360",
+                    spiegazione: "25% = 90°, quindi 100% = 90° × 4 = 360° (cerchio completo).",
+                    difficolta: 3
+                }
+            ]
+        };
+
+        // ==================== FUNZIONI UTILI ====================
+        function mescolaArray(array) {
+            let arrayMescolato = [...array];
+            for (let i = arrayMescolato.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arrayMescolato[i], arrayMescolato[j]] = [arrayMescolato[j], arrayMescolato[i]];
+            }
+            return arrayMescolato;
+        }
+
+        let domande = {
+            tabelle: mescolaArray([...tutteLeDomande.tabelle]),
+            grafici: mescolaArray([...tutteLeDomande.grafici]),
+            conversione: mescolaArray([...tutteLeDomande.conversione]),
+            interpretazione: mescolaArray([...tutteLeDomande.interpretazione])
+        };
+
+        let domandaCorrente = null;
+        let domandeDisponibili = [...domande.tabelle];
+        let indiceDomandaCorrente = 0;
+
+        // ==================== AUDIO ====================
+        let audioContext;
+        let audioInizializzato = false;
+        let wowSound, ahiSound, successSound, clickSound, startSound;
+
+        function inizializzaAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                creaSuoni();
+                audioInizializzato = true;
+            } catch (e) {
+                console.log("Audio non supportato:", e);
+                audioInizializzato = false;
+            }
+        }
+
+        function creaSuoni() {
+            try {
+                const durata = 1.5;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq1 = 200 + (t * 600);
+                    if (freq1 > 800) freq1 = 800;
+                    let freq2 = freq1 * 1.5;
+                    let freq3 = freq1 * 2;
+                    let envelope = Math.sin(Math.PI * t/durata) * 0.7;
+                    envelope *= (1 + 0.3 * Math.sin(2 * Math.PI * 2 * t));
+                    output[i] = envelope * (Math.sin(2 * Math.PI * freq1 * t) * 0.5 + Math.sin(2 * Math.PI * freq2 * t) * 0.3 + Math.sin(2 * Math.PI * freq3 * t) * 0.2);
+                    output[i] *= (1 + 0.1 * Math.sin(2 * Math.PI * 3 * t));
+                }
+                wowSound = buffer;
+            } catch (e) {}
+            try {
+                const durata = 0.8;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 800 * Math.exp(-t * 3);
+                    if (freq < 150) freq = 150;
+                    let envelope = Math.exp(-t * 4) * 0.8;
+                    const phase = 2 * Math.PI * freq * t;
+                    output[i] = envelope * (2 * (phase % (2 * Math.PI)) / (2 * Math.PI) - 1) * 0.5;
+                    if (t < 0.1) output[i] += (Math.random() * 2 - 1) * 0.1 * (1 - t/0.1);
+                }
+                ahiSound = buffer;
+            } catch (e) {}
+            try {
+                const durata = 1.0;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 300;
+                    if (t < 0.25) freq = 300;
+                    else if (t < 0.5) freq = 400;
+                    else if (t < 0.75) freq = 500;
+                    else freq = 600;
+                    let envelope = Math.sin(Math.PI * t/durata) * 0.6;
+                    output[i] = envelope * Math.sin(2 * Math.PI * freq * t);
+                    output[i] += 0.3 * envelope * Math.sin(2 * Math.PI * freq * 2 * t);
+                }
+                successSound = buffer;
+            } catch (e) {}
+            try {
+                const durata = 0.1;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 1000 * Math.exp(-t * 50);
+                    let envelope = Math.exp(-t * 100) * 0.3;
+                    output[i] = envelope * Math.sin(2 * Math.PI * freq * t);
+                }
+                clickSound = buffer;
+            } catch (e) {}
+            try {
+                const durata = 1.2;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 400 + Math.sin(2 * Math.PI * 2 * t) * 100;
+                    let envelope = Math.sin(Math.PI * t/durata) * 0.7;
+                    output[i] = envelope * (Math.sin(2 * Math.PI * freq * t) * 0.6 + Math.sin(2 * Math.PI * freq * 1.5 * t) * 0.3 + Math.sin(2 * Math.PI * freq * 2 * t) * 0.1);
+                    if (t < 0.5) output[i] += 0.2 * Math.sin(2 * Math.PI * (200 + t * 800) * t);
+                }
+                startSound = buffer;
+            } catch (e) {}
+        }
+
+        function playSound(soundBuffer, volume = 0.7) {
+            if (!audioInizializzato || !soundBuffer) return;
+            try {
+                const source = audioContext.createBufferSource();
+                source.buffer = soundBuffer;
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = volume;
+                source.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                source.start();
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + soundBuffer.duration);
+            } catch (e) {}
+        }
+        function playWowSound() { playSound(wowSound, 0.8); }
+        function playAhiSound() { playSound(ahiSound, 0.6); }
+        function playSuccessSound() { playSound(successSound, 0.5); }
+        function playClickSound() { playSound(clickSound, 0.3); }
+        function playStartSound() { playSound(startSound, 0.7); }
+
+        // ==================== DISPLAY ====================
+        function aggiornaDisplayPunteggio() {
+            const punteggioDisplay = document.getElementById('punteggio-display');
+            punteggioDisplay.style.opacity = '0.7';
+            punteggioDisplay.style.transform = 'scale(1.1) skew(-1deg)';
+            setTimeout(() => {
+                punteggioDisplay.textContent = punteggio;
+                punteggioDisplay.style.opacity = '1';
+                punteggioDisplay.style.transform = 'scale(1) skew(-1deg)';
+                if (punteggio >= 150) punteggioDisplay.className = 'display-7segmenti giallo';
+                else if (punteggio >= 100) punteggioDisplay.className = 'display-7segmenti verde';
+                else punteggioDisplay.className = 'display-7segmenti giallo';
+            }, 150);
+        }
+        function aggiornaDisplayTempo() {
+            const tempoDisplay = document.getElementById('tempo-display');
+            const minuti = Math.floor(tempoRimanente / 60);
+            const secondi = tempoRimanente % 60;
+            const tempoFormattato = `${minuti.toString().padStart(2, '0')}:${secondi.toString().padStart(2, '0')}`;
+            tempoDisplay.style.opacity = '0.7';
+            tempoDisplay.style.transform = 'scale(1.05) skew(-1deg)';
+            setTimeout(() => {
+                tempoDisplay.textContent = tempoFormattato;
+                tempoDisplay.style.opacity = '1';
+                tempoDisplay.style.transform = 'scale(1) skew(-1deg)';
+                if (tempoRimanente <= 60) {
+                    tempoDisplay.style.color = '#ff0000';
+                    tempoDisplay.style.textShadow = '0 0 8px rgba(255, 0, 0, 0.8), 0 0 15px rgba(255, 0, 0, 0.4)';
+                    if (tempoRimanente <= 10) tempoDisplay.style.animation = 'pulse 0.5s infinite';
+                    else tempoDisplay.style.animation = '';
+                } else {
+                    tempoDisplay.style.color = '#00ff00';
+                    tempoDisplay.style.textShadow = '0 0 6px rgba(0, 255, 0, 0.8), 0 0 10px rgba(0, 255, 0, 0.4)';
+                    tempoDisplay.style.animation = '';
+                }
+            }, 150);
+        }
+        function aggiornaVite() {
+            const viteContainer = document.getElementById('vite-container');
+            viteContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const vita = document.createElement('div');
+                vita.className = 'vita';
+                if (i >= vite) vita.classList.add('persa');
+                viteContainer.appendChild(vita);
+            }
+        }
+        function avviaTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerAttivo = true;
+            timerInterval = setInterval(() => {
+                if (tempoRimanente <= 0) {
+                    clearInterval(timerInterval);
+                    timerAttivo = false;
+                    gameOver = true;
+                    mostraGameOver();
+                    return;
+                }
+                tempoRimanente--;
+                aggiornaDisplayTempo();
+                if (tempoRimanente === 60) mostraMessaggio("⚠️ Attenzione! Manca solo 1 minuto!", "messaggio-info");
+                if (tempoRimanente === 10) playAhiSound();
+            }, 1000);
+        }
+        function pausaTimer() {
+            timerAttivo = false;
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        }
+        function ripristinaTimer() {
+            tempoRimanente = TEMPO_TOTALE;
+            aggiornaDisplayTempo();
+        }
+
+        // ==================== MESSAGGI ====================
+        function mostraMessaggio(testo, classe = "messaggio-info") {
+            const messaggioDiv = document.getElementById('messaggio-verifica');
+            messaggioDiv.textContent = testo;
+            messaggioDiv.className = "messaggio-verifica";
+            messaggioDiv.classList.add(classe, "mostra");
+            if (classe === "messaggio-info" || classe === "messaggio-suggerimento") {
+                setTimeout(() => {
+                    messaggioDiv.classList.remove("mostra");
+                    setTimeout(() => { messaggioDiv.textContent = ""; }, 300);
+                }, 5000);
+            }
+            if (classe === "messaggio-wow") playWowSound();
+            else if (classe === "messaggio-ahi") playAhiSound();
+        }
+        function nascondiMessaggio() {
+            const messaggioDiv = document.getElementById('messaggio-verifica');
+            messaggioDiv.classList.remove("mostra");
+            setTimeout(() => { messaggioDiv.textContent = ""; }, 300);
+        }
+
+        // ==================== GIOCO ====================
+        function aggiornaErroriIndicatore() {
+            for (let i = 1; i <= 3; i++) {
+                const pallino = document.getElementById(`errore-${i}`);
+                if (i <= erroriConsecutivi) pallino.classList.add('attivo');
+                else pallino.classList.remove('attivo');
+            }
+        }
+        function aggiornaContatori() {
+            document.getElementById('contatore-consecutive').textContent = operazioniCorretteConsecutive;
+            document.getElementById('contatore-aiuti').textContent = aiutiUtilizzatiDomandaCorrente;
+            const risposteConsecutive = document.getElementById('risposte-consecutive');
+            const aiutiUtilizzati = document.getElementById('aiuti-utilizzati');
+            if (operazioniCorretteConsecutive > 0) risposteConsecutive.style.display = 'flex';
+            else risposteConsecutive.style.display = 'none';
+            if (aiutiUtilizzatiDomandaCorrente > 0) aiutiUtilizzati.style.display = 'flex';
+            else aiutiUtilizzati.style.display = 'none';
+        }
+
+        function iniziaGioco() {
+            if (!giocoIniziato) {
+                playStartSound();
+                const messaggioAvvio = document.getElementById('messaggio-avvio');
+                messaggioAvvio.style.display = 'none';
+                document.getElementById('controlli-gioco').style.display = 'flex';
+                giocoIniziato = true;
+                gameOver = false;
+                ripristinaTimer();
+                vite = 3;
+                punteggio = 0;
+                operazioniCorretteConsecutive = 0;
+                erroriConsecutivi = 0;
+                domandeConsecutiveStessaSezione = 0;
+                haMostratoSuggerimentoCambioSezione = false;
+                aggiornaVite();
+                aggiornaDisplayPunteggio();
+                aggiornaErroriIndicatore();
+                aggiornaContatori();
+                avviaTimer();
+                creaNuovaDomanda();
+                document.getElementById('area-domanda').style.display = 'flex';
+            }
+        }
+
+        function cambiaTipoDomanda(tipo) {
+            if (!giocoIniziato && !gameOver) {
+                iniziaGioco();
+            }
+            tipoGioco = tipo;
+            document.querySelectorAll('.tipo-domanda-btn').forEach(btn => btn.classList.remove('attiva'));
+            document.getElementById(`tipo-${tipo}`).classList.add('attiva');
+            domandeDisponibili = [...domande[tipo]];
+            indiceDomandaCorrente = 0;
+            domandeConsecutiveStessaSezione = 0;
+            haMostratoSuggerimentoCambioSezione = false;
+            if (giocoIniziato && !gameOver) {
+                creaNuovaDomanda();
+            }
+        }
+
+        function mostraGameOver() {
+            pausaTimer();
+            gameOver = true;
+            let messaggioFinale = "⏱️ TEMPO SCADUTO!\n\nPunteggio finale: " + punteggio + "\nDomande corrette consecutive: " + operazioniCorretteConsecutive + "\n\n";
+            if (punteggio >= 100) messaggioFinale += "🎉 ECCELLENTE! Sei un esperto di tabelle e grafici! 🎉";
+            else if (punteggio >= 50) messaggioFinale += "👍 BUON LAVORO! Continua a esercitarti!";
+            else messaggioFinale += "💪 NON ARRENDERTI! Riprova e migliorerai!";
+            mostraMessaggio(messaggioFinale, "messaggio-game-over");
+            document.getElementById('bottone-nuova').style.display = 'block';
+        }
+
+        function inizializzaTastieraNumerica(casellaInput) {
+            const tastieraNumerica = document.getElementById('tastiera-numerica');
+            tastieraNumerica.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                const tasto = document.createElement('button');
+                tasto.className = 'tasto-numero';
+                tasto.textContent = i;
+                tasto.addEventListener('click', () => { playClickSound(); casellaInput.value += i; rispostaAperta = casellaInput.value; });
+                tastieraNumerica.appendChild(tasto);
+            }
+            const tasto0 = document.createElement('button');
+            tasto0.className = 'tasto-numero';
+            tasto0.textContent = '0';
+            tasto0.addEventListener('click', () => { playClickSound(); casellaInput.value += '0'; rispostaAperta = casellaInput.value; });
+            tastieraNumerica.appendChild(tasto0);
+            const tastoCancella = document.createElement('button');
+            tastoCancella.className = 'tasto-numero tasto-cancella';
+            tastoCancella.textContent = '←';
+            tastoCancella.addEventListener('click', () => { playClickSound(); casellaInput.value = casellaInput.value.slice(0, -1); rispostaAperta = casellaInput.value; });
+            tastieraNumerica.appendChild(tastoCancella);
+        }
+
+        function creaNuovaDomanda() {
+            verificaEseguita = false;
+            haSbagliatoQuestaDomanda = false;
+            aiutiUtilizzatiDomandaCorrente = 0;
+            opzioniSelezionate = [];
+            rispostaAperta = "";
+
+            if (domandeDisponibili.length === 0) {
+                domandeDisponibili = [...domande[tipoGioco]];
+                domandeDisponibili = mescolaArray(domandeDisponibili);
+                indiceDomandaCorrente = 0;
+            }
+            domandaCorrente = domandeDisponibili[indiceDomandaCorrente];
+            indiceDomandaCorrente = (indiceDomandaCorrente + 1) % domandeDisponibili.length;
+            domandeConsecutiveStessaSezione++;
+            aggiornaContatori();
+            document.getElementById('tastiera-container').style.display = 'none';
+            document.getElementById('bottone-prossima').style.display = 'none';
+            document.getElementById('bottone-verifica').style.display = 'block';
+            document.getElementById('bottone-aiuto').style.display = 'block';
+
+            const areaDomanda = document.getElementById('area-domanda');
+            areaDomanda.innerHTML = '';
+
+            const testoDomanda = document.createElement('div');
+            testoDomanda.className = 'testo-domanda';
+            testoDomanda.textContent = domandaCorrente.domanda;
+            areaDomanda.appendChild(testoDomanda);
+
+            if (domandaCorrente.tabella) {
+                const tabellaContainer = document.createElement('div');
+                tabellaContainer.className = 'tabella-container';
+                const tabella = document.createElement('table');
+                tabella.className = 'tabella-visuale';
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                domandaCorrente.tabella.intestazioni.forEach(intestazione => {
+                    const th = document.createElement('th');
+                    th.textContent = intestazione;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                tabella.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                domandaCorrente.tabella.righe.forEach(riga => {
+                    const tr = document.createElement('tr');
+                    riga.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+                tabella.appendChild(tbody);
+                tabellaContainer.appendChild(tabella);
+                areaDomanda.appendChild(tabellaContainer);
+            }
+
+            if (domandaCorrente.grafico) {
+                const graficoContainer = document.createElement('div');
+                graficoContainer.className = 'grafico-container';
+                const graficoVisuale = document.createElement('div');
+                graficoVisuale.className = 'grafico-visuale';
+
+                if (domandaCorrente.grafico.tipo === 'barre') {
+                    const graficoBarre = document.createElement('div');
+                    graficoBarre.className = 'grafico-barre';
+                    const valori = domandaCorrente.grafico.dati.map(d => d.valore);
+                    const maxValore = Math.max(...valori);
+                    domandaCorrente.grafico.dati.forEach(dato => {
+                        const barra = document.createElement('div');
+                        barra.className = 'barra';
+                        barra.style.height = `${(dato.valore / maxValore) * 140}px`;
+                        const valoreBarra = document.createElement('div');
+                        valoreBarra.className = 'valore-barra';
+                        valoreBarra.textContent = dato.valore;
+                        barra.appendChild(valoreBarra);
+                        const etichettaBarra = document.createElement('div');
+                        etichettaBarra.className = 'etichetta-barra';
+                        etichettaBarra.textContent = dato.etichetta;
+                        barra.appendChild(etichettaBarra);
+                        graficoBarre.appendChild(barra);
+                    });
+                    graficoVisuale.appendChild(graficoBarre);
+                    graficoContainer.appendChild(graficoVisuale);
+                    areaDomanda.appendChild(graficoContainer);
+                } else if (domandaCorrente.grafico.tipo === 'torta') {
+                    const graficoTorta = document.createElement('div');
+                    graficoTorta.className = 'grafico-torta';
+                    const total = domandaCorrente.grafico.dati.reduce((sum, d) => sum + d.valore, 0);
+                    let accumulato = 0;
+                    let gradienti = [];
+                    domandaCorrente.grafico.dati.forEach((dato, index) => {
+                        const percentuale = (dato.valore / total) * 100;
+                        const inizio = accumulato;
+                        const fine = accumulato + percentuale;
+                        gradienti.push(`${dato.colore || '#ff6b6b'} ${inizio}% ${fine}%`);
+                        accumulato = fine;
+                    });
+                    graficoTorta.style.background = `conic-gradient(${gradienti.join(', ')})`;
+                    graficoVisuale.appendChild(graficoTorta);
+                    const legenda = document.createElement('div');
+                    legenda.className = 'legenda-grafico';
+                    domandaCorrente.grafico.dati.forEach(dato => {
+                        const elementoLegenda = document.createElement('div');
+                        elementoLegenda.className = 'elemento-legenda';
+                        const coloreLegenda = document.createElement('div');
+                        coloreLegenda.className = 'colore-legenda';
+                        coloreLegenda.style.backgroundColor = dato.colore || '#ff6b6b';
+                        const testoLegenda = document.createElement('span');
+                        testoLegenda.textContent = `${dato.etichetta}: ${dato.valore}%`;
+                        elementoLegenda.appendChild(coloreLegenda);
+                        elementoLegenda.appendChild(testoLegenda);
+                        legenda.appendChild(elementoLegenda);
+                    });
+                    graficoVisuale.appendChild(legenda);
+                    graficoContainer.appendChild(graficoVisuale);
+                    areaDomanda.appendChild(graficoContainer);
+                } else if (domandaCorrente.grafico.tipo === 'linee') {
+                    const graficoLinee = document.createElement('div');
+                    graficoLinee.className = 'grafico-linee';
+
+                    const valori = domandaCorrente.grafico.dati.map(d => d.valore);
+                    const maxValore = Math.max(...valori);
+                    const minValore = Math.min(...valori);
+                    const range = maxValore - minValore;
+
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'linea-canvas';
+                    graficoLinee.appendChild(canvas);
+
+                    const punti = [];
+                    domandaCorrente.grafico.dati.forEach((dato, index) => {
+                        const punto = document.createElement('div');
+                        punto.className = 'punto-linea';
+                        graficoLinee.appendChild(punto);
+                        const etichetta = document.createElement('div');
+                        etichetta.className = 'etichetta-linea';
+                        etichetta.textContent = dato.etichetta;
+                        graficoLinee.appendChild(etichetta);
+                        const valore = document.createElement('div');
+                        valore.className = 'valore-linea';
+                        valore.textContent = dato.valore;
+                        graficoLinee.appendChild(valore);
+                        punti.push({ punto, etichetta, valore, indice: index, valoreNum: dato.valore });
+                    });
+
+                    graficoVisuale.appendChild(graficoLinee);
+                    graficoContainer.appendChild(graficoVisuale);
+                    areaDomanda.appendChild(graficoContainer);
+
+                    function disegnaLinea() {
+                        const rect = graficoLinee.getBoundingClientRect();
+                        if (rect.width === 0 || rect.height === 0) {
+                            requestAnimationFrame(disegnaLinea);
+                            return;
+                        }
+                        canvas.width = rect.width;
+                        canvas.height = rect.height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                        const n = domandaCorrente.grafico.dati.length;
+                        if (n < 2) return;
+
+                        const marginLeft = 30;
+                        const marginRight = 30;
+                        const marginTop = 20;
+                        const marginBottom = 25;
+
+                        const graphWidth = canvas.width - marginLeft - marginRight;
+                        const graphHeight = canvas.height - marginTop - marginBottom;
+
+                        let yBase = marginTop + graphHeight / 2;
+
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#ffa500';
+                        ctx.lineWidth = 3;
+
+                        for (let i = 0; i < n; i++) {
+                            const dato = domandaCorrente.grafico.dati[i];
+                            let x = marginLeft + (i / (n - 1)) * graphWidth;
+                            let y;
+                            if (range === 0) {
+                                y = yBase;
+                            } else {
+                                y = marginTop + (1 - (dato.valore - minValore) / range) * graphHeight;
+                            }
+                            y = Math.min(Math.max(y, marginTop), canvas.height - marginBottom);
+
+                            const puntoDiv = punti[i].punto;
+                            puntoDiv.style.left = `${x - 6}px`;
+                            puntoDiv.style.top = `${y - 6}px`;
+
+                            const etichettaDiv = punti[i].etichetta;
+                            etichettaDiv.style.left = `${x}px`;
+                            etichettaDiv.style.bottom = `-35px`;
+
+                            const valoreDiv = punti[i].valore;
+                            valoreDiv.style.left = `${x}px`;
+                            if (y < 25) {
+                                valoreDiv.style.top = `${y + 15}px`;
+                            } else {
+                                valoreDiv.style.top = `${y - 15}px`;
+                            }
+
+                            if (i === 0) ctx.moveTo(x, y);
+                            else ctx.lineTo(x, y);
+                        }
+                        ctx.stroke();
+                    }
+                    requestAnimationFrame(disegnaLinea);
+                    setTimeout(disegnaLinea, 50);
+                }
+            }
+
+            if (domandaCorrente.tipo === 'scelta_multipla') {
+                const opzioniContainer = document.createElement('div');
+                opzioniContainer.className = 'opzioni-container';
+                domandaCorrente.opzioni.forEach((opzione, index) => {
+                    const opzioneBtn = document.createElement('button');
+                    opzioneBtn.className = 'opzione-btn';
+                    opzioneBtn.textContent = opzione;
+                    opzioneBtn.dataset.index = index;
+                    opzioneBtn.addEventListener('click', () => {
+                        if (!verificaEseguita) {
+                            playClickSound();
+                            document.querySelectorAll('.opzione-btn').forEach(btn => btn.classList.remove('selezionata'));
+                            opzioneBtn.classList.add('selezionata');
+                            rispostaCorrente = index;
+                        }
+                    });
+                    opzioniContainer.appendChild(opzioneBtn);
+                });
+                areaDomanda.appendChild(opzioniContainer);
+            } else if (domandaCorrente.tipo === 'scelta_multipla_multi') {
+                const infoMultiSelezione = document.createElement('div');
+                infoMultiSelezione.className = 'multi-selezione-info';
+                infoMultiSelezione.textContent = '⚠️ ATTENZIONE: Questa domanda ha più risposte corrette! Clicca su tutte le opzioni che ritieni corrette.';
+                areaDomanda.appendChild(infoMultiSelezione);
+                const opzioniContainer = document.createElement('div');
+                opzioniContainer.className = 'opzioni-container';
+                domandaCorrente.opzioni.forEach((opzione, index) => {
+                    const opzioneBtn = document.createElement('button');
+                    opzioneBtn.className = 'opzione-btn';
+                    opzioneBtn.textContent = opzione;
+                    opzioneBtn.dataset.index = index;
+                    opzioneBtn.addEventListener('click', () => {
+                        if (!verificaEseguita) {
+                            playClickSound();
+                            if (opzioniSelezionate.includes(index)) {
+                                opzioniSelezionate = opzioniSelezionate.filter(i => i !== index);
+                                opzioneBtn.classList.remove('selezionata');
+                            } else {
+                                opzioniSelezionate.push(index);
+                                opzioneBtn.classList.add('selezionata');
+                            }
+                        }
+                    });
+                    opzioniContainer.appendChild(opzioneBtn);
+                });
+                areaDomanda.appendChild(opzioniContainer);
+            } else if (domandaCorrente.tipo === 'vero_falso') {
+                const opzioniContainer = document.createElement('div');
+                opzioniContainer.className = 'opzioni-container';
+                const opzioniVF = [
+                    { testo: "VERO", valore: true },
+                    { testo: "FALSO", valore: false }
+                ];
+                opzioniVF.forEach(opzione => {
+                    const opzioneBtn = document.createElement('button');
+                    opzioneBtn.className = 'opzione-btn';
+                    opzioneBtn.textContent = opzione.testo;
+                    opzioneBtn.dataset.valore = opzione.valore;
+                    opzioneBtn.addEventListener('click', () => {
+                        if (!verificaEseguita) {
+                            playClickSound();
+                            document.querySelectorAll('.opzione-btn').forEach(btn => btn.classList.remove('selezionata'));
+                            opzioneBtn.classList.add('selezionata');
+                            rispostaCorrente = opzione.valore;
+                        }
+                    });
+                    opzioniContainer.appendChild(opzioneBtn);
+                });
+                areaDomanda.appendChild(opzioniContainer);
+            } else if (domandaCorrente.tipo === 'risposta_aperta') {
+                const rispostaContainer = document.createElement('div');
+                rispostaContainer.className = 'risposta-aperta-container';
+                const inputContainer = document.createElement('div');
+                inputContainer.className = 'risposta-input-container';
+                const casellaRisposta = document.createElement('input');
+                casellaRisposta.className = 'casella-risposta';
+                casellaRisposta.type = 'text';
+                casellaRisposta.maxLength = 10;
+                casellaRisposta.addEventListener('input', (e) => { rispostaAperta = e.target.value; });
+                casellaRisposta.addEventListener('focus', () => { document.getElementById('tastiera-container').style.display = 'block'; });
+                inputContainer.appendChild(casellaRisposta);
+                rispostaContainer.appendChild(inputContainer);
+                areaDomanda.appendChild(rispostaContainer);
+                inizializzaTastieraNumerica(casellaRisposta);
+            }
+
+            if (!haMostratoSuggerimentoCambioSezione && domandeConsecutiveStessaSezione >= LIMITE_DOMANDE_PRIMA_SUGGERIMENTO && giocoIniziato) {
+                mostraMessaggio(`🧠 Suggerimento: Hai fatto ${domandeConsecutiveStessaSezione} domande sulla stessa sezione. Prova a cambiare tipo di domanda per esercitarti su tutti gli argomenti!`, "messaggio-suggerimento");
+                haMostratoSuggerimentoCambioSezione = true;
+            }
+        }
+
+        function verificaRisposta() {
+            if (verificaEseguita) { creaNuovaDomanda(); return; }
+            verificaEseguita = true;
+            let rispostaCorretta = false;
+            let messaggio = "";
+            let classeMessaggio = "messaggio-info";
+            document.getElementById('tastiera-container').style.display = 'none';
+
+            if (domandaCorrente.tipo === 'scelta_multipla') {
+                if (rispostaCorrente === domandaCorrente.risposta) {
+                    rispostaCorretta = true;
+                    messaggio = `✅ CORRETTO! ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-corretto";
+                    playSuccessSound();
+                } else {
+                    messaggio = `❌ SBAGLIATO. La risposta corretta era: "${domandaCorrente.opzioni[domandaCorrente.risposta]}". ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-errato";
+                    haSbagliatoQuestaDomanda = true;
+                }
+                document.querySelectorAll('.opzione-btn').forEach((btn, index) => {
+                    if (index === domandaCorrente.risposta) btn.classList.add('selezionata');
+                    else if (index === rispostaCorrente && !rispostaCorretta) btn.classList.add('errata');
+                });
+            } else if (domandaCorrente.tipo === 'scelta_multipla_multi') {
+                const risposteSelezionateOrdinate = [...opzioniSelezionate].sort();
+                const risposteCorretteOrdinate = [...domandaCorrente.risposte].sort();
+                const sonoUguali = risposteSelezionateOrdinate.length === risposteCorretteOrdinate.length &&
+                                   risposteSelezionateOrdinate.every((val, idx) => val === risposteCorretteOrdinate[idx]);
+                if (sonoUguali) {
+                    rispostaCorretta = true;
+                    messaggio = `✅ TUTTE CORRETTE! ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-corretto";
+                    playSuccessSound();
+                } else {
+                    const risposteGiuste = risposteSelezionateOrdinate.filter(val => risposteCorretteOrdinate.includes(val)).length;
+                    if (risposteGiuste > 0) {
+                        messaggio = `⚠️ PARZIALMENTE CORRETTO. Hai individuato ${risposteGiuste} risposta/e corretta/e su ${risposteCorretteOrdinate.length}. ${domandaCorrente.spiegazione}`;
+                        classeMessaggio = "messaggio-parziale";
+                    } else {
+                        messaggio = `❌ SBAGLIATO. ${domandaCorrente.spiegazione}`;
+                        classeMessaggio = "messaggio-errato";
+                    }
+                    haSbagliatoQuestaDomanda = true;
+                }
+                document.querySelectorAll('.opzione-btn').forEach((btn, index) => {
+                    const isSelezionata = opzioniSelezionate.includes(index);
+                    const isCorretta = domandaCorrente.risposte.includes(index);
+                    if (isCorretta) btn.classList.add('selezionata');
+                    else if (isSelezionata && !isCorretta) btn.classList.add('errata');
+                });
+            } else if (domandaCorrente.tipo === 'vero_falso') {
+                if (rispostaCorrente === domandaCorrente.risposta) {
+                    rispostaCorretta = true;
+                    messaggio = `✅ CORRETTO! ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-corretto";
+                    playSuccessSound();
+                } else {
+                    messaggio = `❌ SBAGLIATO. La risposta corretta era: ${domandaCorrente.risposta ? "VERO" : "FALSO"}. ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-errato";
+                    haSbagliatoQuestaDomanda = true;
+                }
+                document.querySelectorAll('.opzione-btn').forEach(btn => {
+                    if ((btn.dataset.valore === "true" && domandaCorrente.risposta) ||
+                        (btn.dataset.valore === "false" && !domandaCorrente.risposta)) {
+                        btn.classList.add('selezionata');
+                    } else if (btn.classList.contains('selezionata') && !rispostaCorretta) {
+                        btn.classList.add('errata');
+                    }
+                });
+            } else if (domandaCorrente.tipo === 'risposta_aperta') {
+                const rispostaUtente = rispostaAperta.trim();
+                const rispostaCorrettaDomanda = domandaCorrente.risposta.toString().trim();
+                if (rispostaUtente === rispostaCorrettaDomanda) {
+                    rispostaCorretta = true;
+                    messaggio = `✅ CORRETTO! ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-corretto";
+                    playSuccessSound();
+                    document.querySelector('.casella-risposta').classList.add('corretta');
+                } else {
+                    messaggio = `❌ SBAGLIATO. La risposta corretta era: ${domandaCorrente.risposta}. ${domandaCorrente.spiegazione}`;
+                    classeMessaggio = "messaggio-errato";
+                    haSbagliatoQuestaDomanda = true;
+                    const casella = document.querySelector('.casella-risposta');
+                    casella.classList.add('errata');
+                    setTimeout(() => { casella.value = domandaCorrente.risposta; }, 500);
+                }
+            }
+
+            if (rispostaCorretta) {
+                operazioniCorretteConsecutive++;
+                erroriConsecutivi = 0;
+                let puntiGuadagnati = 2;
+                if (domandaCorrente.tipo === 'scelta_multipla_multi' && rispostaCorretta) puntiGuadagnati = 3;
+                puntiGuadagnati = Math.max(0, puntiGuadagnati - (aiutiUtilizzatiDomandaCorrente * 2));
+                punteggio += puntiGuadagnati;
+                if (operazioniCorretteConsecutive % 5 === 0 && vite < 3) {
+                    vite++;
+                    aggiornaVite();
+                    mostraMessaggio(`✨ BONUS VITA! Hai raggiunto ${operazioniCorretteConsecutive} risposte corrette consecutive!`, "messaggio-wow");
+                }
+                if (puntiGuadagnati > 0) {
+                    if (puntiGuadagnati === 3) { messaggio = `🎉 PERFETTO! +3 punti! ${domandaCorrente.spiegazione}`; classeMessaggio = "messaggio-wow"; }
+                    else if (puntiGuadagnati === 2) { messaggio = `✅ BRAVO! +2 punti! ${domandaCorrente.spiegazione}`; classeMessaggio = "messaggio-corretto"; }
+                    else if (puntiGuadagnati === 1) { messaggio = `👍 OK! +1 punto! ${domandaCorrente.spiegazione}`; classeMessaggio = "messaggio-corretto"; }
+                    else { messaggio = `😐 Risposta corretta, ma hai usato troppi aiuti! ${domandaCorrente.spiegazione}`; classeMessaggio = "messaggio-info"; }
+                }
+            } else {
+                operazioniCorretteConsecutive = 0;
+                erroriConsecutivi++;
+                if (erroriConsecutivi >= 3 && vite > 0) {
+                    vite--;
+                    erroriConsecutivi = 0;
+                    aggiornaVite();
+                    if (vite === 0) { mostraMessaggio("💀 GAME OVER! Hai perso tutte le vite!", "messaggio-ahi"); gameOver = true; pausaTimer(); }
+                    else { mostraMessaggio(`💔 Hai perso una vita! Ti rimangono ${vite} vite.`, "messaggio-ahi"); }
+                }
+                if (haSbagliatoQuestaDomanda) classeMessaggio = "messaggio-ahi";
+            }
+
+            aggiornaDisplayPunteggio();
+            aggiornaErroriIndicatore();
+            aggiornaContatori();
+            mostraMessaggio(messaggio, classeMessaggio);
+            document.getElementById('bottone-prossima').style.display = 'block';
+            document.getElementById('bottone-verifica').style.display = 'none';
+            document.getElementById('bottone-aiuto').style.display = 'none';
+        }
+
+        function daiAiuto() {
+            if (verificaEseguita || gameOver) return;
+            playClickSound();
+            aiutiUtilizzatiDomandaCorrente++;
+            aggiornaContatori();
+            let suggerimento = "";
+            if (domandaCorrente.tipo === 'scelta_multipla') {
+                const opzioniSbagliate = [0, 1, 2, 3].filter(i => i !== domandaCorrente.risposta);
+                const opzioniDaEliminare = mescolaArray(opzioniSbagliate).slice(0, 2);
+                opzioniDaEliminare.forEach(index => {
+                    const btn = document.querySelector(`.opzione-btn[data-index="${index}"]`);
+                    if (btn && !btn.classList.contains('selezionata')) {
+                        btn.style.opacity = '0.3';
+                        btn.style.pointerEvents = 'none';
+                    }
+                });
+                suggerimento = "Ho eliminato 2 risposte sbagliate!";
+            } else if (domandaCorrente.tipo === 'scelta_multipla_multi') {
+                const risposteNonSelezionate = domandaCorrente.risposte.filter(r => !opzioniSelezionate.includes(r));
+                if (risposteNonSelezionate.length > 0) {
+                    const rivelare = risposteNonSelezionate[0];
+                    const btn = document.querySelector(`.opzione-btn[data-index="${rivelare}"]`);
+                    if (btn) { btn.classList.add('selezionata'); opzioniSelezionate.push(rivelare); }
+                    suggerimento = "Ho selezionato una risposta corretta per te!";
+                } else suggerimento = "Hai già selezionato tutte le risposte corrette!";
+            } else if (domandaCorrente.tipo === 'vero_falso') {
+                suggerimento = `La risposta corretta è: ${domandaCorrente.risposta ? "VERO" : "FALSO"}`;
+            } else if (domandaCorrente.tipo === 'risposta_aperta') {
+                const rispostaNum = parseInt(domandaCorrente.risposta);
+                if (!isNaN(rispostaNum)) {
+                    const range = Math.max(1, Math.floor(rispostaNum * 0.2));
+                    const min = Math.max(0, rispostaNum - range);
+                    const max = rispostaNum + range;
+                    suggerimento = `Il numero è compreso tra ${min} e ${max}`;
+                } else {
+                    suggerimento = `La risposta contiene: "${domandaCorrente.risposta.substring(0, 3)}..."`;
+                }
+            }
+            mostraMessaggio(`🧠 AIUTO UTILIZZATO (-2 punti): ${suggerimento}`, "messaggio-info");
+        }
+
+        // ==================== INIZIALIZZAZIONE ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            inizializzaAudio();
+            aggiornaVite();
+            aggiornaDisplayTempo();
+            aggiornaDisplayPunteggio();
+            aggiornaErroriIndicatore();
+
+            const messaggioAvvio = document.getElementById('messaggio-avvio');
+            messaggioAvvio.addEventListener('click', iniziaGioco);
+
+            document.getElementById('tipo-tabelle').addEventListener('click', () => cambiaTipoDomanda('tabelle'));
+            document.getElementById('tipo-grafici').addEventListener('click', () => cambiaTipoDomanda('grafici'));
+            document.getElementById('tipo-conversione').addEventListener('click', () => cambiaTipoDomanda('conversione'));
+            document.getElementById('tipo-interpretazione').addEventListener('click', () => cambiaTipoDomanda('interpretazione'));
+
+            document.getElementById('bottone-verifica').addEventListener('click', verificaRisposta);
+            document.getElementById('bottone-aiuto').addEventListener('click', daiAiuto);
+            document.getElementById('bottone-prossima').addEventListener('click', () => {
+                if (gameOver) {
+                    giocoIniziato = false;
+                    document.getElementById('messaggio-avvio').style.display = 'flex';
+                    document.getElementById('controlli-gioco').style.display = 'none';
+                    document.getElementById('area-domanda').style.display = 'none';
+                    nascondiMessaggio();
+                } else {
+                    creaNuovaDomanda();
+                    nascondiMessaggio();
+                }
+            });
+
+            document.getElementById('bottone-nuova').addEventListener('click', () => {
+                giocoIniziato = false;
+                gameOver = false;
+                pausaTimer();
+                document.getElementById('messaggio-avvio').style.display = 'flex';
+                document.getElementById('controlli-gioco').style.display = 'none';
+                document.getElementById('area-domanda').style.display = 'none';
+                nascondiMessaggio();
+                domande = {
+                    tabelle: mescolaArray([...tutteLeDomande.tabelle]),
+                    grafici: mescolaArray([...tutteLeDomande.grafici]),
+                    conversione: mescolaArray([...tutteLeDomande.conversione]),
+                    interpretazione: mescolaArray([...tutteLeDomande.interpretazione])
+                };
+                domandeDisponibili = [...domande.tabelle];
+                indiceDomandaCorrente = 0;
+            });
+
+            const istruzioniBtn = document.getElementById('istruzioni-btn');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const closeModal = document.getElementById('close-modal');
+            istruzioniBtn.addEventListener('click', () => { modalOverlay.style.display = 'flex'; playClickSound(); });
+            closeModal.addEventListener('click', () => { modalOverlay.style.display = 'none'; playClickSound(); });
+            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) modalOverlay.style.display = 'none'; });
+
+            timeoutBenvenuto = setTimeout(() => {
+                if (!giocoIniziato) messaggioAvvio.style.animation = 'pulse 1s infinite';
+            }, 10000);
+
+            console.log("Tabelle e Grafici inizializzato!");
+        });
+    </script>
+</body>
+</html>

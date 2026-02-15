@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area e Perimetro - Scuola Primaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .punteggio-compresso {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .punteggio-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .punteggio-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+            margin-bottom: 2px;
+        }
+
+        .punteggio-valore {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .serie-spiegazione {
+            font-size: 0.65em;
+            opacity: 0.8;
+            margin-top: 2px;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: opacity 0.2s;
+        }
+
+        .serie-spiegazione:hover {
+            opacity: 1;
+        }
+
+        /* Stile per il pulsante Esci */
+        .esci-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 0.9em;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: 100%;
+            padding: 2px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .esci-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .esci-icon {
+            font-size: 1.2em;
+        }
+
+        .tempo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            height: 20px;
+        }
+
+        .tempo-icon {
+            font-size: 0.9em;
+        }
+
+        .tempo-bar {
+            flex-grow: 1;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .tempo-riempimento {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #ff9800, #f44336);
+            border-radius: 2px;
+            width: 0%;
+            transition: none;
+        }
+
+        .tempo-numero {
+            font-weight: bold;
+            font-size: 0.85em;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .domanda {
+            text-align: center;
+            font-size: 1.2em;
+            color: #333;
+            font-weight: bold;
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #ffc107;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .figure-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .figura-wrapper {
+            flex: 1;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .figura-label {
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            padding: 6px 12px;
+            background: #667eea;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .griglia-contenitore {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .quadretto {
+            position: absolute;
+            border: 1px solid #4caf50;
+            background: #81c784;
+            box-sizing: border-box;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .risultato-input {
+            width: 110px;
+            height: 45px;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.4em;
+            text-align: center;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            background: white;
+        }
+
+        .risultato-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .unita-misura {
+            font-size: 0.95em;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .opzioni-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .opzione {
+            padding: 12px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .opzione:hover {
+            transform: translateY(-2px);
+            background: #e0e0e0;
+        }
+
+        .opzione.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+
+        .messaggio {
+            text-align: center;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .messaggio.show {
+            opacity: 1;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .messaggio.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #4caf50;
+        }
+
+        .messaggio.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f44336;
+        }
+
+        /* Finestra modale per spiegazioni */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: 1.4em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #d32f2f;
+        }
+
+        .spiegazione-section {
+            margin-bottom: 15px;
+        }
+
+        .spiegazione-section h3 {
+            color: #4caf50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .spiegazione-section p, .spiegazione-section ul {
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .spiegazione-section ul {
+            padding-left: 18px;
+        }
+
+        .spiegazione-section li {
+            margin-bottom: 4px;
+        }
+
+        .punteggio-esempio {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            border-left: 4px solid #4caf50;
+            font-size: 0.9em;
+        }
+
+        .esempio-titolo {
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 6px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Media Queries per schermi piccoli */
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.4em;
+                margin-bottom: 8px;
+            }
+            
+            .domanda {
+                font-size: 1em;
+                padding: 10px;
+                margin-bottom: 12px;
+            }
+            
+            .figure-container {
+                gap: 12px;
+            }
+            
+            .figura-wrapper {
+                min-width: 140px;
+            }
+            
+            .figura-label {
+                padding: 5px 10px;
+                font-size: 0.95em;
+            }
+            
+            .opzioni-container {
+                grid-template-columns: 1fr;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 1em;
+                max-width: 180px;
+            }
+            
+            .punteggio-compresso {
+                padding: 8px;
+            }
+            
+            .punteggio-label {
+                font-size: 0.75em;
+            }
+            
+            .punteggio-valore {
+                font-size: 1.2em;
+            }
+            
+            .tempo-container {
+                height: 18px;
+                margin-bottom: 8px;
+            }
+            
+            .tempo-bar {
+                height: 3px;
+            }
+            
+            .tempo-numero {
+                font-size: 0.8em;
+                min-width: 35px;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📐 Area e Perimetro</h1>
+
+        <div class="punteggio-compresso">
+            <div class="punteggio-item">
+                <div class="punteggio-label">Punteggio</div>
+                <div class="punteggio-valore" id="score">0</div>
+            </div>
+            <div class="punteggio-item">
+                <div class="punteggio-label">Domande</div>
+                <div class="punteggio-valore" id="questions">0</div>
+            </div>
+            <div class="punteggio-item">
+                <div class="punteggio-label">Serie 🔥</div>
+                <div class="punteggio-valore" id="streak">0</div>
+                <div class="serie-spiegazione" id="spiegazioniBtn">spiegazioni del gioco</div>
+            </div>
+            <!-- NUOVO PULSANTE ESCI -->
+            <div class="punteggio-item">
+                <button class="esci-btn" id="esciBtn">
+                    <span class="esci-icon">🚪</span>
+                    <span>Esci</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="tempo-container">
+            <div class="tempo-icon">⏱️</div>
+            <div class="tempo-bar">
+                <div class="tempo-riempimento" id="tempoBar"></div>
+            </div>
+            <div class="tempo-numero" id="tempoNumero">0.0s</div>
+        </div>
+
+        <div class="domanda" id="domanda"></div>
+
+        <div class="figure-container" id="figure-container"></div>
+
+        <div class="input-container" id="input-container"></div>
+
+        <div class="button-group">
+            <button class="btn-check" id="checkBtn">
+                <span>✅</span>
+                <span>Controlla</span>
+            </button>
+            <button class="btn-next" id="nextBtn">
+                <span>➡️</span>
+                <span>Prossima</span>
+            </button>
+        </div>
+
+        <div class="messaggio" id="messaggio"></div>
+    </div>
+
+    <!-- Finestra modale per spiegazioni -->
+    <div class="modal-overlay" id="modalSpiegazioni">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📚 Spiegazioni del Gioco</div>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>🎯 Obiettivo del Gioco</h3>
+                <p>Rispondi correttamente alle domande su <strong>area</strong> e <strong>perimetro</strong> delle figure geometriche.</p>
+                <p>Le figure sono disegnate su una griglia a quadretti. Ogni quadretto rappresenta un'unità di misura.</p>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>📏 Come Calcolare</h3>
+                <ul>
+                    <li><strong>AREA</strong>: Conta quanti quadretti compongono la figura</li>
+                    <li><strong>PERIMETRO</strong>: Conta quanti lati dei quadretti formano il contorno esterno della figura</li>
+                </ul>
+                <p>Esempio: Un quadrato 3×3 ha area 9 (9 quadretti) e perimetro 12 (12 lati).</p>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>⭐ Sistema di Punteggio</h3>
+                <p>Il punteggio finale si calcola con questa formula:</p>
+                <div class="punteggio-esempio">
+                    <div class="esempio-titolo">Formula: PUNTI = (20 + Serie × 5) × Moltiplicatore Tempo</div>
+                    <p><strong>Punti Base</strong>: 20 punti per ogni risposta corretta</p>
+                    <p><strong>Bonus Serie</strong>: +5 punti per ogni risposta corretta consecutiva</p>
+                    <p><strong>Moltiplicatore Tempo</strong>: Bonus in base alla velocità:</p>
+                    <ul>
+                        <li>0-5 secondi: ×2.0 (doppio punteggio!)</li>
+                        <li>5-10 secondi: ×1.5 (+50%)</li>
+                        <li>10-15 secondi: ×1.2 (+20%)</li>
+                        <li>15+ secondi: ×1.0 (punteggio base)</li>
+                    </ul>
+                    <p><strong>Nota:</strong> Non c'è limite di tempo per rispondere, ma più sei veloce, più punti ottieni!</p>
+                </div>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>🔥 Cos'è la "Serie"?</h3>
+                <p>La <strong>serie</strong> è il conteggio delle risposte corrette di seguito. Ogni risposta sbagliata azzera la serie.</p>
+                <p>Mantieni alta la serie per ottenere bonus di punteggio maggiori!</p>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>⏱️ Timer e Tempo</h3>
+                <p>Il timer misura quanto tempo impieghi per rispondere. Più sei veloce, più punti ottieni!</p>
+                <p>La barra del tempo cambia colore in base alla velocità:</p>
+                <ul>
+                    <li>🟢 <strong>Verde</strong>: Molto veloce (0-5 secondi) - ×2.0 punti!</li>
+                    <li>🟠 <strong>Arancione</strong>: Veloce (5-10 secondi) - ×1.5 punti</li>
+                    <li>🔴 <strong>Rosso</strong>: Normale (10-15 secondi) - ×1.2 punti</li>
+                    <li>⚫ <strong>Grigio</strong>: Lento (15+ secondi) - ×1.0 punti</li>
+                </ul>
+                <p><strong>Attenzione</strong>: Non c'è penalità per essere lenti, ma premi per essere veloci!</p>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>🎮 Tipi di Domande</h3>
+                <p>Il gioco propone 4 tipi di domande:</p>
+                <ol>
+                    <li><strong>Calcolo Area</strong>: Quanti quadretti ha la figura?</li>
+                    <li><strong>Calcolo Perimetro</strong>: Quanti lati ha il contorno?</li>
+                    <li><strong>Confronto Area</strong>: Quale figura ha più quadretti?</li>
+                    <li><strong>Confronto Perimetro</strong>: Quale figura ha più lati?</li>
+                </ol>
+            </div>
+            
+            <div class="spiegazione-section">
+                <h3>💡 Consigli per Vincere</h3>
+                <ul>
+                    <li>Allena il calcolo veloce di area e perimetro</li>
+                    <li>Cerca di rispondere entro 10 secondi per il bonus</li>
+                    <li>Fai attenzione ai dettagli delle figure complesse</li>
+                    <li>Pratica con le diverse forme: T, L, C, quadrati, rettangoli</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px; padding-top: 12px; border-top: 1px solid #ddd;">
+                <p style="color: #667eea; font-weight: bold;">Buon divertimento e buona fortuna! 🍀</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAZIONE
+        const DIMENSIONE_QUADRETTO = 32;
+        const PUNTI_BASE = 20;
+        const BONUS_SERIE = 5;
+        
+        // FUNZIONE PER CALCOLARE AUTOMATICAMENTE IL PERIMETRO
+        function calcolaPerimetro(quadretti) {
+            let perimetro = 0;
+            const setQuadretti = new Set(quadretti.map(q => `${q[0]},${q[1]}`));
+            
+            // Per ogni quadretto, controlla i 4 lati
+            for (const q of quadretti) {
+                const [x, y] = q;
+                
+                // Controlla se c'è un quadretto a sinistra
+                if (!setQuadretti.has(`${x-1},${y}`)) perimetro++;
+                // Controlla se c'è un quadretto a destra
+                if (!setQuadretti.has(`${x+1},${y}`)) perimetro++;
+                // Controlla se c'è un quadretto sopra
+                if (!setQuadretti.has(`${x},${y-1}`)) perimetro++;
+                // Controlla se c'è un quadretto sotto
+                if (!setQuadretti.has(`${x},${y+1}`)) perimetro++;
+            }
+            
+            return perimetro;
+        }
+        
+        // FUNZIONE PER CALCOLARE AUTOMATICAMENTE L'AREA
+        function calcolaArea(quadretti) {
+            return quadretti.length;
+        }
+        
+        // FIGURE (solo coordinate, area e perimetro verranno calcolati automaticamente)
+        const FIGURE = [
+            // Figura A: Forma a C
+            {
+                nome: "A",
+                quadretti: [
+                    [1,1], [2,1], [3,1],
+                    [1,2], [3,2],
+                    [1,3], [2,3], [3,3]
+                ]
+            },
+            // Figura B: Rettangolo con buco
+            {
+                nome: "B",
+                quadretti: [
+                    [1,1], [2,1], [3,1], [4,1],
+                    [1,2], [4,2],
+                    [1,3], [4,3],
+                    [1,4], [2,4], [3,4], [4,4]
+                ]
+            },
+            // Figura C: Rettangolo 2x4
+            {
+                nome: "C",
+                quadretti: [
+                    [1,1], [2,1],
+                    [1,2], [2,2],
+                    [1,3], [2,3],
+                    [1,4], [2,4]
+                ]
+            },
+            // Figura D: Clessidra
+            {
+                nome: "D",
+                quadretti: [
+                    [2,1], [3,1],
+                    [1,2], [2,2], [3,2], [4,2],
+                    [2,3], [3,3],
+                    [1,4], [2,4], [3,4], [4,4]
+                ]
+            },
+            // Figura E: Quadrato 3x3
+            {
+                nome: "E",
+                quadretti: [
+                    [1,1], [2,1], [3,1],
+                    [1,2], [2,2], [3,2],
+                    [1,3], [2,3], [3,3]
+                ]
+            },
+            // Figura F: Forma a L allungata
+            {
+                nome: "F",
+                quadretti: [
+                    [1,1], [2,1],
+                    [1,2], [2,2], [3,2],
+                    [1,3], [2,3], [3,3],
+                    [2,4], [3,4]
+                ]
+            },
+            // Figura G: T piccola
+            {
+                nome: "G",
+                quadretti: [
+                    [1,1], [2,1], [3,1],
+                    [2,2],
+                    [2,3],
+                    [2,4]
+                ]
+            },
+            // Figura H: T larga
+            {
+                nome: "H",
+                quadretti: [
+                    [1,1], [2,1], [3,1], [4,1],
+                    [2,2],
+                    [2,3],
+                    [2,4]
+                ]
+            },
+            // Figura I: T allungata
+            {
+                nome: "I",
+                quadretti: [
+                    [2,1],
+                    [1,2], [2,2], [3,2],
+                    [2,3],
+                    [2,4],
+                    [2,5]
+                ]
+            },
+            // Figura J: L piccola
+            {
+                nome: "J",
+                quadretti: [
+                    [1,1],
+                    [1,2],
+                    [1,3],
+                    [1,4], [2,4]
+                ]
+            },
+            // Figura K: L media
+            {
+                nome: "K",
+                quadretti: [
+                    [1,1],
+                    [1,2],
+                    [1,3],
+                    [1,4], [2,4], [3,4]
+                ]
+            },
+            // Figura L: L grande
+            {
+                nome: "L",
+                quadretti: [
+                    [1,1],
+                    [1,2],
+                    [1,3],
+                    [1,4], [2,4], [3,4], [4,4]
+                ]
+            },
+            // Figura M: L con base larga
+            {
+                nome: "M",
+                quadretti: [
+                    [1,1], [2,1],
+                    [1,2],
+                    [1,3],
+                    [1,4], [2,4], [3,4], [4,4]
+                ]
+            },
+            // Figura N: L rovesciata
+            {
+                nome: "N",
+                quadretti: [
+                    [1,1], [2,1], [3,1],
+                    [3,2],
+                    [3,3],
+                    [1,4], [2,4], [3,4]
+                ]
+            },
+            // Figura O: L complessa
+            {
+                nome: "O",
+                quadretti: [
+                    [1,1], [2,1], [3,1],
+                    [1,2],
+                    [1,3],
+                    [1,4], [2,4], [3,4], [4,4]
+                ]
+            }
+        ];
+        
+        // Calcola area e perimetro per tutte le figure
+        FIGURE.forEach(figura => {
+            figura.area = calcolaArea(figura.quadretti);
+            figura.perimetro = calcolaPerimetro(figura.quadretti);
+        });
+
+        // TIPI DI DOMANDE
+        const TIPI_DOMANDA = [
+            { tipo: "area", testo: "Quanto è l'AREA della figura {figura}?" },
+            { tipo: "perimetro", testo: "Quanto è il PERIMETRO della figura {figura}?" },
+            { tipo: "area-maggiore", testo: "Quale figura ha AREA MAGGIORE?" },
+            { tipo: "perimetro-maggiore", testo: "Quale figura ha PERIMETRO MAGGIORE?" }
+        ];
+
+        // STATO GIOCO
+        let figura1 = null;
+        let figura2 = null;
+        let tipoDomanda = null;
+        let domandaFigura = null;
+        let rispostaSelezionata = null;
+        let inputValore = null;
+        let tempoInizio = null;
+        let timerIntervallo = null;
+
+        // PUNTEGGIO
+        let score = 0;
+        let questions = 0;
+        let streak = 0;
+
+        // INIZIALIZZAZIONE
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            
+            document.getElementById('checkBtn').addEventListener('click', verificaRisposta);
+            document.getElementById('nextBtn').addEventListener('click', prossimaDomanda);
+            
+            // Gestione finestra spiegazioni
+            document.getElementById('spiegazioniBtn').addEventListener('click', () => {
+                document.getElementById('modalSpiegazioni').classList.add('show');
+            });
+            
+            document.getElementById('modalClose').addEventListener('click', () => {
+                document.getElementById('modalSpiegazioni').classList.remove('show');
+            });
+            
+            // Chiudi modale cliccando fuori
+            document.getElementById('modalSpiegazioni').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('modalSpiegazioni')) {
+                    document.getElementById('modalSpiegazioni').classList.remove('show');
+                }
+            });
+            
+            // Chiudi modale con ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.getElementById('modalSpiegazioni').classList.remove('show');
+                }
+            });
+
+            // NUOVO: pulsante Esci
+            document.getElementById('esciBtn').addEventListener('click', esciDalGioco);
+        });
+
+        function initGame() {
+            resetGameState();
+            generaNuovaDomanda();
+        }
+
+        function resetGameState() {
+            rispostaSelezionata = null;
+            inputValore = null;
+            document.getElementById('messaggio').classList.remove('show');
+            document.getElementById('input-container').innerHTML = '';
+            
+            // Ferma il timer di aggiornamento continuo
+            if (timerIntervallo) {
+                clearInterval(timerIntervallo);
+                timerIntervallo = null;
+            }
+        }
+
+        function avviaTimer() {
+            tempoInizio = Date.now();
+            
+            // Aggiorna il timer in tempo reale
+            timerIntervallo = setInterval(() => {
+                const tempoTrascorso = (Date.now() - tempoInizio) / 1000;
+                aggiornaTimerDisplay(tempoTrascorso);
+            }, 100);
+            
+            aggiornaTimerDisplay(0);
+        }
+
+        function aggiornaTimerDisplay(tempoTrascorso) {
+            // Mostra il tempo trascorso con un decimale
+            document.getElementById('tempoNumero').textContent = `${tempoTrascorso.toFixed(1)}s`;
+            
+            // Calcola la percentuale per la barra (mostra fino a 30 secondi come massimo)
+            const maxTempoVisuale = 30;
+            const percentuale = Math.min((tempoTrascorso / maxTempoVisuale) * 100, 100);
+            document.getElementById('tempoBar').style.width = `${percentuale}%`;
+            
+            // Cambia colore in base alla velocità
+            const barra = document.getElementById('tempoBar');
+            if (tempoTrascorso <= 5) {
+                barra.style.background = 'linear-gradient(90deg, #4caf50, #4caf50)';
+            } else if (tempoTrascorso <= 10) {
+                barra.style.background = 'linear-gradient(90deg, #ff9800, #ff9800)';
+            } else if (tempoTrascorso <= 15) {
+                barra.style.background = 'linear-gradient(90deg, #f44336, #f44336)';
+            } else {
+                barra.style.background = 'linear-gradient(90deg, #666666, #666666)';
+            }
+        }
+
+        function calcolaPunteggioPerTempo(tempoTrascorso) {
+            let moltiplicatore = 1.0;
+            
+            if (tempoTrascorso <= 5) {
+                moltiplicatore = 2.0;
+            } else if (tempoTrascorso <= 10) {
+                moltiplicatore = 1.5;
+            } else if (tempoTrascorso <= 15) {
+                moltiplicatore = 1.2;
+            } else {
+                moltiplicatore = 1.0;
+            }
+            
+            return moltiplicatore;
+        }
+
+        function generaNuovaDomanda() {
+            tipoDomanda = TIPI_DOMANDA[Math.floor(Math.random() * TIPI_DOMANDA.length)];
+            
+            // Seleziona due figure diverse con valori diversi per confronti
+            let tentativi = 0;
+            do {
+                figura1 = FIGURE[Math.floor(Math.random() * FIGURE.length)];
+                figura2 = FIGURE[Math.floor(Math.random() * FIGURE.length)];
+                tentativi++;
+                
+                if (tentativi > 10) {
+                    break;
+                }
+            } while (
+                figura1.nome === figura2.nome ||
+                (tipoDomanda.tipo === "area-maggiore" && figura1.area === figura2.area) ||
+                (tipoDomanda.tipo === "perimetro-maggiore" && figura1.perimetro === figura2.perimetro)
+            );
+            
+            if (tipoDomanda.tipo === "area" || tipoDomanda.tipo === "perimetro") {
+                domandaFigura = Math.random() > 0.5 ? figura1 : figura2;
+            } else {
+                domandaFigura = null;
+            }
+            
+            let testoDomanda = tipoDomanda.testo;
+            if (domandaFigura) {
+                testoDomanda = testoDomanda.replace("{figura}", domandaFigura.nome);
+            }
+            
+            document.getElementById('domanda').textContent = testoDomanda;
+            
+            renderFigure();
+            renderInput();
+            avviaTimer();
+        }
+
+        function renderFigure() {
+            const container = document.getElementById('figure-container');
+            let html = '';
+            
+            [figura1, figura2].forEach(figura => {
+                const maxX = Math.max(...figura.quadretti.map(q => q[0]));
+                const maxY = Math.max(...figura.quadretti.map(q => q[1]));
+                const width = maxX * DIMENSIONE_QUADRETTO;
+                const height = maxY * DIMENSIONE_QUADRETTO;
+                
+                html += `
+                    <div class="figura-wrapper">
+                        <div class="figura-label">Figura ${figura.nome}</div>
+                        <div class="griglia-contenitore" style="width: ${width}px; height: ${height}px; position: relative;">
+                `;
+                
+                figura.quadretti.forEach(q => {
+                    const [x, y] = q;
+                    html += `
+                        <div class="quadretto" 
+                             style="left: ${(x-1) * DIMENSIONE_QUADRETTO}px; 
+                                    top: ${(y-1) * DIMENSIONE_QUADRETTO}px;
+                                    width: ${DIMENSIONE_QUADRETTO}px;
+                                    height: ${DIMENSIONE_QUADRETTO}px;">
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function renderInput() {
+            const container = document.getElementById('input-container');
+            
+            if (tipoDomanda.tipo === "area" || tipoDomanda.tipo === "perimetro") {
+                const unita = tipoDomanda.tipo === "area" ? "quadretti" : "lati";
+                container.innerHTML = `
+                    <div class="input-area">
+                        <input type="number" id="input-valore" class="risultato-input" 
+                               min="0" max="50" placeholder="?" autofocus>
+                        <div class="unita-misura">${unita}</div>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    document.getElementById('input-valore')?.focus();
+                }, 100);
+                
+                document.getElementById('input-valore').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        verificaRisposta();
+                    }
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="opzioni-container">
+                        <div class="opzione" data-valore="${figura1.nome}">
+                            Figura ${figura1.nome}
+                        </div>
+                        <div class="opzione" data-valore="${figura2.nome}">
+                            Figura ${figura2.nome}
+                        </div>
+                    </div>
+                `;
+                
+                document.querySelectorAll('.opzione').forEach(opzione => {
+                    opzione.addEventListener('click', () => {
+                        document.querySelectorAll('.opzione').forEach(o => 
+                            o.classList.remove('selected'));
+                        opzione.classList.add('selected');
+                        rispostaSelezionata = opzione.dataset.valore;
+                    });
+                });
+            }
+        }
+
+        function verificaRisposta() {
+            // Ferma il timer di aggiornamento continuo
+            if (timerIntervallo) {
+                clearInterval(timerIntervallo);
+                timerIntervallo = null;
+            }
+            
+            const tempoTrascorso = (Date.now() - tempoInizio) / 1000;
+            const moltiplicatoreTempo = calcolaPunteggioPerTempo(tempoTrascorso);
+            
+            let rispostaUtente = null;
+            let rispostaCorretta = null;
+            
+            switch(tipoDomanda.tipo) {
+                case "area":
+                    rispostaCorretta = domandaFigura.area;
+                    rispostaUtente = parseInt(document.getElementById('input-valore')?.value);
+                    break;
+                case "perimetro":
+                    rispostaCorretta = domandaFigura.perimetro;
+                    rispostaUtente = parseInt(document.getElementById('input-valore')?.value);
+                    break;
+                case "area-maggiore":
+                    rispostaCorretta = figura1.area > figura2.area ? figura1.nome : figura2.nome;
+                    rispostaUtente = rispostaSelezionata;
+                    break;
+                case "perimetro-maggiore":
+                    rispostaCorretta = figura1.perimetro > figura2.perimetro ? figura1.nome : figura2.nome;
+                    rispostaUtente = rispostaSelezionata;
+                    break;
+            }
+            
+            if ((tipoDomanda.tipo === "area" || tipoDomanda.tipo === "perimetro") && 
+                (isNaN(rispostaUtente) || rispostaUtente === null)) {
+                mostraMessaggio('Inserisci un numero!', 'error');
+                // Riavvia il timer se non c'è risposta
+                avviaTimer();
+                return;
+            }
+            
+            if ((tipoDomanda.tipo === "area-maggiore" || tipoDomanda.tipo === "perimetro-maggiore") && 
+                !rispostaSelezionata) {
+                mostraMessaggio('Seleziona una figura!', 'error');
+                // Riavvia il timer se non c'è risposta
+                avviaTimer();
+                return;
+            }
+            
+            const isCorrect = rispostaUtente == rispostaCorretta;
+            
+            let punti = 0;
+            let messaggio = '';
+            
+            if (isCorrect) {
+                const puntiBase = PUNTI_BASE;
+                const bonusSerie = streak * BONUS_SERIE;
+                punti = Math.round((puntiBase + bonusSerie) * moltiplicatoreTempo);
+                
+                score += punti;
+                streak++;
+                questions++;
+                
+                messaggio = `🎉 BRAVISSIMO!<br>`;
+                messaggio += `Tempo: ${tempoTrascorso.toFixed(1)}s<br>`;
+                
+                if (tipoDomanda.tipo === "area") {
+                    messaggio += `Area figura ${domandaFigura.nome} = ${rispostaCorretta} quadretti`;
+                } else if (tipoDomanda.tipo === "perimetro") {
+                    messaggio += `Perimetro figura ${domandaFigura.nome} = ${rispostaCorretta} lati`;
+                } else if (tipoDomanda.tipo === "area-maggiore") {
+                    messaggio += `Esatto! Figura ${rispostaCorretta} ha più quadretti`;
+                } else {
+                    messaggio += `Esatto! Figura ${rispostaCorretta} ha più lati esterni`;
+                }
+                
+                messaggio += `<br>Punti: ${puntiBase} base`;
+                if (bonusSerie > 0) messaggio += ` + ${bonusSerie} serie`;
+                if (moltiplicatoreTempo > 1.0) messaggio += ` × ${moltiplicatoreTempo.toFixed(1)} velocità`;
+                messaggio += `<br>Totale: +${punti} punti`;
+                messaggio += `<br>Serie: ${streak} risposte giuste di seguito! 🔥`;
+                
+                mostraMessaggio(messaggio, 'success');
+            } else {
+                streak = 0;
+                questions++;
+                
+                messaggio = `❌ ATTENZIONE!<br>`;
+                messaggio += `Tempo: ${tempoTrascorso.toFixed(1)}s<br>`;
+                
+                if (tipoDomanda.tipo === "area") {
+                    messaggio += `Area figura ${domandaFigura.nome} = ${rispostaCorretta} quadretti`;
+                    messaggio += `<br>Hai risposto: ${rispostaUtente}`;
+                } else if (tipoDomanda.tipo === "perimetro") {
+                    messaggio += `Perimetro figura ${domandaFigura.nome} = ${rispostaCorretta} lati`;
+                    messaggio += `<br>Hai risposto: ${rispostaUtente}`;
+                } else if (tipoDomanda.tipo === "area-maggiore") {
+                    messaggio += `La risposta era: Figura ${rispostaCorretta}`;
+                    messaggio += `<br>(${figura1.nome}=${figura1.area}, ${figura2.nome}=${figura2.area})`;
+                } else {
+                    messaggio += `La risposta era: Figura ${rispostaCorretta}`;
+                    messaggio += `<br>(${figura1.nome}=${figura1.perimetro}, ${figura2.nome}=${figura2.perimetro})`;
+                }
+                
+                messaggio += `<br>Riprova!`;
+                
+                mostraMessaggio(messaggio, 'error');
+            }
+            
+            updatePunteggio();
+            disabilitaInput();
+        }
+
+        function disabilitaInput() {
+            if (tipoDomanda.tipo === "area" || tipoDomanda.tipo === "perimetro") {
+                const input = document.getElementById('input-valore');
+                if (input) input.disabled = true;
+            } else {
+                document.querySelectorAll('.opzione').forEach(o => {
+                    o.style.pointerEvents = 'none';
+                });
+            }
+        }
+
+        function prossimaDomanda() {
+            resetGameState();
+            generaNuovaDomanda();
+            document.getElementById('messaggio').classList.remove('show');
+        }
+
+        function updatePunteggio() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('questions').textContent = questions;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function mostraMessaggio(testo, tipo) {
+            const msg = document.getElementById('messaggio');
+            msg.innerHTML = testo;
+            msg.className = `messaggio show ${tipo}`;
+            
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 5000);
+        }
+
+        // ==================== FUNZIONE PER ESCI (DIRETTA) ====================
+        function esciDalGioco() {
+            if (confirm("Vuoi davvero uscire dal gioco?")) {
+                // Ferma il timer se attivo
+                if (timerIntervallo) {
+                    clearInterval(timerIntervallo);
+                }
+                // Reindirizza a Google (o a qualsiasi altra pagina)
+                window.location.href = "https://oragioca.github.io/matematica/";
+                // In alternativa, per una pagina vuota: window.location.href = "about:blank";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Addizioni - Display 7 Segmenti</title>
+    <style>
+        /* STILI IDENTICI AL TUO ORIGINALE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #1a1a2e, #16213e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+            color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        .game-container {
+            background: linear-gradient(145deg, #2d3047, #1f2235);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            width: 100%;
+            max-width: 1000px;
+            text-align: center;
+            border: 2px solid #3a3f5c;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+            max-height: 98vh;
+            overflow-y: auto;
+        }
+        
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b00, #ffa500, #ff6b00);
+            z-index: 1;
+        }
+        
+        .game-header {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #ffa500;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(90deg, #ff6b00, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            padding: 0 5px;
+        }
+        
+        .modalita-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 8px 0 10px 0;
+            width: 100%;
+        }
+        
+        .modalita-btn {
+            padding: 8px 20px;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            background: rgba(74, 144, 226, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-weight: bold;
+            min-width: 110px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modalita-btn:hover {
+            background: rgba(74, 144, 226, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .modalita-btn.attiva {
+            background: #4a90e2;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 12px rgba(74, 144, 226, 0.5);
+            border: 2px solid #5aa0f0;
+        }
+        
+        .cruscotto-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 8px;
+            padding: 6px;
+            margin: 6px 0;
+            border: 2px solid #3a3f5c;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5),
+                        0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+        
+        .cruscotto-container::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            border-radius: 5px;
+            pointer-events: none;
+        }
+        
+        .indicatore-cruscotto {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;  /* MODIFICATO: centra verticalmente il contenuto */
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            padding: 0 5px;
+        }
+        
+        .display-container {
+            position: relative;
+            width: 80px;
+            height: 40px;
+            margin-bottom: 3px;
+            background: linear-gradient(145deg, #0a0e14, #05070a);
+            border-radius: 5px;
+            border: 2px solid #1a3b5d;
+            box-shadow: 
+                inset 0 0 8px rgba(0, 20, 40, 0.8),
+                0 3px 4px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(0, 100, 200, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .display-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.03) 0px,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .display-7segmenti {
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 
+                0 0 6px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.4);
+            letter-spacing: 0.6px;
+            position: relative;
+            z-index: 2;
+            transform: skew(-1deg);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .display-7segmenti.giallo {
+            color: #ffcc00;
+            text-shadow: 
+                0 0 6px rgba(255, 204, 0, 0.8),
+                0 0 10px rgba(255, 204, 0, 0.4);
+        }
+        
+        .display-7segmenti.verde {
+            color: #00ff00;
+            text-shadow: 
+                0 0 6px rgba(0, 255, 0, 0.8),
+                0 0 10px rgba(0, 255, 0, 0.4);
+        }
+        
+        .display-7segmenti.tempo {
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+        
+        .display-title {
+            margin-top: 3px;
+            font-size: 0.75rem;
+            color: #ffcc00;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(255, 204, 0, 0.5);
+            letter-spacing: 0.2px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+        }
+        
+        .istruzioni-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 0 5px;
+        }
+        
+        .istruzioni-btn {
+            padding: 7px 14px;
+            background: linear-gradient(145deg, #ffa500, #ff8c00);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            line-height: 1.2;
+            width: 100%;
+            max-width: 110px;
+        }
+        
+        .istruzioni-btn:hover {
+            background: linear-gradient(145deg, #ff8c00, #e67e00);
+            transform: translateY(-2px);
+        }
+        
+        .vite-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+            width: 100%;
+        }
+        
+        .vita {
+            width: 22px;
+            height: 22px;
+            background: #ff4757;
+            clip-path: polygon(50% 0%, 100% 35%, 82% 100%, 18% 100%, 0% 35%);
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+            transition: all 0.3s ease;
+        }
+        
+        .vita.persa {
+            background: #3a3f5c;
+            transform: scale(0.8);
+        }
+        
+        .sezione-gioco {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            position: relative;
+        }
+        
+        .area-operazione {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 33, 57, 0.8);
+            border: 2px solid #4a90e2;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 6px 0;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .colonna-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .riga-colonna {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin: 2px 0;
+        }
+        
+        .riga-riporti {
+            margin-bottom: 2px;
+            min-height: 30px;
+        }
+        
+        .cella-riporto {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #228b22;
+            border-radius: 6px;
+            background: linear-gradient(145deg, #228b22, #1a6b1a);
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-left: 2px;
+            cursor: pointer;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+        
+        .cella-riporto.attivo {
+            background: linear-gradient(145deg, #28a745, #1e7e34);
+            border: 2px solid #32cd32;
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 12px rgba(40, 167, 69, 0.6);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .spazio-segno {
+            width: 18px;
+            margin-right: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffa500;
+        }
+        
+        .cella-numero {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #4a90e2;
+            margin-left: 2px;
+            font-size: 1rem;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 6px;
+        }
+        
+        .cella-virgola {
+            width: 10px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-left: 1px;
+            margin-right: 1px;
+            color: #ffa500;
+        }
+        
+        .cella-risultato {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #4a90e2;
+            margin-left: 2px;
+            font-size: 1rem;
+            font-weight: bold;
+            background: rgba(74, 144, 226, 0.2);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .cella-risultato:hover {
+            background: rgba(74, 144, 226, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .cella-evidenziata {
+            animation: evidenzia 1s infinite;
+            border: 2px solid #ffa500;
+            background: rgba(255, 165, 0, 0.3);
+            box-shadow: 0 0 12px rgba(255, 165, 0, 0.5);
+        }
+        
+        @keyframes evidenzia {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        .cella-corretta {
+            background: rgba(40, 167, 69, 0.3);
+            border: 2px solid #28a745;
+        }
+        
+        .cella-errata {
+            background: rgba(220, 53, 69, 0.3);
+            border: 2px solid #dc3545;
+        }
+        
+        .linea-divisione {
+            border-top: 2px solid #ffa500;
+            margin: 2px 0;
+            width: 100%;
+            max-width: 220px;
+            align-self: flex-end;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+        }
+        
+        .messaggio-verifica {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px dashed #ffc107;
+            border-radius: 6px;
+            padding: 8px 10px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            color: white;
+            width: 90%;
+            max-width: 450px;
+            margin: 6px auto;
+            text-align: center;
+        }
+        
+        .messaggio-verifica.mostra {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .messaggio-corretto {
+            background: rgba(40, 167, 69, 0.3);
+            border-color: #28a745;
+            color: #90ee90;
+        }
+        
+        .messaggio-errato {
+            background: rgba(220, 53, 69, 0.3);
+            border-color: #dc3545;
+            color: #ff6b6b;
+        }
+        
+        .messaggio-info {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #ffc107;
+            color: #ffd166;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .messaggio-info:hover {
+            background: rgba(255, 193, 7, 0.4);
+        }
+        
+        .messaggio-game-over {
+            background: rgba(108, 117, 125, 0.3);
+            border-color: #495057;
+            color: white;
+            font-size: 0.8rem;
+            padding: 10px;
+        }
+        
+        .messaggio-wow {
+            background: linear-gradient(145deg, #ff0080, #ff00ff);
+            border: 2px solid #ff00ff;
+            color: #ffffff;
+            animation: rainbow 2s infinite;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .messaggio-ahi {
+            background: linear-gradient(145deg, #ff0000, #ff4500);
+            border: 2px solid #ff0000;
+            color: #ffffff;
+            animation: shake 0.5s ease-in-out;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        
+        @keyframes rainbow {
+            0%, 100% { 
+                background: linear-gradient(145deg, #ff0080, #ff00ff);
+                box-shadow: 0 0 12px rgba(255, 0, 255, 0.8);
+            }
+            25% { 
+                background: linear-gradient(145deg, #00ffff, #0080ff);
+                box-shadow: 0 0 12px rgba(0, 255, 255, 0.8);
+            }
+            50% { 
+                background: linear-gradient(145deg, #00ff80, #00ff00);
+                box-shadow: 0 0 12px rgba(0, 255, 0, 0.8);
+            }
+            75% { 
+                background: linear-gradient(145deg, #ffff00, #ff8000);
+                box-shadow: 0 0 12px rgba(255, 255, 0, 0.8);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .controlli {
+            display: none;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+            animation: fadeIn 0.5s ease 0.3s both;
+        }
+        
+        .bottone {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(145deg, #4a90e2, #3a7bd5);
+            color: white;
+            transition: all 0.2s;
+            min-width: 90px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            font-size: 0.85rem;
+            line-height: 1.2;
+            flex: 1;
+            max-width: 140px;
+        }
+        
+        .bottone:hover {
+            background: linear-gradient(145deg, #3a7bd5, #2a6bc5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 7px rgba(0, 0, 0, 0.4);
+        }
+        
+        .bottone-verifica {
+            background: linear-gradient(145deg, #28a745, #1e7e34);
+        }
+        
+        .bottone-verifica:hover {
+            background: linear-gradient(145deg, #1e7e34, #156d2b);
+        }
+        
+        .bottone-aiuto {
+            background: linear-gradient(145deg, #ffa500, #ff8c00);
+        }
+        
+        .bottone-aiuto:hover {
+            background: linear-gradient(145deg, #ff8c00, #e67e00);
+        }
+        
+        .bottone-nuova {
+            background: linear-gradient(145deg, #9370db, #7b5fcf);
+        }
+        
+        .bottone-nuova:hover {
+            background: linear-gradient(145deg, #7b5fcf, #6a4fcb);
+        }
+        
+        .tastiera-container {
+            display: none;
+            background: rgba(30, 33, 57, 0.8);
+            border-radius: 6px;
+            padding: 8px;
+            border: 2px solid #4a90e2;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+            margin-top: 8px;
+            animation: fadeIn 0.5s ease 0.6s both;
+        }
+        
+        .tastiera-numerica {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .tasto-numero {
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            background: linear-gradient(145deg, #3a3f5c, #2d3047);
+            cursor: pointer;
+            color: #ffffff;
+            transition: all 0.2s;
+            flex: 0 0 auto;
+        }
+        
+        .tasto-numero:hover {
+            background: linear-gradient(145deg, #4a4f6c, #3d4057);
+            transform: translateY(-2px);
+        }
+        
+        .tasto-cancella {
+            background: linear-gradient(145deg, #ff4757, #ff3742);
+            color: white;
+            border-color: #dc3545;
+            font-size: 0.9rem;
+            width: 60px;
+        }
+        
+        .tasto-cancella:hover {
+            background: linear-gradient(145deg, #ff3742, #ff2732);
+        }
+        
+        .risposte-consecutive, .aiuti-utilizzati {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 0.65rem;
+            color: #a0a0c0;
+            font-weight: bold;
+        }
+        
+        .cuore-consecutivo {
+            color: #ff4757;
+            font-size: 0.8rem;
+        }
+        
+        .icona-aiuto {
+            color: #ffa500;
+            font-size: 0.8rem;
+        }
+        
+        .messaggio-avvio {
+            background: linear-gradient(145deg, #4a90e2, #3a7bd5);
+            border: 3px solid #ffa500;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px auto;
+            max-width: 450px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            animation: pulse-glow 2s infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                            0 0 0px rgba(255, 165, 0, 0.5);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                            0 0 20px rgba(255, 165, 0, 0.8);
+            }
+        }
+        
+        .messaggio-avvio:hover {
+            transform: scale(1.03);
+            background: linear-gradient(145deg, #3a7bd5, #2a6bc5);
+        }
+        
+        .messaggio-avvio h2 {
+            color: #ffcc00;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .messaggio-avvio p {
+            color: white;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            text-align: center;
+        }
+        
+        .messaggio-avvio .istruzione-principale {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+        
+        .messaggio-avvio .istruzione-gioco {
+            font-size: 0.9rem;
+            color: #ffd166;
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px dashed #ffc107;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            width: 90%;
+            max-width: 350px;
+        }
+        
+        .icona-play {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #2d3047, #1f2235);
+            border-radius: 6px;
+            padding: 10px;
+            width: 95%;
+            max-width: 450px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 2px solid #4a90e2;
+            position: relative;
+            color: white;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 5px;
+        }
+        
+        .modal-title {
+            color: #ffa500;
+            font-size: 0.9rem;
+        }
+        
+        .close-modal {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-section {
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        
+        .modal-section h3 {
+            color: #4a90e2;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            border-left: 3px solid #ffa500;
+            padding-left: 4px;
+        }
+        
+        .modal-section p {
+            margin-bottom: 4px;
+            line-height: 1.2;
+            font-size: 0.7rem;
+            color: #d0d0e0;
+        }
+        
+        .modal-list {
+            list-style-type: decimal;
+            padding-left: 12px;
+            margin: 5px 0;
+            color: #d0d0e0;
+        }
+        
+        .modal-list li {
+            margin-bottom: 4px;
+            line-height: 1.2;
+            font-size: 0.7rem;
+        }
+        
+        .punteggio-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .punteggio-item {
+            background: rgba(74, 144, 226, 0.2);
+            padding: 4px;
+            border-radius: 4px;
+            border: 2px solid #4a90e2;
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .punteggio-item .value {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 0.75rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 2px;
+                align-items: flex-start;
+            }
+            
+            .game-container {
+                padding: 6px;
+                margin: 2px auto;
+                border-radius: 10px;
+                max-height: 96vh;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+                margin-bottom: 6px;
+            }
+            
+            .modalita-container {
+                margin: 6px 0 8px 0;
+                gap: 10px;
+            }
+            
+            .modalita-btn {
+                padding: 7px 16px;
+                font-size: 0.9rem;
+                min-width: 100px;
+            }
+            
+            .cruscotto-container {
+                padding: 5px;
+                margin: 4px 0;
+            }
+            
+            .display-container {
+                width: 75px;
+                height: 36px;
+            }
+            
+            .display-7segmenti {
+                font-size: 1.3rem;
+            }
+            
+            .display-7segmenti.tempo {
+                font-size: 0.9rem;
+            }
+            
+            .display-title {
+                font-size: 0.7rem;
+                padding: 2px 5px;
+            }
+            
+            .istruzioni-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                max-width: 100px;
+            }
+            
+            .area-operazione {
+                padding: 8px;
+                margin: 4px 0;
+            }
+            
+            .vite-container {
+                margin: 6px 0;
+            }
+            
+            .vita {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .controlli {
+                gap: 6px;
+                margin: 6px 0;
+            }
+            
+            .bottone {
+                padding: 7px 10px;
+                min-width: 80px;
+                font-size: 0.8rem;
+                max-width: 120px;
+            }
+            
+            .messaggio-avvio {
+                padding: 12px;
+                margin: 8px auto;
+            }
+            
+            .messaggio-avvio h2 {
+                font-size: 1.2rem;
+            }
+            
+            .messaggio-avvio p {
+                font-size: 0.85rem;
+            }
+            
+            .tastiera-container {
+                padding: 6px;
+            }
+            
+            .tasto-numero {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .tasto-cancella {
+                width: 70px;
+                font-size: 0.9rem;
+                height: 45px;
+            }
+            
+            .cella-riporto, .cella-numero, .cella-risultato {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+            
+            .cella-virgola {
+                width: 12px;
+                height: 32px;
+                font-size: 1.2rem;
+            }
+            
+            .spazio-segno {
+                width: 20px;
+                font-size: 1.1rem;
+            }
+            
+            .messaggio-verifica {
+                padding: 6px 8px;
+                min-height: 35px;
+                font-size: 0.75rem;
+                margin: 4px auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 5px;
+                max-height: 94vh;
+            }
+            
+            h1 {
+                font-size: 1.1rem;
+                margin-bottom: 4px;
+            }
+            
+            .modalita-container {
+                gap: 8px;
+                margin: 4px 0 6px 0;
+            }
+            
+            .modalita-btn {
+                padding: 6px 14px;
+                font-size: 0.85rem;
+                min-width: 90px;
+            }
+            
+            .cruscotto-container {
+                padding: 4px;
+            }
+            
+            .display-container {
+                width: 70px;
+                height: 34px;
+            }
+            
+            .display-7segmenti {
+                font-size: 1.2rem;
+            }
+            
+            .display-7segmenti.tempo {
+                font-size: 0.85rem;
+            }
+            
+            .display-title {
+                font-size: 0.65rem;
+                padding: 2px 4px;
+            }
+            
+            .istruzioni-btn {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+                max-width: 90px;
+            }
+            
+            .vita {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .controlli {
+                gap: 4px;
+            }
+            
+            .bottone {
+                padding: 6px 8px;
+                min-width: 70px;
+                font-size: 0.75rem;
+                max-width: 100px;
+            }
+            
+            .messaggio-avvio {
+                padding: 10px;
+            }
+            
+            .messaggio-avvio h2 {
+                font-size: 1.1rem;
+            }
+            
+            .messaggio-avvio p {
+                font-size: 0.8rem;
+            }
+            
+            .icona-play {
+                font-size: 1.8rem;
+            }
+            
+            .tasto-numero {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+            }
+            
+            .tasto-cancella {
+                width: 75px;
+                height: 48px;
+            }
+            
+            .cella-riporto, .cella-numero, .cella-risultato {
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+            
+            .cella-virgola {
+                width: 14px;
+                height: 35px;
+                font-size: 1.3rem;
+            }
+            
+            .messaggio-verifica {
+                font-size: 0.7rem;
+                padding: 5px 6px;
+                min-height: 30px;
+            }
+            
+            .modal-content {
+                padding: 8px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .modalita-container {
+                flex-direction: column;
+                gap: 4px;
+                align-items: center;
+            }
+            
+            .modalita-btn {
+                width: 100%;
+                max-width: 150px;
+            }
+            
+            .cruscotto-container {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .indicatore-cruscotto, .istruzioni-container {
+                flex: 0 0 calc(50% - 10px);
+                margin-bottom: 5px;
+            }
+            
+            .istruzioni-container {
+                order: 3;
+                flex: 0 0 100%;
+            }
+            
+            .controlli {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .bottone {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>GIOCA CON LE ADDIZIONI</h1>
+            
+            <div class="modalita-container">
+                <button class="modalita-btn attiva" id="modalita-interi">Interi</button>
+                <button class="modalita-btn" id="modalita-decimali">Decimali</button>
+            </div>
+            
+            <div class="cruscotto-container">
+                <div class="indicatore-cruscotto">
+                    <div class="display-container">
+                        <div class="display-7segmenti giallo" id="punteggio-display">0</div>
+                    </div>
+                    <div class="display-title">PUNTEGGIO</div>
+                </div>
+                
+                <div class="istruzioni-container">
+                    <button class="istruzioni-btn" id="istruzioni-btn" title="Istruzioni del gioco">📚 Istruzioni</button>
+                </div>
+                
+                <div class="indicatore-cruscotto">
+                    <div class="display-container">
+                        <div class="display-7segmenti verde tempo" id="tempo-display">10:00</div>
+                    </div>
+                    <div class="display-title">TEMPO</div>
+                </div>
+
+                <!-- PULSANTE ESCI (ORA SENZA TESTO SOTTO) -->
+                <div class="indicatore-cruscotto">
+                    <button class="istruzioni-btn" id="esci-btn" title="Esci dal gioco">🚪 Esci</button>
+                    <!-- TESTO "ESCI" RIMOSSO -->
+                </div>
+            </div>
+            
+            <div class="vite-container" id="vite-container"></div>
+            
+            <div class="risposte-consecutive" id="risposte-consecutive">
+                <span>Risposte consecutive corrette:</span>
+                <span id="contatore-consecutive">0</span>
+                <span class="cuore-consecutivo">❤️</span>
+            </div>
+            
+            <div class="aiuti-utilizzati" id="aiuti-utilizzati">
+                <span>Aiuti utilizzati in questa operazione:</span>
+                <span id="contatore-aiuti">0</span>
+                <span class="icona-aiuto">🧠</span>
+                <span>(costo: -2 punti ciascuno)</span>
+            </div>
+        </div>
+        
+        <div class="sezione-gioco">
+            <!-- Messaggio di avvio (sempre presente) -->
+            <div class="messaggio-avvio" id="messaggio-avvio">
+                <div class="icona-play">🎮</div>
+                <h2>Pronto per la sfida?</h2>
+                <p>Risolvi addizioni in colonna e guadagna punti!</p>
+                <p>Inizia dalla colonna più a destra e procedi verso sinistra.</p>
+                <div class="istruzione-gioco">
+                    Clicca su una casella gialla e inserisci le cifre con la tastiera. Inizia da destra!
+                </div>
+                <p class="istruzione-principale">Clicca qui per iniziare a giocare!</p>
+            </div>
+            
+            <div class="area-operazione" id="area-operazione">
+                <div class="colonna-container" id="colonna-container"></div>
+            </div>
+            
+            <div class="messaggio-verifica" id="messaggio-verifica"></div>
+        </div>
+        
+        <div class="controlli" id="controlli-gioco">
+            <button class="bottone bottone-aiuto" id="bottone-aiuto">🧠 Aiuto (-2)</button>
+            <button class="bottone bottone-verifica" id="bottone-verifica">✓ Verifica</button>
+            <button class="bottone bottone-nuova" id="bottone-nuova">🔄 Nuova</button>
+        </div>
+        
+        <div class="tastiera-container" id="tastiera-container">
+            <div class="tastiera-numerica" id="tastiera-numerica"></div>
+        </div>
+    </div>
+
+    <!-- MODALE ISTRUZIONI -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🐛 Istruzioni del Gioco</div>
+                <button class="close-modal" id="close-modal">✕</button>
+            </div>
+            <div class="modal-section">
+                <h3>🎯 Come Giocare</h3>
+                <p>Risolvi le addizioni in colonna:</p>
+                <ol class="modal-list">
+                    <li>Inizia dalla colonna più a destra (unità)</li>
+                    <li>Clicca sulla casella gialla del risultato</li>
+                    <li>Inserisci la cifra con la tastiera</li>
+                    <li>Se la somma è 10 o più, inserisci il riporto (1) nella casella verde</li>
+                    <li>Procedi verso sinistra</li>
+                    <li>Premi "Verifica" per controllare</li>
+                </ol>
+            </div>
+            <div class="modal-section">
+                <h3>🏆 Sistema dei Punteggi e Vite</h3>
+                <div class="punteggio-info">
+                    <div class="punteggio-item"><div>Operazione completata:</div><div class="value">Max punti = numero di cifre</div></div>
+                    <div class="punteggio-item"><div>Aiuto utilizzato:</div><div class="value">-2 punti ciascuno</div></div>
+                    <div class="punteggio-item"><div>Errore:</div><div class="value">-1 vita</div></div>
+                    <div class="punteggio-item"><div>5 risposte corrette consecutive:</div><div class="value">+1 vita</div></div>
+                </div>
+                <p><strong>📊 Punteggio per operazione:</strong></p>
+                <ul class="modal-list">
+                    <li><strong>2 cifre</strong>: Massimo 2 punti</li>
+                    <li><strong>3 cifre</strong>: Massimo 3 punti</li>
+                    <li><strong>4 cifre</strong>: Massimo 4 punti</li>
+                    <li><strong>5 cifre</strong>: Massimo 5 punti</li>
+                </ul>
+                <p><strong>⚠️ Attenzione:</strong> Se usi troppi aiuti, potresti finire con 0 punti per quell'operazione!</p>
+                <p><strong>✨ Bonus Vita:</strong> Ogni 5 risposte consecutive corrette, recuperi una vita (massimo 3 vite).</p>
+            </div>
+            <div class="modal-section">
+                <h3>📚 Modalità di Gioco</h3>
+                <p><strong>Numeri Interi:</strong> Addizioni senza virgola (max 5 cifre)</p>
+                <p><strong>Numeri Decimali:</strong> Addizioni con virgola (2 decimali)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VARIABILI GLOBALI ====================
+        let punteggio = 0;
+        let vite = 3;
+        let numero1 = 0;
+        let numero2 = 0;
+        let risultatoCorretto = 0;
+        let modalitaGioco = 'interi';
+        let verificaEseguita = false;
+        let gameOver = false;
+        let haSbagliatoQuestaOperazione = false;
+        
+        let operazioniCorretteConsecutive = 0;
+        let aiutiUtilizzatiOperazioneCorrente = 0;
+        let punteggioBaseOperazioneCorrente = 0;
+        let numeroCifreOperazioneCorrente = 0;
+        
+        let numCifreTotali = 0;
+        let colonnaAttiva = 0;
+        let cifreNumero1 = [];
+        let cifreNumero2 = [];
+        let cifreRisultato = [];
+        let cifreRiporto = [];
+        let risultatiCorretti = [];
+        let riportiCorretti = [];
+        let modalitaRiporto = false;
+        let posizioneVirgola = 0;
+        
+        let tempoRimanente = 600;
+        let timerInterval;
+        let timerAttivo = false;
+        const TEMPO_TOTALE = 600;
+        
+        let timeoutBenvenuto = null;
+        let giocoIniziato = false;
+        
+        // AUDIO
+        let audioContext;
+        let audioInizializzato = false;
+        let wowSound = null;
+        let ahiSound = null;
+        let successSound = null;
+        let clickSound = null;
+        let startSound = null;
+
+        // ==================== FUNZIONI AUDIO ====================
+        function inizializzaAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                creaSuoni();
+                audioInizializzato = true;
+            } catch (e) {
+                console.log("Audio non supportato:", e);
+                audioInizializzato = false;
+            }
+        }
+        
+        function creaSuoni() {
+            // WOW
+            try {
+                const durata = 1.5;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq1 = 200 + (t * 600);
+                    if (freq1 > 800) freq1 = 800;
+                    let freq2 = freq1 * 1.5;
+                    let freq3 = freq1 * 2;
+                    let envelope = Math.sin(Math.PI * t/durata) * 0.7;
+                    envelope *= (1 + 0.3 * Math.sin(2 * Math.PI * 2 * t));
+                    output[i] = envelope * (
+                        Math.sin(2 * Math.PI * freq1 * t) * 0.5 +
+                        Math.sin(2 * Math.PI * freq2 * t) * 0.3 +
+                        Math.sin(2 * Math.PI * freq3 * t) * 0.2
+                    );
+                    output[i] *= (1 + 0.1 * Math.sin(2 * Math.PI * 3 * t));
+                }
+                wowSound = buffer;
+            } catch (e) { console.log("Errore creazione suono wow:", e); }
+            
+            // AHI
+            try {
+                const durata = 0.8;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 800 * Math.exp(-t * 3);
+                    if (freq < 150) freq = 150;
+                    let envelope = Math.exp(-t * 4) * 0.8;
+                    const phase = 2 * Math.PI * freq * t;
+                    output[i] = envelope * (2 * (phase % (2 * Math.PI)) / (2 * Math.PI) - 1) * 0.5;
+                    if (t < 0.1) {
+                        output[i] += (Math.random() * 2 - 1) * 0.1 * (1 - t/0.1);
+                    }
+                }
+                ahiSound = buffer;
+            } catch (e) { console.log("Errore creazione suono ahi:", e); }
+            
+            // SUCCESSO
+            try {
+                const durata = 1.0;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 300;
+                    if (t < 0.25) freq = 300;
+                    else if (t < 0.5) freq = 400;
+                    else if (t < 0.75) freq = 500;
+                    else freq = 600;
+                    let envelope = Math.sin(Math.PI * t/durata) * 0.6;
+                    output[i] = envelope * Math.sin(2 * Math.PI * freq * t);
+                    output[i] += 0.3 * envelope * Math.sin(2 * Math.PI * freq * 2 * t);
+                }
+                successSound = buffer;
+            } catch (e) { console.log("Errore creazione suono successo:", e); }
+            
+            // CLICK
+            try {
+                const durata = 0.1;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 1000 * Math.exp(-t * 50);
+                    let envelope = Math.exp(-t * 100) * 0.3;
+                    output[i] = envelope * Math.sin(2 * Math.PI * freq * t);
+                }
+                clickSound = buffer;
+            } catch (e) { console.log("Errore creazione suono click:", e); }
+            
+            // START
+            try {
+                const durata = 1.2;
+                const buffer = audioContext.createBuffer(1, audioContext.sampleRate * durata, audioContext.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / audioContext.sampleRate;
+                    let freq = 400 + Math.sin(2 * Math.PI * 2 * t) * 100;
+                    let envelope = Math.sin(Math.PI * t/durata) * 0.7;
+                    output[i] = envelope * (
+                        Math.sin(2 * Math.PI * freq * t) * 0.6 +
+                        Math.sin(2 * Math.PI * freq * 1.5 * t) * 0.3 +
+                        Math.sin(2 * Math.PI * freq * 2 * t) * 0.1
+                    );
+                    if (t < 0.5) {
+                        output[i] += 0.2 * Math.sin(2 * Math.PI * (200 + t * 800) * t);
+                    }
+                }
+                startSound = buffer;
+            } catch (e) { console.log("Errore creazione suono inizio:", e); }
+        }
+        
+        function playSound(soundBuffer, volume = 0.7) {
+            if (!audioInizializzato || !soundBuffer) return;
+            try {
+                const source = audioContext.createBufferSource();
+                source.buffer = soundBuffer;
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = volume;
+                source.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                source.start();
+                const durata = soundBuffer.duration;
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + durata);
+            } catch (e) { console.log("Errore riproduzione suono:", e); }
+        }
+        
+        function playWowSound() { playSound(wowSound, 0.8); }
+        function playAhiSound() { playSound(ahiSound, 0.6); }
+        function playSuccessSound() { playSound(successSound, 0.5); }
+        function playClickSound() { playSound(clickSound, 0.3); }
+        function playStartSound() { playSound(startSound, 0.7); }
+
+        // ==================== FUNZIONI DISPLAY ====================
+        function aggiornaDisplayPunteggio() {
+            const punteggioDisplay = document.getElementById('punteggio-display');
+            punteggioDisplay.style.opacity = '0.7';
+            punteggioDisplay.style.transform = 'scale(1.1) skew(-1deg)';
+            setTimeout(() => {
+                punteggioDisplay.textContent = punteggio;
+                punteggioDisplay.style.opacity = '1';
+                punteggioDisplay.style.transform = 'scale(1) skew(-1deg)';
+                if (punteggio >= 150) {
+                    punteggioDisplay.className = 'display-7segmenti giallo';
+                } else if (punteggio >= 100) {
+                    punteggioDisplay.className = 'display-7segmenti verde';
+                } else {
+                    punteggioDisplay.className = 'display-7segmenti giallo';
+                }
+            }, 150);
+        }
+        
+        function aggiornaDisplayTempo() {
+            const tempoDisplay = document.getElementById('tempo-display');
+            const minuti = Math.floor(tempoRimanente / 60);
+            const secondi = tempoRimanente % 60;
+            const tempoFormattato = `${minuti.toString().padStart(2, '0')}:${secondi.toString().padStart(2, '0')}`;
+            tempoDisplay.style.opacity = '0.7';
+            tempoDisplay.style.transform = 'scale(1.05) skew(-1deg)';
+            setTimeout(() => {
+                tempoDisplay.textContent = tempoFormattato;
+                tempoDisplay.style.opacity = '1';
+                tempoDisplay.style.transform = 'scale(1) skew(-1deg)';
+                if (tempoRimanente <= 60) {
+                    tempoDisplay.style.color = '#ff0000';
+                    tempoDisplay.style.textShadow = '0 0 8px rgba(255, 0, 0, 0.8), 0 0 15px rgba(255, 0, 0, 0.4)';
+                    if (tempoRimanente <= 10) {
+                        tempoDisplay.style.animation = tempoRimanente % 2 === 0 ? 'none' : 'pulse 0.5s infinite';
+                    }
+                } else if (tempoRimanente <= 180) {
+                    tempoDisplay.style.color = '#ff9900';
+                    tempoDisplay.style.textShadow = '0 0 8px rgba(255, 153, 0, 0.8), 0 0 15px rgba(255, 153, 0, 0.4)';
+                } else {
+                    tempoDisplay.style.color = '#00ff00';
+                    tempoDisplay.style.textShadow = '0 0 8px rgba(0, 255, 0, 0.8), 0 0 15px rgba(0, 255, 0, 0.4)';
+                }
+            }, 150);
+        }
+        
+        function aggiornaViteUI() {
+            const viteContainer = document.getElementById('vite-container');
+            viteContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const vitaDiv = document.createElement('div');
+                vitaDiv.className = `vita ${i < vite ? '' : 'persa'}`;
+                viteContainer.appendChild(vitaDiv);
+            }
+        }
+        
+        // ==================== TIMER ====================
+        function avviaTimer() {
+            if (timerAttivo || gameOver) return;
+            timerAttivo = true;
+            aggiornaDisplayTempo();
+            timerInterval = setInterval(() => {
+                tempoRimanente--;
+                aggiornaDisplayTempo();
+                if (tempoRimanente <= 0) {
+                    fermaTimer();
+                    tempoRimanente = 0;
+                    gameOver = true;
+                    mostraMessaggio(`TEMPO SCADUTO! Punteggio finale: ${punteggio}. Clicca "Nuova" per ricominciare`, "game-over");
+                    document.getElementById("bottone-verifica").disabled = true;
+                    document.getElementById("bottone-aiuto").disabled = true;
+                    aggiornaUI();
+                }
+            }, 1000);
+        }
+        
+        function fermaTimer() {
+            clearInterval(timerInterval);
+            timerAttivo = false;
+        }
+        
+        function resetTimer() {
+            fermaTimer();
+            tempoRimanente = TEMPO_TOTALE;
+            aggiornaDisplayTempo();
+            if (giocoIniziato) {
+                avviaTimer();
+            }
+        }
+
+        // ==================== FUNZIONI DI GIOCO ====================
+        function generaNumeroCasuale(cifre) {
+            cifre = Math.min(cifre, 5);
+            const min = Math.pow(10, cifre - 1);
+            const max = Math.pow(10, cifre) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generaNumeroDecimale() {
+            const cifreIntere = Math.floor(Math.random() * 3) + 1;
+            const parteIntera = generaNumeroCasuale(cifreIntere);
+            const decimale = Math.floor(Math.random() * 100);
+            return parseFloat(`${parteIntera}.${decimale.toString().padStart(2, '0')}`);
+        }
+
+        function inizializzaGioco() {
+            punteggio = 0;
+            vite = 3;
+            gameOver = false;
+            haSbagliatoQuestaOperazione = false;
+            operazioniCorretteConsecutive = 0;
+            aiutiUtilizzatiOperazioneCorrente = 0;
+            modalitaGioco = 'interi';
+            verificaEseguita = false;
+            tempoRimanente = TEMPO_TOTALE;
+            giocoIniziato = false;
+            
+            if (!audioInizializzato) {
+                inizializzaAudio();
+            }
+            
+            document.getElementById('area-operazione').style.display = 'none';
+            document.getElementById('controlli-gioco').style.display = 'none';
+            document.getElementById('tastiera-container').style.display = 'none';
+            document.getElementById('messaggio-avvio').style.display = 'flex';
+            
+            aggiornaViteUI();
+            aggiornaDisplayPunteggio();
+            aggiornaDisplayTempo();
+            creaTastiera();
+            
+            preparaPrimaOperazione();
+            
+            document.getElementById("bottone-verifica").disabled = false;
+            document.getElementById("bottone-aiuto").disabled = false;
+            
+            aggiornaUI();
+        }
+
+        function iniziaGioco() {
+            if (!giocoIniziato) {
+                giocoIniziato = true;
+                playStartSound();
+                document.getElementById('messaggio-avvio').style.display = 'none';
+                document.getElementById('area-operazione').style.display = 'flex';
+                document.getElementById('controlli-gioco').style.display = 'flex';
+                document.getElementById('tastiera-container').style.display = 'block';
+                resetTimer();
+            }
+        }
+
+        function preparaPrimaOperazione() {
+            if (modalitaGioco === 'interi') {
+                const cifre = Math.floor(Math.random() * 4) + 2;
+                numeroCifreOperazioneCorrente = cifre;
+                punteggioBaseOperazioneCorrente = cifre;
+                numero1 = generaNumeroCasuale(cifre);
+                numero2 = generaNumeroCasuale(cifre);
+                risultatoCorretto = numero1 + numero2;
+                const cifreRisultato = risultatoCorretto.toString().length;
+                if (cifreRisultato > cifre) {
+                    numeroCifreOperazioneCorrente = cifreRisultato;
+                    punteggioBaseOperazioneCorrente = cifreRisultato;
+                }
+                if (cifreRisultato > 6) {
+                    const differenza = risultatoCorretto - Math.pow(10, 6);
+                    numero2 = Math.max(1, numero2 - differenza - 1);
+                    risultatoCorretto = numero1 + numero2;
+                }
+            } else {
+                numeroCifreOperazioneCorrente = 3;
+                punteggioBaseOperazioneCorrente = 3;
+                numero1 = generaNumeroDecimale();
+                numero2 = generaNumeroDecimale();
+                if (numero1 > 999.99) numero1 = numero1 % 1000;
+                if (numero2 > 999.99) numero2 = numero2 % 1000;
+                risultatoCorretto = Math.round((numero1 + numero2) * 100) / 100;
+            }
+            preparaNumeriPerColonna();
+            colonnaAttiva = numCifreTotali - 1;
+            modalitaRiporto = false;
+            aggiornaColonna();
+            aggiornaUI();
+        }
+
+        function cambiaModalita(nuovaModalita) {
+            if (gameOver || !giocoIniziato) return;
+            modalitaGioco = nuovaModalita;
+            verificaEseguita = false;
+            haSbagliatoQuestaOperazione = false;
+            aiutiUtilizzatiOperazioneCorrente = 0;
+            document.getElementById('modalita-interi').classList.remove('attiva');
+            document.getElementById('modalita-decimali').classList.remove('attiva');
+            if (nuovaModalita === 'interi') {
+                document.getElementById('modalita-interi').classList.add('attiva');
+            } else {
+                document.getElementById('modalita-decimali').classList.add('attiva');
+            }
+            nuovaOperazione();
+        }
+
+        function nuovaOperazione() {
+            if (gameOver) {
+                inizializzaGioco();
+                return;
+            }
+            verificaEseguita = false;
+            haSbagliatoQuestaOperazione = false;
+            aiutiUtilizzatiOperazioneCorrente = 0;
+            nascondiMessaggio();
+            if (modalitaGioco === 'interi') {
+                const cifre = Math.floor(Math.random() * 4) + 2;
+                numeroCifreOperazioneCorrente = cifre;
+                punteggioBaseOperazioneCorrente = cifre;
+                numero1 = generaNumeroCasuale(cifre);
+                numero2 = generaNumeroCasuale(cifre);
+                risultatoCorretto = numero1 + numero2;
+                const cifreRisultato = risultatoCorretto.toString().length;
+                if (cifreRisultato > cifre) {
+                    numeroCifreOperazioneCorrente = cifreRisultato;
+                    punteggioBaseOperazioneCorrente = cifreRisultato;
+                }
+                if (cifreRisultato > 6) {
+                    const differenza = risultatoCorretto - Math.pow(10, 6);
+                    numero2 = Math.max(1, numero2 - differenza - 1);
+                    risultatoCorretto = numero1 + numero2;
+                }
+            } else {
+                numeroCifreOperazioneCorrente = 3;
+                punteggioBaseOperazioneCorrente = 3;
+                numero1 = generaNumeroDecimale();
+                numero2 = generaNumeroDecimale();
+                if (numero1 > 999.99) numero1 = numero1 % 1000;
+                if (numero2 > 999.99) numero2 = numero2 % 1000;
+                risultatoCorretto = Math.round((numero1 + numero2) * 100) / 100;
+            }
+            preparaNumeriPerColonna();
+            colonnaAttiva = numCifreTotali - 1;
+            modalitaRiporto = false;
+            aggiornaColonna();
+            document.getElementById("bottone-verifica").disabled = false;
+            aggiornaUI();
+        }
+
+        function preparaNumeriPerColonna() {
+            let str1, str2, strRisultato;
+            if (modalitaGioco === 'interi') {
+                str1 = numero1.toString();
+                str2 = numero2.toString();
+                strRisultato = risultatoCorretto.toString();
+                const maxLength = Math.max(str1.length, str2.length, strRisultato.length);
+                str1 = str1.padStart(maxLength, '0');
+                str2 = str2.padStart(maxLength, '0');
+                strRisultato = strRisultato.padStart(maxLength, '0');
+                numCifreTotali = maxLength;
+                posizioneVirgola = -1;
+                cifreNumero1 = str1.split('');
+                cifreNumero2 = str2.split('');
+                cifreRisultato = new Array(numCifreTotali).fill("");
+                cifreRiporto = new Array(numCifreTotali).fill("");
+                risultatiCorretti = new Array(numCifreTotali).fill(0);
+                riportiCorretti = new Array(numCifreTotali).fill(0);
+                calcolaRisultatiCorrettiInteri();
+            } else {
+                str1 = numero1.toFixed(2);
+                str2 = numero2.toFixed(2);
+                strRisultato = risultatoCorretto.toFixed(2);
+                const parte1 = str1.replace('.', '');
+                const parte2 = str2.replace('.', '');
+                const parteRis = strRisultato.replace('.', '');
+                const maxLength = Math.max(parte1.length, parte2.length, parteRis.length);
+                numCifreTotali = maxLength + 1;
+                posizioneVirgola = maxLength - 2;
+                cifreNumero1 = new Array(numCifreTotali).fill("");
+                cifreNumero2 = new Array(numCifreTotali).fill("");
+                cifreRisultato = new Array(numCifreTotali).fill("");
+                cifreRiporto = new Array(numCifreTotali).fill("");
+                risultatiCorretti = new Array(numCifreTotali).fill(0);
+                riportiCorretti = new Array(numCifreTotali).fill(0);
+                let idx = 0;
+                for (let i = 0; i < numCifreTotali; i++) {
+                    if (i === posizioneVirgola) {
+                        cifreNumero1[i] = ",";
+                        cifreNumero2[i] = ",";
+                        risultatiCorretti[i] = ",";
+                    } else {
+                        cifreNumero1[i] = parte1[idx] || "0";
+                        cifreNumero2[i] = parte2[idx] || "0";
+                        idx++;
+                    }
+                }
+                calcolaRisultatiCorrettiDecimali();
+            }
+        }
+
+        function calcolaRisultatiCorrettiInteri() {
+            let riporto = 0;
+            for (let i = numCifreTotali - 1; i >= 0; i--) {
+                const cifra1 = parseInt(cifreNumero1[i]) || 0;
+                const cifra2 = parseInt(cifreNumero2[i]) || 0;
+                const somma = cifra1 + cifra2 + riporto;
+                risultatiCorretti[i] = somma % 10;
+                riporto = Math.floor(somma / 10);
+                if (i > 0) {
+                    riportiCorretti[i-1] = riporto;
+                }
+            }
+            if (riporto > 0) {
+                cifreNumero1.unshift("0");
+                cifreNumero2.unshift("0");
+                cifreRisultato.unshift("");
+                cifreRiporto.unshift("");
+                risultatiCorretti.unshift(riporto);
+                riportiCorretti.unshift(0);
+                numCifreTotali++;
+            }
+        }
+
+        function calcolaRisultatiCorrettiDecimali() {
+            let riporto = 0;
+            for (let i = numCifreTotali - 1; i >= 0; i--) {
+                if (cifreNumero1[i] === ",") {
+                    risultatiCorretti[i] = ",";
+                    continue;
+                }
+                const cifra1 = parseInt(cifreNumero1[i]) || 0;
+                const cifra2 = parseInt(cifreNumero2[i]) || 0;
+                const somma = cifra1 + cifra2 + riporto;
+                risultatiCorretti[i] = somma % 10;
+                riporto = Math.floor(somma / 10);
+                if (i > 0) {
+                    let sinistra = i - 1;
+                    while (sinistra >= 0 && cifreNumero1[sinistra] === ",") {
+                        sinistra--;
+                    }
+                    if (sinistra >= 0) {
+                        riportiCorretti[sinistra] = riporto;
+                    }
+                }
+            }
+            if (riporto > 0) {
+                cifreNumero1.unshift("0");
+                cifreNumero2.unshift("0");
+                cifreRisultato.unshift("");
+                cifreRiporto.unshift("");
+                risultatiCorretti.unshift(riporto);
+                riportiCorretti.unshift(0);
+                posizioneVirgola++;
+                numCifreTotali++;
+            }
+        }
+
+        function aggiornaUI() {
+            aggiornaDisplayPunteggio();
+            aggiornaViteUI();
+            document.getElementById("contatore-consecutive").textContent = operazioniCorretteConsecutive;
+            document.getElementById("contatore-aiuti").textContent = aiutiUtilizzatiOperazioneCorrente;
+            const indicatoreConsecutive = document.getElementById("risposte-consecutive");
+            indicatoreConsecutive.style.display = operazioniCorretteConsecutive > 0 ? "flex" : "none";
+            const indicatoreAiuti = document.getElementById("aiuti-utilizzati");
+            indicatoreAiuti.style.display = aiutiUtilizzatiOperazioneCorrente > 0 ? "flex" : "none";
+            document.getElementById("bottone-aiuto").innerHTML = `🧠 Aiuto (-2)`;
+        }
+
+        function aggiornaColonna() {
+            const colonnaContainer = document.getElementById("colonna-container");
+            colonnaContainer.innerHTML = "";
+            const rigaRiporti = document.createElement("div");
+            rigaRiporti.className = "riga-colonna riga-riporti";
+            const rigaNumero1 = document.createElement("div");
+            rigaNumero1.className = "riga-colonna";
+            const rigaNumero2 = document.createElement("div");
+            rigaNumero2.className = "riga-colonna";
+            rigaNumero2.innerHTML = '<div class="spazio-segno">+</div>';
+            const linea = document.createElement("div");
+            linea.className = "linea-divisione";
+            const rigaRisultato = document.createElement("div");
+            rigaRisultato.className = "riga-colonna";
+            
+            let celleEffettive = 0;
+            for (let i = 0; i < numCifreTotali; i++) {
+                if (!(modalitaGioco === 'decimali' && i === posizioneVirgola)) {
+                    celleEffettive++;
+                }
+            }
+            const larghezzaLinea = (celleEffettive * 30) + ((celleEffettive - 1) * 2);
+            
+            for (let i = 0; i < numCifreTotali; i++) {
+                // Riga riporti
+                if (i === numCifreTotali - 1) {
+                    const cellaVuota = document.createElement("div");
+                    cellaVuota.className = "cella-riporto";
+                    cellaVuota.style.visibility = "hidden";
+                    cellaVuota.style.width = "30px";
+                    cellaVuota.style.height = "30px";
+                    rigaRiporti.appendChild(cellaVuota);
+                } else if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    const cellaVuota = document.createElement("div");
+                    cellaVuota.className = "cella-riporto";
+                    cellaVuota.style.visibility = "hidden";
+                    cellaVuota.style.width = "10px";
+                    cellaVuota.style.height = "30px";
+                    rigaRiporti.appendChild(cellaVuota);
+                } else {
+                    let valoreRiporto = "";
+                    let isAttivo = false;
+                    if (cifreRiporto[i] !== "") {
+                        valoreRiporto = cifreRiporto[i];
+                        isAttivo = (colonnaAttiva === i && modalitaRiporto);
+                    }
+                    const cellaRiporto = document.createElement("div");
+                    cellaRiporto.className = `cella-riporto ${isAttivo ? 'attivo' : ''}`;
+                    cellaRiporto.textContent = valoreRiporto;
+                    cellaRiporto.onclick = () => selezionaRiporto(i);
+                    rigaRiporti.appendChild(cellaRiporto);
+                }
+                
+                // Riga numero 1
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    const cellaVirgola = document.createElement("div");
+                    cellaVirgola.className = "cella-virgola";
+                    cellaVirgola.textContent = ",";
+                    rigaNumero1.appendChild(cellaVirgola);
+                } else {
+                    const cellaNumero = document.createElement("div");
+                    cellaNumero.className = "cella-numero";
+                    cellaNumero.textContent = cifreNumero1[i];
+                    rigaNumero1.appendChild(cellaNumero);
+                }
+                
+                // Riga numero 2
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    const cellaVirgola = document.createElement("div");
+                    cellaVirgola.className = "cella-virgola";
+                    cellaVirgola.textContent = ",";
+                    rigaNumero2.appendChild(cellaVirgola);
+                } else {
+                    const cellaNumero = document.createElement("div");
+                    cellaNumero.className = "cella-numero";
+                    cellaNumero.textContent = cifreNumero2[i];
+                    rigaNumero2.appendChild(cellaNumero);
+                }
+                
+                // Riga risultato
+                const isAttiva = colonnaAttiva === i && !modalitaRiporto;
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) {
+                    const cellaVirgola = document.createElement("div");
+                    cellaVirgola.className = "cella-virgola";
+                    cellaVirgola.textContent = ",";
+                    rigaRisultato.appendChild(cellaVirgola);
+                } else {
+                    const cellaRisultato = document.createElement("div");
+                    cellaRisultato.className = `cella-risultato ${isAttiva ? 'cella-evidenziata' : ''}`;
+                    cellaRisultato.textContent = cifreRisultato[i] || "";
+                    cellaRisultato.onclick = () => selezionaColonna(i);
+                    rigaRisultato.appendChild(cellaRisultato);
+                }
+            }
+            
+            colonnaContainer.appendChild(rigaRiporti);
+            colonnaContainer.appendChild(rigaNumero1);
+            colonnaContainer.appendChild(rigaNumero2);
+            colonnaContainer.appendChild(linea);
+            colonnaContainer.appendChild(rigaRisultato);
+            linea.style.width = `${larghezzaLinea}px`;
+        }
+
+        function creaTastiera() {
+            const tastiera = document.getElementById("tastiera-numerica");
+            tastiera.innerHTML = "";
+            const isMobile = window.innerWidth <= 480;
+            const tastoSize = isMobile ? "48px" : "40px";
+            const fontSize = isMobile ? "1.3rem" : "1.1rem";
+            for (let i = 0; i <= 9; i++) {
+                const tasto = document.createElement("button");
+                tasto.className = "tasto-numero";
+                tasto.textContent = i;
+                tasto.onclick = () => {
+                    playClickSound();
+                    inserisciCifra(i);
+                };
+                if (isMobile) {
+                    tasto.style.width = tastoSize;
+                    tasto.style.height = tastoSize;
+                    tasto.style.fontSize = fontSize;
+                }
+                tastiera.appendChild(tasto);
+            }
+            const tastoCancella = document.createElement("button");
+            tastoCancella.className = "tasto-numero tasto-cancella";
+            tastoCancella.textContent = "⌫";
+            tastoCancella.onclick = () => {
+                playClickSound();
+                cancellaCifra();
+            };
+            if (isMobile) {
+                tastoCancella.style.width = "75px";
+                tastoCancella.style.fontSize = "1rem";
+                tastoCancella.style.height = tastoSize;
+            }
+            tastiera.appendChild(tastoCancella);
+        }
+
+        function mostraMessaggio(testo, tipo, speciale = false) {
+            const messaggioDiv = document.getElementById("messaggio-verifica");
+            if (timeoutBenvenuto) {
+                clearTimeout(timeoutBenvenuto);
+                timeoutBenvenuto = null;
+            }
+            messaggioDiv.textContent = testo;
+            messaggioDiv.className = "messaggio-verifica mostra";
+            messaggioDiv.classList.remove("messaggio-wow", "messaggio-ahi");
+            if (speciale) {
+                if (tipo === "wow") messaggioDiv.classList.add("messaggio-wow");
+                else if (tipo === "ahi") messaggioDiv.classList.add("messaggio-ahi");
+            } else if (tipo === "corretto") {
+                messaggioDiv.classList.add("messaggio-corretto");
+                messaggioDiv.classList.remove("messaggio-errato", "messaggio-info", "messaggio-game-over");
+            } else if (tipo === "errato") {
+                messaggioDiv.classList.add("messaggio-errato");
+                messaggioDiv.classList.remove("messaggio-corretto", "messaggio-info", "messaggio-game-over");
+            } else if (tipo === "game-over") {
+                messaggioDiv.classList.add("messaggio-game-over");
+                messaggioDiv.classList.remove("messaggio-corretto", "messaggio-errato", "messaggio-info");
+            } else {
+                messaggioDiv.classList.add("messaggio-info");
+                messaggioDiv.classList.remove("messaggio-corretto", "messaggio-errato", "messaggio-game-over");
+            }
+        }
+
+        function nascondiMessaggio() {
+            const messaggioDiv = document.getElementById("messaggio-verifica");
+            messaggioDiv.classList.remove("mostra");
+            setTimeout(() => {
+                messaggioDiv.textContent = "";
+                messaggioDiv.className = "messaggio-verifica";
+            }, 300);
+        }
+
+        function controllaSeCorretto() {
+            if (modalitaGioco === 'interi') calcolaRisultatiCorrettiInteri();
+            else calcolaRisultatiCorrettiDecimali();
+            let tuttoCorretto = true;
+            for (let i = 0; i < numCifreTotali; i++) {
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) continue;
+                const risultatoUtente = parseInt(cifreRisultato[i]) || 0;
+                const risultatoCorrettoColonna = risultatiCorretti[i];
+                if (risultatoUtente !== risultatoCorrettoColonna) {
+                    tuttoCorretto = false;
+                }
+            }
+            for (let i = 0; i < numCifreTotali; i++) {
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) continue;
+                if (i === numCifreTotali - 1) continue;
+                const riportoUtente = parseInt(cifreRiporto[i]) || 0;
+                const riportoCorretto = riportiCorretti[i] || 0;
+                if (riportoCorretto === 1 && riportoUtente !== riportoCorretto) {
+                    tuttoCorretto = false;
+                }
+            }
+            return tuttoCorretto;
+        }
+
+        function selezionaColonna(indice) {
+            if (gameOver || (modalitaGioco === 'decimali' && indice === posizioneVirgola)) return;
+            if (!giocoIniziato) return;
+            playClickSound();
+            colonnaAttiva = indice;
+            modalitaRiporto = false;
+            aggiornaColonna();
+        }
+
+        function selezionaRiporto(indice) {
+            if (gameOver || indice === numCifreTotali - 1) return;
+            if (modalitaGioco === 'decimali' && indice === posizioneVirgola) return;
+            if (!giocoIniziato) return;
+            playClickSound();
+            colonnaAttiva = indice;
+            modalitaRiporto = true;
+            aggiornaColonna();
+        }
+
+        function inserisciCifra(cifra) {
+            if (gameOver || colonnaAttiva < 0 || colonnaAttiva >= numCifreTotali) return;
+            if (modalitaGioco === 'decimali' && colonnaAttiva === posizioneVirgola) return;
+            if (!giocoIniziato) return;
+            if (modalitaRiporto) {
+                if (cifra === 0 || cifra === 1) {
+                    cifreRiporto[colonnaAttiva] = cifra.toString();
+                    modalitaRiporto = false;
+                } else {
+                    mostraMessaggio("Il riporto può essere solo 0 o 1", "errato");
+                    return;
+                }
+            } else {
+                if (cifra >= 0 && cifra <= 9) {
+                    cifreRisultato[colonnaAttiva] = cifra.toString();
+                    const cifra1 = parseInt(cifreNumero1[colonnaAttiva]) || 0;
+                    const cifra2 = parseInt(cifreNumero2[colonnaAttiva]) || 0;
+                    const riportoIn = parseInt(cifreRiporto[colonnaAttiva]) || 0;
+                    const somma = cifra1 + cifra2 + riportoIn;
+                    const nuovoRiporto = Math.floor(somma / 10);
+                    let precedente = colonnaAttiva - 1;
+                    if (modalitaGioco === 'decimali') {
+                        while (precedente >= 0 && precedente === posizioneVirgola) {
+                            precedente--;
+                        }
+                    }
+                    if (precedente >= 0) {
+                        colonnaAttiva = precedente;
+                        if (nuovoRiporto > 0) {
+                            modalitaRiporto = true;
+                        }
+                    } else {
+                        mostraMessaggio("Operazione completata! Premi VERIFICA", "info");
+                    }
+                } else {
+                    mostraMessaggio("Inserisci una cifra da 0 a 9", "errato");
+                    return;
+                }
+            }
+            aggiornaColonna();
+        }
+
+        function cancellaCifra() {
+            if (gameOver || colonnaAttiva < 0 || colonnaAttiva >= numCifreTotali) return;
+            if (modalitaGioco === 'decimali' && colonnaAttiva === posizioneVirgola) return;
+            if (!giocoIniziato) return;
+            if (modalitaRiporto) {
+                cifreRiporto[colonnaAttiva] = "";
+            } else {
+                cifreRisultato[colonnaAttiva] = "";
+            }
+            aggiornaColonna();
+        }
+
+        function mostraAiuto() {
+            if (gameOver || !giocoIniziato) {
+                mostraMessaggio("Devi prima iniziare a giocare!", "errato");
+                return;
+            }
+            if (punteggio <= 0 && aiutiUtilizzatiOperazioneCorrente >= 1) {
+                mostraMessaggio("Attenzione! Potresti finire con 0 punti per questa operazione!", "errato");
+                return;
+            }
+            aiutiUtilizzatiOperazioneCorrente++;
+            const puntiDaSottrarre = 2;
+            if (modalitaRiporto) {
+                const riportoCorretto = riportiCorretti[colonnaAttiva] || 0;
+                if (riportoCorretto === 1) {
+                    mostraMessaggio(`Aiuto: riporto = 1 (-${puntiDaSottrarre} punti, totale aiuti: ${aiutiUtilizzatiOperazioneCorrente})`, "info");
+                } else {
+                    mostraMessaggio(`Aiuto: nessun riporto (-${puntiDaSottrarre} punti, totale aiuti: ${aiutiUtilizzatiOperazioneCorrente})`, "info");
+                }
+            } else {
+                const risultatoCorrettoColonna = risultatiCorretti[colonnaAttiva];
+                mostraMessaggio(`Aiuto: risultato = ${risultatoCorrettoColonna} (-${puntiDaSottrarre} punti, totale aiuti: ${aiutiUtilizzatiOperazioneCorrente})`, "info");
+            }
+            playClickSound();
+            aggiornaUI();
+        }
+
+        function verificaOperazione() {
+            if (gameOver || !giocoIniziato) return;
+            let tuttePiene = true;
+            for (let i = 0; i < numCifreTotali; i++) {
+                if (modalitaGioco === 'decimali' && i === posizioneVirgola) continue;
+                if (cifreRisultato[i] === "" || cifreRisultato[i] === undefined) {
+                    tuttePiene = false;
+                    break;
+                }
+            }
+            if (!tuttePiene) {
+                mostraMessaggio("Completa tutte le caselle prima di verificare!", "errato");
+                return;
+            }
+            const tuttoCorretto = controllaSeCorretto();
+            if (tuttoCorretto) {
+                const puntiGuadagnati = punteggioBaseOperazioneCorrente - (aiutiUtilizzatiOperazioneCorrente * 2);
+                const puntiFinali = Math.max(0, puntiGuadagnati);
+                punteggio += puntiFinali;
+                operazioniCorretteConsecutive++;
+                let messaggioPunti = `✓ Corretto!`;
+                let operazioneDifficile = false;
+                if (numeroCifreOperazioneCorrente >= 4 || modalitaGioco === 'decimali') {
+                    operazioneDifficile = true;
+                    messaggioPunti = `WOW! ` + messaggioPunti + ` Operazione difficile completata! `;
+                    playWowSound();
+                } else {
+                    playSuccessSound();
+                }
+                if (puntiFinali > 0) {
+                    messaggioPunti += ` +${puntiFinali} punti`;
+                } else {
+                    messaggioPunti += ` 0 punti (troppi aiuti!)`;
+                }
+                if (modalitaGioco === 'interi') {
+                    messaggioPunti += ` (${numeroCifreOperazioneCorrente} cifre, ${aiutiUtilizzatiOperazioneCorrente} aiuti)`;
+                } else {
+                    messaggioPunti += ` (decimali, ${aiutiUtilizzatiOperazioneCorrente} aiuti)`;
+                }
+                if (operazioniCorretteConsecutive >= 5 && vite < 3) {
+                    vite++;
+                    operazioniCorretteConsecutive = 0;
+                    messaggioPunti += ` 🎉 5 risposte consecutive! Vita recuperata!`;
+                }
+                if (operazioneDifficile) {
+                    mostraMessaggio(messaggioPunti, "wow", true);
+                } else {
+                    mostraMessaggio(messaggioPunti, "corretto");
+                }
+                setTimeout(nuovaOperazione, 4000);
+                verificaEseguita = true;
+            } else {
+                operazioniCorretteConsecutive = 0;
+                if (!haSbagliatoQuestaOperazione) {
+                    vite--;
+                    haSbagliatoQuestaOperazione = true;
+                    verificaEseguita = false;
+                    if (vite <= 0) {
+                        gameOver = true;
+                        fermaTimer();
+                        playAhiSound();
+                        mostraMessaggio(`AHI! GAME OVER! Punteggio finale: ${punteggio}. Clicca "Nuova" per ricominciare`, "ahi", true);
+                        document.getElementById("bottone-verifica").disabled = true;
+                        document.getElementById("bottone-aiuto").disabled = true;
+                    } else {
+                        if (numeroCifreOperazioneCorrente >= 4 || modalitaGioco === 'decimali') {
+                            playAhiSound();
+                            mostraMessaggio(`AHI! Hai perso una vita! Vite rimaste: ${vite}`, "ahi", true);
+                        } else {
+                            mostraMessaggio(`Ahi! Hai perso una vita! Vite rimaste: ${vite}`, "errato");
+                        }
+                    }
+                } else {
+                    mostraMessaggio(`Ci sono ancora errori. Correggi e riprova`, "errato");
+                }
+            }
+            aggiornaUI();
+        }
+
+        function mostraIstruzioni() {
+            document.getElementById('modal-overlay').style.display = 'flex';
+            playClickSound();
+        }
+        
+        function nascondiIstruzioni() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            playClickSound();
+        }
+
+        // ==================== FUNZIONE PER ESCI (DIRETTA) ====================
+        function esciDirettamente() {
+            if (confirm("Vuoi davvero uscire dal gioco?")) {
+                // Ferma il timer
+                fermaTimer();
+                // Reindirizza a Google (o a qualsiasi altra pagina)
+                window.location.href = "https://oragioca.github.io/matematica/";
+                // In alternativa, per una pagina vuota: window.location.href = "about:blank";
+            }
+        }
+
+        // ==================== SETUP INIZIALE ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('modalita-interi').addEventListener('click', () => { playClickSound(); cambiaModalita('interi'); });
+            document.getElementById('modalita-decimali').addEventListener('click', () => { playClickSound(); cambiaModalita('decimali'); });
+            document.getElementById('bottone-aiuto').addEventListener('click', mostraAiuto);
+            document.getElementById('bottone-verifica').addEventListener('click', verificaOperazione);
+            document.getElementById('bottone-nuova').addEventListener('click', () => { playClickSound(); nuovaOperazione(); });
+            document.getElementById('istruzioni-btn').addEventListener('click', mostraIstruzioni);
+            document.getElementById('close-modal').addEventListener('click', nascondiIstruzioni);
+            document.getElementById('modal-overlay').addEventListener('click', function(event) { if (event.target === this) nascondiIstruzioni(); });
+            document.getElementById('messaggio-avvio').addEventListener('click', iniziaGioco);
+            
+            // Pulsante esci: ora azione diretta
+            document.getElementById('esci-btn').addEventListener('click', esciDirettamente);
+            
+            inizializzaAudio();
+            setTimeout(inizializzaGioco, 100);
+        });
+
+        window.addEventListener('resize', creaTastiera);
+    </script>
+</body>
+</html>

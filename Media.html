@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Media Aritmetica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #add8e6, #87ceeb);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 8px;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 100, 0.2);
+            padding: 12px;
+            max-width: 880px;
+            width: 100%;
+            text-align: center;
+            border: 5px solid #4a90e2;
+            margin-top: 5px;
+        }
+        
+        .titolo-container {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #000080;
+            font-size: 1.6rem;
+            text-shadow: 1px 1px 0 #ffd700;
+            line-height: 1.2;
+        }
+        
+        .sottotitolo {
+            color: #333;
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+        
+        .autore {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0.7rem;
+            color: #666;
+            background: #f0f8ff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid #4a90e2;
+        }
+        
+        .tipo-domanda {
+            background: #ffd700;
+            color: #8b4513;
+            padding: 4px 8px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            border: 2px solid #ff8c00;
+            font-size: 0.9rem;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            background: #f0f8ff;
+            padding: 6px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 3px solid #4a90e2;
+            align-items: center;
+        }
+        
+        .punteggio, .vite, .livello, .esci-item {
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        .punteggio { color: #000080; }
+        .vite { color: #ff0000; }
+        .livello { color: #008000; }
+        
+        /* Stile per il pulsante Esci */
+        .btn-exit {
+            background: linear-gradient(145deg, #6c757d, #5a6268);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #495057;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .btn-exit:hover {
+            background: linear-gradient(145deg, #5a6268, #495057);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #343a40;
+        }
+        
+        .bonus-info {
+            background: linear-gradient(145deg, #ffd700, #ffa500);
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin: 4px auto;
+            font-weight: bold;
+            color: #8b4513;
+            border: 2px solid #ff8c00;
+            max-width: 280px;
+            display: none;
+            font-size: 0.85rem;
+        }
+        
+        .area-domanda {
+            margin: 4px 0 12px 0;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* TABELLA NUMERI */
+        .tabella-numeri {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            border-radius: 10px;
+            padding: 12px;
+            border: 4px solid #006400;
+            box-shadow: 0 3px 6px rgba(0, 100, 0, 0.3);
+            display: none;
+        }
+        
+        .riga-tabella {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 6px 0;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .numero-cella {
+            width: 48px;
+            height: 48px;
+            background: #4a90e2;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.4rem;
+            border: 3px solid #000080;
+            flex-shrink: 0;
+        }
+        
+        /* DIAGRAMMA A BARRE - ULTERIORMENTE MIGLIORATO */
+        .diagramma-barre {
+            width: 100%;
+            max-width: 680px;
+            background: linear-gradient(145deg, #ff6b6b, #ff8c8c);
+            border-radius: 10px;
+            padding: 15px 10px;
+            border: 4px solid #8b0000;
+            box-shadow: 0 3px 6px rgba(139, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .titolo-diagramma {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .contenitore-barre {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: flex-end;
+            height: 150px;
+            padding: 0 3px;
+            position: relative;
+        }
+        
+        .barra-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 65px;
+            position: relative;
+            margin: 0 2px;
+        }
+        
+        .barra {
+            width: 36px;
+            background: linear-gradient(to top, #4ecdc4, #44a08d);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            border: 2px solid #1a535c;
+            min-height: 4px;
+        }
+        
+        .valore-barra {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #1a535c;
+            background: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            border: 1px solid #1a535c;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .etichetta-barra {
+            margin-top: 8px;
+            font-weight: bold;
+            color: #1a535c;
+            background: white;
+            padding: 3px 3px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            text-align: center;
+            max-width: 55px;
+            word-wrap: break-word;
+            line-height: 1;
+            border: 1px solid #1a535c;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* TABELLA DATI */
+        .tabella-dati {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(145deg, #9d65c9, #7b4caf);
+            border-radius: 10px;
+            padding: 12px;
+            border: 4px solid #4b0082;
+            box-shadow: 0 3px 6px rgba(75, 0, 130, 0.3);
+            display: none;
+        }
+        
+        .riga-dati {
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.9);
+            margin: 3px 0;
+            border-radius: 5px;
+            overflow: hidden;
+            font-weight: bold;
+        }
+        
+        .cella-dati {
+            flex: 1;
+            padding: 6px 3px;
+            text-align: center;
+            border-right: 1px solid #ccc;
+            font-size: 0.85rem;
+        }
+        
+        .cella-dati:last-child {
+            border-right: none;
+        }
+        
+        .intestazione-dati {
+            background: #4b0082;
+            color: white;
+        }
+        
+        /* DIAGRAMMA A TORTA */
+        .diagramma-torta {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(145deg, #ffd166, #ffb347);
+            border-radius: 10px;
+            padding: 15px;
+            border: 4px solid #cc5500;
+            box-shadow: 0 3px 6px rgba(204, 85, 0, 0.3);
+            display: none;
+        }
+        
+        .contenitore-torta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 170px;
+            position: relative;
+        }
+        
+        .torta-grafico {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .legenda-torta {
+            margin-left: 15px;
+            text-align: left;
+        }
+        
+        .item-legenda {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 0.8rem;
+        }
+        
+        .colore-legenda {
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+        
+        .formula-compatta {
+            background: #fffacd;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border: 2px solid #b8860b;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #8b0000;
+        }
+        
+        .area-risposta {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 3px solid #4a90e2;
+        }
+        
+        .istruzione-risposta {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        
+        .input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-risposta {
+            font-size: 1.5rem;
+            width: 85px;
+            padding: 6px;
+            text-align: center;
+            border: 3px solid #4a90e2;
+            border-radius: 6px;
+            font-weight: bold;
+            background: white;
+        }
+        
+        .bottone-invia {
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 0 #006400;
+            font-weight: bold;
+        }
+        
+        .bottone-invia:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #006400;
+        }
+        
+        .suggerimento-tasto {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .controlli-gioco {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 6px 0;
+        }
+        
+        .bottone-aiuto {
+            background: linear-gradient(145deg, #ffa500, #ff8c00);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 0 #cc7000;
+        }
+        
+        .bottone-aiuto:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #cc7000;
+        }
+        
+        .bottone-istruzioni {
+            background: linear-gradient(145deg, #4a90e2, #357ae8);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 0 #1c5fa6;
+        }
+        
+        .bottone-istruzioni:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0 #1c5fa6;
+        }
+        
+        .bottone-aiuto:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 1px 0 #999999;
+        }
+        
+        .messaggio {
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 6px 0;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
+        }
+        
+        .corretto {
+            background-color: #90ee90;
+            color: #006400;
+            border: 2px solid #006400;
+        }
+        
+        .errato {
+            background-color: #ffcccc;
+            color: #8b0000;
+            border: 2px solid #8b0000;
+        }
+        
+        .aiuto {
+            background-color: #fffacd;
+            color: #b8860b;
+            border: 2px dashed #b8860b;
+        }
+        
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .game-over-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            border: 5px solid #ff0000;
+        }
+        
+        .game-over-title {
+            color: #ff0000;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        
+        .game-over-punteggio {
+            font-size: 1.3rem;
+            color: #000080;
+            margin-bottom: 12px;
+        }
+        
+        .stelle-valutazione {
+            font-size: 1.8rem;
+            margin: 8px 0;
+            color: #ffd700;
+        }
+        
+        .bottone-rigioca {
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+        }
+        
+        .aiuto-livello {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        
+        .livello-aiuto {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+        
+        .livello-aiuto.attivo {
+            background-color: #ffa500;
+        }
+        
+        .avviso-arrotondamento {
+            background-color: #e6f7ff;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 6px 0;
+            border: 2px solid #4a90e2;
+            font-size: 0.85rem;
+            color: #000080;
+            font-weight: bold;
+            display: none;
+        }
+        
+        /* MODALE ISTRUZIONI */
+        .modale {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+        
+        .modale-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            max-width: 480px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 5px solid #4a90e2;
+        }
+        
+        .modale-title {
+            color: #000080;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            text-align: center;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 8px;
+        }
+        
+        .sezione-istruzioni {
+            margin-bottom: 12px;
+        }
+        
+        .sezione-title {
+            color: #000080;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .sezione-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #333;
+            margin-left: 10px;
+        }
+        
+        .lista-istruzioni {
+            margin-left: 20px;
+            margin-top: 4px;
+        }
+        
+        .lista-istruzioni li {
+            margin-bottom: 4px;
+            line-height: 1.3;
+            font-size: 0.9rem;
+        }
+        
+        .icona-istruzione {
+            font-size: 1.1rem;
+        }
+        
+        .bottone-chiudi {
+            background: linear-gradient(145deg, #ff6b6b, #ff4757);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        /* AVVISO PER SCROLL */
+        .avviso-scroll {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            z-index: 50;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+                align-items: flex-start;
+            }
+            
+            .game-container {
+                padding: 10px;
+                border-radius: 15px;
+                margin-top: 0;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .sottotitolo {
+                font-size: 0.8rem;
+            }
+            
+            .autore {
+                font-size: 0.65rem;
+                padding: 1px 4px;
+            }
+            
+            .numero-cella {
+                width: 42px;
+                height: 42px;
+                font-size: 1.3rem;
+            }
+            
+            .input-risposta {
+                font-size: 1.3rem;
+                width: 75px;
+                padding: 5px;
+            }
+            
+            .bottone-invia {
+                padding: 5px 10px;
+                font-size: 0.95rem;
+            }
+            
+            .game-info {
+                padding: 5px;
+                margin-bottom: 10px;
+            }
+            
+            .punteggio, .vite, .livello, .esci-item {
+                font-size: 0.95rem;
+            }
+            
+            .btn-exit {
+                font-size: 0.85rem;
+                padding: 5px 10px;
+            }
+            
+            .formula-compatta {
+                font-size: 0.95rem;
+                padding: 6px;
+            }
+            
+            .messaggio {
+                font-size: 0.95rem;
+                min-height: 45px;
+                padding: 6px;
+            }
+            
+            .bottone-aiuto, .bottone-istruzioni {
+                padding: 5px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .contenitore-barre {
+                height: 130px;
+            }
+            
+            .barra-item {
+                width: 50px;
+                margin: 0 1px;
+            }
+            
+            .barra {
+                width: 28px;
+            }
+            
+            .etichetta-barra {
+                font-size: 0.7rem;
+                max-width: 45px;
+                padding: 2px;
+                margin-top: 6px;
+            }
+            
+            .valore-barra {
+                font-size: 0.7rem;
+                padding: 1px 2px;
+                top: -22px;
+            }
+            
+            .contenitore-torta {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .legenda-torta {
+                margin-left: 0;
+                margin-top: 12px;
+            }
+            
+            .item-legenda {
+                font-size: 0.75rem;
+            }
+            
+            .torta-grafico {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .area-domanda {
+                min-height: 180px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .contenitore-barre {
+                height: 110px;
+            }
+            
+            .barra-item {
+                width: 40px;
+            }
+            
+            .barra {
+                width: 24px;
+            }
+            
+            .etichetta-barra {
+                font-size: 0.65rem;
+                max-width: 35px;
+            }
+            
+            .valore-barra {
+                font-size: 0.65rem;
+                top: -20px;
+            }
+            
+            .numero-cella {
+                width: 38px;
+                height: 38px;
+                font-size: 1.2rem;
+            }
+            
+            .autore {
+                position: static;
+                display: inline-block;
+                margin-top: 2px;
+            }
+            
+            .titolo-container {
+                margin-bottom: 6px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .game-container {
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            .area-domanda {
+                min-height: 160px;
+            }
+            
+            .contenitore-barre {
+                height: 120px;
+            }
+            
+            .messaggio {
+                min-height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="titolo-container">
+            <h1>📊 CALCOLA LA MEDIA - INVALSI STYLE 📊</h1>
+            <p class="sottotitolo">Gioco di matematica con diagrammi per la scuola primaria</p>
+            <div class="autore">RG PNRR 2026</div>
+        </div>
+        
+        <div class="tipo-domanda" id="tipo-domanda">MEDIA SEMPLICE</div>
+        
+        <div class="game-info">
+            <div class="punteggio">Punti: <span id="punteggio">0</span></div>
+            <div class="vite">Vite: <span id="vite">❤️❤️❤️</span></div>
+            <div class="livello">Livello: <span id="livello">1</span></div>
+            <!-- NUOVO PULSANTE ESCI -->
+            <div class="esci-item">
+                <button class="btn-exit" id="esciBtn">🚪 Esci</button>
+            </div>
+        </div>
+        
+        <div class="bonus-info" id="bonus-info">
+            <span id="bonus-text"></span>
+        </div>
+        
+        <div class="avviso-arrotondamento" id="avviso-arrotondamento">
+            ⚠️ La media va ARROTONDATA all'unità intera!
+        </div>
+        
+        <!-- AREA DOMANDE MULTIFORMA -->
+        <div class="area-domanda">
+            <!-- TABELLA NUMERI (media semplice) -->
+            <div class="tabella-numeri" id="tabella-numeri">
+                <div class="riga-tabella" id="riga-numeri">
+                    <!-- I numeri verranno aggiunti con JavaScript -->
+                </div>
+            </div>
+            
+            <!-- DIAGRAMMA A BARRE -->
+            <div class="diagramma-barre" id="diagramma-barre">
+                <div class="titolo-diagramma" id="titolo-barre">Diagramma a barre</div>
+                <div class="contenitore-barre" id="contenitore-barre">
+                    <!-- Le barre verranno aggiunte con JavaScript -->
+                </div>
+            </div>
+            
+            <!-- TABELLA DATI -->
+            <div class="tabella-dati" id="tabella-dati">
+                <div class="riga-dati intestazione-dati" id="intestazione-dati">
+                    <!-- Intestazione tabella -->
+                </div>
+                <!-- Righe dati verranno aggiunte con JavaScript -->
+            </div>
+            
+            <!-- DIAGRAMMA A TORTA -->
+            <div class="diagramma-torta" id="diagramma-torta">
+                <div class="titolo-diagramma" id="titolo-torta">Diagramma a torta</div>
+                <div class="contenitore-torta">
+                    <div class="torta-grafico" id="torta-grafico"></div>
+                    <div class="legenda-torta" id="legenda-torta">
+                        <!-- Legenda verrà aggiunta con JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="formula-compatta" id="formula">
+            Media = (Somma dei valori) ÷ (Numero di valori)
+        </div>
+        
+        <div class="area-risposta">
+            <div class="istruzione-risposta">
+                ✍️ SCRIVI LA MEDIA (NUMERO INTERO):
+            </div>
+            <div class="input-container">
+                <input type="number" class="input-risposta" id="input-risposta" 
+                       placeholder="???" step="1" min="0" max="100" autofocus>
+                <button class="bottone-invia" id="bottone-invia" onclick="inviaRisposta()">
+                    INVIA
+                </button>
+            </div>
+            <div class="suggerimento-tasto">
+                (Premi INVIO per inviare)
+            </div>
+        </div>
+        
+        <div class="controlli-gioco">
+            <button class="bottone-aiuto" id="bottone-aiuto" onclick="mostraAiuto()">
+                🧠 AIUTINO (-5 punti)
+            </button>
+            <button class="bottone-istruzioni" id="bottone-istruzioni" onclick="mostraIstruzioni()">
+                📚 ISTRUZIONI
+            </button>
+        </div>
+        
+        <div class="aiuto-livello">
+            <div class="livello-aiuto" id="aiuto1"></div>
+            <div class="livello-aiuto" id="aiuto2"></div>
+            <div class="livello-aiuto" id="aiuto3"></div>
+        </div>
+        
+        <div class="messaggio" id="messaggio">
+            Calcola la media dei dati presentati
+        </div>
+    </div>
+    
+    <!-- AVVISO PER SCROLL (solo se necessario) -->
+    <div class="avviso-scroll" id="avviso-scroll">
+        ↓ Scorri per vedere tutto il gioco ↓
+    </div>
+    
+    <!-- MODALE ISTRUZIONI -->
+    <div class="modale" id="modale-istruzioni">
+        <div class="modale-content">
+            <h2 class="modale-title">📚 COME SI GIOCA</h2>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">🎯</span> OBIETTIVO</h3>
+                <p class="sezione-text">Calcolare la media aritmetica dei dati presentati in diversi formati.</p>
+            </div>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">📝</span> COME GIOCARE</h3>
+                <ol class="lista-istruzioni">
+                    <li><strong>Osserva</strong> i dati nel grafico o tabella</li>
+                    <li><strong>Estrai</strong> i valori numerici</li>
+                    <li><strong>Calcola</strong> la somma di tutti i valori</li>
+                    <li><strong>Dividi</strong> la somma per il numero di valori</li>
+                    <li><strong>Arrotonda</strong> all'unità intera se necessario</li>
+                    <li><strong>Scrivi</strong> il numero intero</li>
+                    <li><strong>Premi INVIA</strong> o clicca INVIA</li>
+                </ol>
+            </div>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">📊</span> TIPI DI DOMANDE</h3>
+                <ul class="lista-istruzioni">
+                    <li><strong>Media semplice:</strong> Numeri in una tabella</li>
+                    <li><strong>Diagramma a barre:</strong> Valori come barre verticali</li>
+                    <li><strong>Tabella di dati:</strong> Informazioni organizzate</li>
+                    <li><strong>Diagramma a torta:</strong> Valori come fette di torta</li>
+                </ul>
+            </div>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">🏆</span> SISTEMA BONUS</h3>
+                <ul class="lista-istruzioni">
+                    <li><strong>+10 punti</strong> per risposta corretta</li>
+                    <li><strong>+5 punti bonus</strong> ogni 3 risposte consecutive corrette</li>
+                    <li><strong>Vita extra</strong> ogni 5 risposte consecutive corrette</li>
+                    <li><strong>Scudo protettivo</strong> dopo 7 risposte consecutive corrette</li>
+                </ul>
+            </div>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">🔄</span> PROGRESSIONE</h3>
+                <ul class="lista-istruzioni">
+                    <li><strong>Prime 2 domande:</strong> Solo numeri semplici</li>
+                    <li><strong>Domande 3-5:</strong> Diagrammi a barre</li>
+                    <li><strong>Domande 6-9:</strong> Tabelle di dati</li>
+                    <li><strong>Dalla 10a:</strong> Tutti i tipi inclusi diagrammi a torta</li>
+                </ul>
+            </div>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">❓</span> AIUTI</h3>
+                <p class="sezione-text">3 livelli di aiuto disponibili. Ogni aiuto costa 5 punti.</p>
+            </div>
+            
+            <div class="sezione-istruzioni">
+                <h3 class="sezione-title"><span class="icona-istruzione">👤</span> AUTORE</h3>
+                <p class="sezione-text">Gioco realizzato da: <strong>RG PNRR 2026</strong></p>
+            </div>
+            
+            <button class="bottone-chiudi" onclick="chiudiIstruzioni()">CHIUDI ISTRUZIONI</button>
+        </div>
+    </div>
+    
+    <!-- GAME OVER SCREEN -->
+    <div class="game-over" id="game-over">
+        <div class="game-over-content">
+            <h2 class="game-over-title">GAME OVER!</h2>
+            <p class="game-over-punteggio">Il tuo punteggio: <span id="punteggio-finale">0</span></p>
+            <p style="font-size: 0.9rem; margin-bottom: 4px;">
+                Livello raggiunto: <span id="livello-finale">1</span>
+            </p>
+            <div class="stelle-valutazione" id="stelle-valutazione"></div>
+            <button class="bottone-rigioca" onclick="rigioca()">🔄 RIGIOCA</button>
+        </div>
+    </div>
+
+    <script>
+        // VARIABILI DEL GIOCO
+        let punteggio = 0;
+        let vite = 3;
+        let livello = 1;
+        let aiutoLivello = 0;
+        let datiCorrente = [];
+        let mediaCorretta = 0;
+        let deveArrotondare = false;
+        let risposteConsecutiveCorrette = 0;
+        let scudoAttivo = false;
+        let tipoDomandaCorrente = 'numeri';
+        let descrizioneDomanda = '';
+        let domandeFatte = 0;
+        
+        // ELEMENTI DOM
+        const elemPunteggio = document.getElementById('punteggio');
+        const elemVite = document.getElementById('vite');
+        const elemLivello = document.getElementById('livello');
+        const elemMessaggio = document.getElementById('messaggio');
+        const elemAvviso = document.getElementById('avviso-arrotondamento');
+        const elemBonusInfo = document.getElementById('bonus-info');
+        const elemBonusText = document.getElementById('bonus-text');
+        const elemTipoDomanda = document.getElementById('tipo-domanda');
+        const inputRisposta = document.getElementById('input-risposta');
+        const bottoneInvia = document.getElementById('bottone-invia');
+        const bottoneAiuto = document.getElementById('bottone-aiuto');
+        const modaleIstruzioni = document.getElementById('modale-istruzioni');
+        const gameOverScreen = document.getElementById('game-over');
+        const avvisoScroll = document.getElementById('avviso-scroll');
+        
+        // ELEMENTI PER I VARI TIPI DI DOMANDE
+        const tabellaNumeri = document.getElementById('tabella-numeri');
+        const rigaNumeri = document.getElementById('riga-numeri');
+        const diagrammaBarre = document.getElementById('diagramma-barre');
+        const tabellaDati = document.getElementById('tabella-dati');
+        const diagrammaTorta = document.getElementById('diagramma-torta');
+        const tortaGrafico = document.getElementById('torta-grafico');
+        
+        // FUNZIONI BASE
+        function aggiornaAiutiVisual() {
+            for (let i = 1; i <= 3; i++) {
+                const elem = document.getElementById(`aiuto${i}`);
+                elem.className = i <= aiutoLivello ? 'livello-aiuto attivo' : 'livello-aiuto';
+            }
+        }
+        
+        function arrotondaAllUnita(numero) {
+            return Math.round(numero);
+        }
+        
+        function mostraBonusTesto(testo) {
+            elemBonusText.textContent = testo;
+            elemBonusInfo.style.display = 'block';
+            setTimeout(() => {
+                elemBonusInfo.style.display = 'none';
+            }, 3000);
+        }
+        
+        // CONTROLLA SE SERVE SCROLL
+        function controllaScrollNecessario() {
+            const windowHeight = window.innerHeight;
+            const gameHeight = document.querySelector('.game-container').offsetHeight;
+            
+            if (gameHeight > windowHeight * 0.9) {
+                avvisoScroll.style.display = 'block';
+            } else {
+                avvisoScroll.style.display = 'none';
+            }
+        }
+        
+        // MODALE ISTRUZIONI
+        function mostraIstruzioni() {
+            modaleIstruzioni.style.display = 'flex';
+        }
+        
+        function chiudiIstruzioni() {
+            modaleIstruzioni.style.display = 'none';
+        }
+        
+        // GENERA UNA NUOVA DOMANDA
+        function generaDomanda() {
+            domandeFatte++;
+            aiutoLivello = 0;
+            aggiornaAiutiVisual();
+            
+            // Nascondi tutti i tipi di domanda
+            tabellaNumeri.style.display = 'none';
+            diagrammaBarre.style.display = 'none';
+            tabellaDati.style.display = 'none';
+            diagrammaTorta.style.display = 'none';
+            
+            // SISTEMA DI PROGRESSIONE
+            let tipiDisponibili = [];
+            
+            if (domandeFatte <= 2) {
+                tipiDisponibili = ['numeri'];
+            } else if (domandeFatte <= 5) {
+                tipiDisponibili = ['numeri', 'barre'];
+            } else if (domandeFatte <= 9) {
+                tipiDisponibili = ['numeri', 'barre', 'tabella'];
+            } else {
+                tipiDisponibili = ['numeri', 'barre', 'tabella', 'torta'];
+            }
+            
+            // Aggiusta in base al livello
+            if (livello >= 2) tipiDisponibili.push('barre');
+            if (livello >= 3) tipiDisponibili.push('tabella');
+            if (livello >= 4) tipiDisponibili.push('torta');
+            
+            // Rimuovi duplicati
+            tipiDisponibili = [...new Set(tipiDisponibili)];
+            
+            // Scegli tipo di domanda
+            const tipoScelto = tipiDisponibili[Math.floor(Math.random() * tipiDisponibili.length)];
+            tipoDomandaCorrente = tipoScelto;
+            
+            // Genera la domanda
+            switch(tipoScelto) {
+                case 'numeri':
+                    generaDomandaNumeri();
+                    elemTipoDomanda.textContent = 'MEDIA SEMPLICE';
+                    break;
+                case 'barre':
+                    generaDomandaBarre();
+                    elemTipoDomanda.textContent = 'DIAGRAMMA A BARRE';
+                    break;
+                case 'tabella':
+                    generaDomandaTabella();
+                    elemTipoDomanda.textContent = 'TABELLA DI DATI';
+                    break;
+                case 'torta':
+                    generaDomandaTorta();
+                    elemTipoDomanda.textContent = 'DIAGRAMMA A TORTA';
+                    break;
+            }
+            
+            // Avviso arrotondamento
+            const mostraArrotondamento = (domandeFatte > 2) && (Math.random() > 0.6);
+            elemAvviso.style.display = (mostraArrotondamento && deveArrotondare) ? 'block' : 'none';
+            
+            // Reset input
+            inputRisposta.value = '';
+            inputRisposta.disabled = false;
+            bottoneInvia.disabled = false;
+            bottoneAiuto.disabled = false;
+            bottoneAiuto.textContent = '🧠 AIUTINO (-5 punti)';
+            
+            // Focus sull'input
+            setTimeout(() => {
+                inputRisposta.focus();
+            }, 100);
+            
+            // Messaggio iniziale
+            elemMessaggio.innerHTML = deveArrotondare ? 
+                `${descrizioneDomanda}<br>ARROTONDA all'unità!` : 
+                descrizioneDomanda;
+            elemMessaggio.className = 'messaggio';
+            
+            // Controlla se serve scroll
+            setTimeout(controllaScrollNecessario, 100);
+        }
+        
+        // 1. DOMANDA CON NUMERI SEMPLICI
+        function generaDomandaNumeri() {
+            tabellaNumeri.style.display = 'block';
+            rigaNumeri.innerHTML = '';
+            
+            let quantita, maxNumero;
+            
+            if (domandeFatte <= 2) {
+                quantita = 3;
+                maxNumero = 10;
+                deveArrotondare = false;
+            } else if (domandeFatte <= 5) {
+                quantita = Math.floor(Math.random() * 2) + 3;
+                maxNumero = 15;
+                deveArrotondare = Math.random() > 0.7;
+            } else {
+                quantita = Math.floor(Math.random() * 3) + 3;
+                maxNumero = 20;
+                deveArrotondare = Math.random() > 0.5;
+            }
+            
+            // Genera numeri
+            datiCorrente = [];
+            for (let i = 0; i < quantita; i++) {
+                datiCorrente.push(Math.floor(Math.random() * maxNumero) + 1);
+            }
+            
+            // Se deve arrotondare, assicuriamoci che la media abbia decimali
+            if (deveArrotondare) {
+                const sommaTemp = datiCorrente.reduce((a, b) => a + b, 0);
+                if (sommaTemp % quantita === 0) {
+                    datiCorrente[0] += 1;
+                }
+            }
+            
+            // Calcola media
+            const somma = datiCorrente.reduce((a, b) => a + b, 0);
+            const mediaEsatta = somma / quantita;
+            mediaCorretta = deveArrotondare ? arrotondaAllUnita(mediaEsatta) : Math.round(mediaEsatta);
+            
+            // Mostra i numeri nella tabella
+            datiCorrente.forEach(numero => {
+                const cella = document.createElement('div');
+                cella.className = 'numero-cella';
+                cella.textContent = numero;
+                rigaNumeri.appendChild(cella);
+            });
+            
+            descrizioneDomanda = 'Calcola la media dei numeri nella tabella';
+        }
+        
+        // 2. DOMANDA CON DIAGRAMMA A BARRE (ULTERIORMENTE MIGLIORATO)
+        function generaDomandaBarre() {
+            diagrammaBarre.style.display = 'block';
+            
+            // Temi con etichette ultra-corte
+            const temi = [
+                { titolo: "Voti", etichette: ["6", "7", "8", "9", "10"] },
+                { titolo: "Libri", etichette: ["1-2", "3-4", "5-6", "7-8", "9+"] },
+                { titolo: "Frutta", etichette: ["M", "P", "U", "B", "F"] },
+                { titolo: "Temp.", etichette: ["G", "F", "M", "A", "M"] },
+                { titolo: "Sport", etichette: ["C", "B", "N", "T", "B"] }
+            ];
+            
+            const tema = temi[Math.floor(Math.random() * temi.length)];
+            document.getElementById('titolo-barre').textContent = tema.titolo;
+            
+            const numBarre = tema.etichette.length;
+            datiCorrente = [];
+            
+            // Genera valori - assicura differenza minima di 2 tra valori consecutivi
+            for (let i = 0; i < numBarre; i++) {
+                let valore;
+                do {
+                    valore = Math.floor(Math.random() * 12) + 3;
+                } while (datiCorrente.length > 0 && Math.abs(valore - datiCorrente[datiCorrente.length-1]) < 2);
+                datiCorrente.push(valore);
+            }
+            
+            // Calcola media
+            const somma = datiCorrente.reduce((a, b) => a + b, 0);
+            const mediaEsatta = somma / numBarre;
+            deveArrotondare = mediaEsatta % 1 !== 0;
+            mediaCorretta = arrotondaAllUnita(mediaEsatta);
+            
+            // Disegna le barre
+            const contenitore = document.getElementById('contenitore-barre');
+            contenitore.innerHTML = '';
+            
+            const maxValore = Math.max(...datiCorrente);
+            const altezzaMax = 120;
+            
+            datiCorrente.forEach((valore, idx) => {
+                const barraItem = document.createElement('div');
+                barraItem.className = 'barra-item';
+                
+                // Calcola altezza proporzionale
+                const altezza = (valore / maxValore) * altezzaMax;
+                
+                const barra = document.createElement('div');
+                barra.className = 'barra';
+                barra.style.height = `${altezza}px`;
+                
+                // Valore sopra la barra
+                const valoreElem = document.createElement('div');
+                valoreElem.className = 'valore-barra';
+                valoreElem.textContent = valore;
+                
+                // Etichetta sotto la barra
+                const etichetta = document.createElement('div');
+                etichetta.className = 'etichetta-barra';
+                etichetta.textContent = tema.etichette[idx];
+                etichetta.title = tema.etichette[idx];
+                
+                barra.appendChild(valoreElem);
+                barraItem.appendChild(barra);
+                barraItem.appendChild(etichetta);
+                contenitore.appendChild(barraItem);
+            });
+            
+            descrizioneDomanda = `Osserva il diagramma. Calcola il valore medio.`;
+        }
+        
+        // 3. DOMANDA CON TABELLA DI DATI
+        function generaDomandaTabella() {
+            tabellaDati.style.display = 'block';
+            
+            const temi = [
+                { intestazione: ["Giorno", "Temp"], desc: "temperature" },
+                { intestazione: ["Nome", "Voto"], desc: "voti" },
+                { intestazione: ["Mese", "Pioggia"], desc: "precipitazioni" },
+                { intestazione: ["Frutto", "Qtà"], desc: "quantità" }
+            ];
+            
+            const tema = temi[Math.floor(Math.random() * temi.length)];
+            const numRighe = 4;
+            
+            // Genera dati
+            datiCorrente = [];
+            for (let i = 0; i < numRighe; i++) {
+                datiCorrente.push(Math.floor(Math.random() * 15) + 5);
+            }
+            
+            // Calcola media
+            const somma = datiCorrente.reduce((a, b) => a + b, 0);
+            const mediaEsatta = somma / numRighe;
+            deveArrotondare = mediaEsatta % 1 !== 0;
+            mediaCorretta = arrotondaAllUnita(mediaEsatta);
+            
+            // Crea la tabella
+            const tabella = document.getElementById('tabella-dati');
+            tabella.innerHTML = '';
+            
+            // Intestazione
+            const intestazione = document.createElement('div');
+            intestazione.className = 'riga-dati intestazione-dati';
+            
+            tema.intestazione.forEach(colonna => {
+                const cella = document.createElement('div');
+                cella.className = 'cella-dati';
+                cella.textContent = colonna;
+                intestazione.appendChild(cella);
+            });
+            tabella.appendChild(intestazione);
+            
+            // Righe dati
+            const nomiRighe = ["Lun", "Mar", "Mer", "Gio", "Ven", "Mrc", "Ann", "Luc"];
+            
+            for (let i = 0; i < numRighe; i++) {
+                const riga = document.createElement('div');
+                riga.className = 'riga-dati';
+                
+                const cella1 = document.createElement('div');
+                cella1.className = 'cella-dati';
+                cella1.textContent = nomiRighe[i];
+                
+                const cella2 = document.createElement('div');
+                cella2.className = 'cella-dati';
+                cella2.textContent = datiCorrente[i];
+                
+                riga.appendChild(cella1);
+                riga.appendChild(cella2);
+                tabella.appendChild(riga);
+            }
+            
+            descrizioneDomanda = `Osserva la tabella. Calcola il valore medio.`;
+        }
+        
+        // 4. DOMANDA CON DIAGRAMMA A TORTA
+        function generaDomandaTorta() {
+            diagrammaTorta.style.display = 'block';
+            
+            const temi = [
+                { titolo: "Preferenze colori", categorie: ["Rosso", "Blu", "Verde", "Giallo"] },
+                { titolo: "Attività tempo libero", categorie: ["Sport", "Lettura", "TV", "PC"] },
+                { titolo: "Frutta preferita", categorie: ["Mele", "Banane", "Pere", "Uva"] }
+            ];
+            
+            const tema = temi[Math.floor(Math.random() * temi.length)];
+            document.getElementById('titolo-torta').textContent = tema.titolo;
+            
+            const numFette = 4;
+            datiCorrente = [];
+            for (let i = 0; i < numFette; i++) {
+                datiCorrente.push(Math.floor(Math.random() * 10) + 5);
+            }
+            
+            // Calcola media
+            const somma = datiCorrente.reduce((a, b) => a + b, 0);
+            const mediaEsatta = somma / numFette;
+            deveArrotondare = mediaEsatta % 1 !== 0;
+            mediaCorretta = arrotondaAllUnita(mediaEsatta);
+            
+            // Crea la legenda
+            const legenda = document.getElementById('legenda-torta');
+            legenda.innerHTML = '';
+            
+            const colori = ['#FF6B6B', '#4ECDC4', '#FFD166', '#95E1D3'];
+            
+            datiCorrente.forEach((valore, idx) => {
+                const item = document.createElement('div');
+                item.className = 'item-legenda';
+                
+                const colore = document.createElement('div');
+                colore.className = 'colore-legenda';
+                colore.style.backgroundColor = colori[idx];
+                
+                const testo = document.createElement('span');
+                testo.textContent = `${tema.categorie[idx]}: ${valore}`;
+                
+                item.appendChild(colore);
+                item.appendChild(testo);
+                legenda.appendChild(item);
+            });
+            
+            // Crea il grafico a torta
+            let gradientString = '';
+            let accumulo = 0;
+            
+            datiCorrente.forEach((valore, idx) => {
+                const percentuale = (valore / somma) * 100;
+                const start = accumulo;
+                const end = accumulo + percentuale;
+                
+                if (idx === 0) {
+                    gradientString += `${colori[idx]} 0% ${end}%`;
+                } else {
+                    gradientString += `, ${colori[idx]} ${start}% ${end}%`;
+                }
+                
+                accumulo = end;
+            });
+            
+            tortaGrafico.style.background = `conic-gradient(${gradientString})`;
+            
+            descrizioneDomanda = `Osserva il diagramma a torta. Calcola il valore medio.`;
+        }
+        
+        // APPLICA BONUS
+        function applicaBonus() {
+            if (risposteConsecutiveCorrette > 0 && risposteConsecutiveCorrette % 3 === 0) {
+                punteggio += 5;
+                elemPunteggio.textContent = punteggio;
+                mostraBonusTesto(`🎁 +5 punti per 3 risposte di fila!`);
+            }
+            
+            if (risposteConsecutiveCorrette > 0 && risposteConsecutiveCorrette % 5 === 0 && vite < 5) {
+                vite++;
+                aggiornaViteVisual();
+                mostraBonusTesto(`💖 VITA EXTRA! Ora hai ${vite} vite!`);
+            }
+            
+            if (risposteConsecutiveCorrette === 7 && !scudoAttivo) {
+                scudoAttivo = true;
+                mostraBonusTesto(`🛡️ SCUDO ATTIVO! Il prossimo errore non toglierà vita!`);
+            }
+        }
+        
+        // AGGIORNA VITE VISUAL
+        function aggiornaViteVisual() {
+            let viteCuori = '';
+            for (let i = 0; i < 5; i++) {
+                viteCuori += i < vite ? '❤️' : '🤍';
+            }
+            elemVite.textContent = viteCuori;
+        }
+        
+        // INVIA RISPOSTA
+        function inviaRisposta() {
+            const valoreInput = inputRisposta.value.trim();
+            
+            if (valoreInput === '') {
+                elemMessaggio.innerHTML = '✏️ Scrivi un numero!';
+                elemMessaggio.className = 'messaggio errato';
+                inputRisposta.focus();
+                return;
+            }
+            
+            const valore = parseInt(valoreInput);
+            if (isNaN(valore)) {
+                elemMessaggio.innerHTML = '🔢 Scrivi un numero valido!';
+                elemMessaggio.className = 'messaggio errato';
+                inputRisposta.value = '';
+                inputRisposta.focus();
+                return;
+            }
+            
+            // Disabilita input
+            inputRisposta.disabled = true;
+            bottoneInvia.disabled = true;
+            bottoneAiuto.disabled = true;
+            
+            if (valore === mediaCorretta) {
+                // RISPOSTA CORRETTA
+                risposteConsecutiveCorrette++;
+                
+                // Punti base
+                let punti = 10;
+                if (tipoDomandaCorrente === 'barre' || tipoDomandaCorrente === 'tabella') punti = 12;
+                if (tipoDomandaCorrente === 'torta') punti = 15;
+                
+                punteggio += punti;
+                elemPunteggio.textContent = punteggio;
+                
+                // Applica bonus
+                applicaBonus();
+                
+                // Messaggio di successo
+                let messaggio = `✅ BRAVISSIMO! ${valore} è giusto! +${punti} punti`;
+                
+                if (datiCorrente.length > 0) {
+                    const somma = datiCorrente.reduce((a, b) => a + b, 0);
+                    const mediaEsatta = somma / datiCorrente.length;
+                    
+                    if (deveArrotondare) {
+                        messaggio += `<br><small>${somma} ÷ ${datiCorrente.length} = ${mediaEsatta.toFixed(2)} → ${mediaCorretta}</small>`;
+                    } else {
+                        messaggio += `<br><small>${somma} ÷ ${datiCorrente.length} = ${mediaCorretta}</small>`;
+                    }
+                }
+                
+                elemMessaggio.innerHTML = messaggio;
+                elemMessaggio.className = 'messaggio corretto';
+                
+                // Aumenta livello
+                const nuovoLivello = Math.floor(punteggio / 30) + 1;
+                if (nuovoLivello > livello) {
+                    livello = nuovoLivello;
+                    elemLivello.textContent = livello;
+                    elemMessaggio.innerHTML += `<br>🎉 SEI PASSATO AL LIVELLO ${livello}!`;
+                }
+                
+                // Nuova domanda dopo 2 secondi
+                setTimeout(generaDomanda, 2000);
+                
+            } else {
+                // RISPOSTA ERRATA
+                risposteConsecutiveCorrette = 0;
+                
+                // Usa scudo se attivo
+                let vitaPersa = true;
+                if (scudoAttivo) {
+                    scudoAttivo = false;
+                    vitaPersa = false;
+                    mostraBonusTesto('🛡️ Scudo utilizzato!');
+                } else {
+                    vite--;
+                }
+                
+                // Messaggio di errore EDUCATIVO
+                const somma = datiCorrente.reduce((a, b) => a + b, 0);
+                const mediaEsatta = somma / datiCorrente.length;
+                
+                let messaggioErrore = `❌ OH NO! La risposta corretta era ${mediaCorretta}.`;
+                if (vitaPersa) {
+                    messaggioErrore += ` -1 vita`;
+                }
+                
+                messaggioErrore += `<br><br>📝 CALCOLO CORRETTO:`;
+                messaggioErrore += `<br>Somma: ${datiCorrente.join(' + ')} = ${somma}`;
+                messaggioErrore += `<br>${somma} ÷ ${datiCorrente.length} = ${mediaEsatta.toFixed(2)}`;
+                
+                if (deveArrotondare) {
+                    messaggioErrore += `<br>→ Arrotondato a ${mediaCorretta}`;
+                }
+                
+                elemMessaggio.innerHTML = messaggioErrore;
+                elemMessaggio.className = 'messaggio errato';
+                
+                // Aggiorna vite
+                if (vitaPersa) {
+                    aggiornaViteVisual();
+                }
+                
+                // Controlla game over
+                if (vite <= 0) {
+                    setTimeout(gameOver, 3500);
+                } else {
+                    setTimeout(generaDomanda, 3500);
+                }
+            }
+        }
+        
+        // MOSTRA AIUTO
+        function mostraAiuto() {
+            if (aiutoLivello >= 3) return;
+            
+            // Penalità punti
+            punteggio = Math.max(0, punteggio - 5);
+            elemPunteggio.textContent = punteggio;
+            
+            aiutoLivello++;
+            aggiornaAiutiVisual();
+            
+            const somma = datiCorrente.reduce((a, b) => a + b, 0);
+            const mediaEsatta = somma / datiCorrente.length;
+            
+            let aiutoTesto = "";
+            
+            if (aiutoLivello === 1) {
+                aiutoTesto = `💡 PRIMO AIUTO (-5 punti):<br>`;
+                aiutoTesto += `Valori: ${datiCorrente.join(', ')}`;
+            } else if (aiutoLivello === 2) {
+                aiutoTesto = `💡 SECONDO AIUTO (-5 punti aggiuntivi):<br>`;
+                aiutoTesto += `Somma = ${somma}<br>`;
+                aiutoTesto += `Numero valori = ${datiCorrente.length}`;
+            } else {
+                aiutoTesto = `💡 RISPOSTA (-5 punti aggiuntivi):<br>`;
+                aiutoTesto += `<strong>Risposta: ${mediaCorretta}</strong><br>`;
+                aiutoTesto += `Perché: ${somma} ÷ ${datiCorrente.length} = ${mediaEsatta.toFixed(2)}`;
+                if (deveArrotondare) {
+                    aiutoTesto += ` → ${mediaCorretta}`;
+                }
+                
+                // Auto-invia dopo 2.5 secondi
+                setTimeout(() => {
+                    if (!inputRisposta.disabled) {
+                        inputRisposta.value = mediaCorretta;
+                        inviaRisposta();
+                    }
+                }, 2500);
+            }
+            
+            elemMessaggio.innerHTML = aiutoTesto;
+            elemMessaggio.className = 'messaggio aiuto';
+            
+            if (aiutoLivello >= 3) {
+                bottoneAiuto.disabled = true;
+                bottoneAiuto.textContent = '❌ AIUTINO ESAURITO';
+            } else {
+                bottoneAiuto.textContent = `🧠 AIUTINO (-5 punti)`;
+            }
+        }
+        
+        // GAME OVER
+        function gameOver() {
+            document.getElementById('punteggio-finale').textContent = punteggio;
+            document.getElementById('livello-finale').textContent = livello;
+            
+            // Calcola stelle
+            let stelle = 0;
+            if (punteggio >= 80) stelle = 5;
+            else if (punteggio >= 50) stelle = 4;
+            else if (punteggio >= 30) stelle = 3;
+            else if (punteggio >= 15) stelle = 2;
+            else if (punteggio >= 5) stelle = 1;
+            
+            document.getElementById('stelle-valutazione').innerHTML = 
+                '⭐'.repeat(stelle) + '☆'.repeat(5-stelle);
+            
+            gameOverScreen.style.display = 'flex';
+        }
+        
+        // RIGIOCA
+        function rigioca() {
+            punteggio = 0;
+            vite = 3;
+            livello = 1;
+            aiutoLivello = 0;
+            risposteConsecutiveCorrette = 0;
+            scudoAttivo = false;
+            domandeFatte = 0;
+            
+            elemPunteggio.textContent = punteggio;
+            aggiornaViteVisual();
+            elemLivello.textContent = livello;
+            elemMessaggio.innerHTML = 'Pronto per una nuova partita!';
+            elemMessaggio.className = 'messaggio';
+            elemBonusInfo.style.display = 'none';
+            elemAvviso.style.display = 'none';
+            aggiornaAiutiVisual();
+            
+            gameOverScreen.style.display = 'none';
+            modaleIstruzioni.style.display = 'none';
+            
+            generaDomanda();
+        }
+        
+        // ==================== FUNZIONE PER ESCI (DIRETTA) ====================
+        function esciDalGioco() {
+            if (confirm("Vuoi davvero uscire dal gioco?")) {
+                window.location.href = "https://oragioca.github.io/matematica/";
+                // In alternativa, per una pagina vuota: window.location.href = "about:blank";
+            }
+        }
+        
+        // INIZIALIZZA
+        window.onload = function() {
+            generaDomanda();
+            
+            // Aggiungi event listener per il pulsante esci
+            document.getElementById('esciBtn').addEventListener('click', esciDalGioco);
+            
+            // Controlla se serve scroll
+            setTimeout(controllaScrollNecessario, 300);
+            
+            // Controlla anche al resize
+            window.addEventListener('resize', controllaScrollNecessario);
+        };
+        
+        // ENTER PER INVIARE
+        inputRisposta.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                inviaRisposta();
+            }
+        });
+        
+        // CHIUDI MODALE CON ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                chiudiIstruzioni();
+            }
+        });
+    </script>
+</body>
+</html>
